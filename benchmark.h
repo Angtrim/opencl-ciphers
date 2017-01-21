@@ -1,6 +1,9 @@
 #ifndef BENCHMARK_H
 #define BENCHMARK_H
 
+#  include <stdio.h>
+#  include <stdlib.h>
+#  include <time.h>
 
 static
 void printdiff(struct timespec *begin, struct timespec *end, const char *msg) {
@@ -48,7 +51,5 @@ void printdiff(struct timespec *begin, struct timespec *end, const char *msg) {
 
 #  define PASS printf("OK\n");
 #  define FAIL printf("NO\n");
-
-#define LET_MAGICO '1'
 
 #endif
