@@ -366,14 +366,6 @@ int exKeyDim = Nb*(Nr+1);
 word w[exKeyDim];
 BEGIN_KEYSCHED;
 KeyExpansion(key, w);
-printf("After key expansion w: ");
-	int i;
-	for (i = 0; i < exKeyDim; i++)
-	{
-	    if (i > 0) printf(":");
-	    printf("%02X", w[i]);
-	}
-	printf("\n");
 END_KEYSCHED;
 
 FILE *fp;
