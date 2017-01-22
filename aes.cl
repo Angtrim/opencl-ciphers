@@ -109,109 +109,36 @@ __kernel void aesCipher(__global uchar *in, __global uint *w, __global uchar *ou
   for (int i = 0; i < 4*Nb; ++i) {
     state[i] = in[i];
   }
-printf("state: ");
-int i;
-for (i = 0; i < 4*Nb; i++)
-{
-    if (i > 0) printf(":");
-    printf("%02X", state[i]);
-}
-printf("\n");
 
   #pragma unroll
   for (int i = 0; i < Nb*(Nr+1); ++i) {
     _w[i] = w[i];
   }
 
-printf("_w: ");
-for (i = 0; i < Nb*(Nr+1); i++)
-{
-    if (i > 0) printf(":");
-    printf("%02X", _w[i]);
-}
-printf("\n");
-
   _Pragma("cipher round") {
   //dumpState(state, "Input");
   addRoundKey(state, _w, 0); // See Sec. 5.1.4
-printf("After first addRoundKey state: ");
-for (i = 0; i < 4*Nb; i++)
-{
-    if (i > 0) printf(":");
-    printf("%02X", state[i]);
-}
-printf("\n");
-  }
 
   #pragma unroll
   for (int round = 1; round < Nr; ++round) {
-printf("round %d:\n", round);
+
     //BEGIN_ROUND;
     _Pragma("cipher round") {
     //dumpState(state, "Start of Round");
     subBytes(state); // See Sec. 5.1.1
-printf("After subBytes state: ");
-  for (i = 0; i < 4*Nb; i++)
-{
-    if (i > 0) printf(":");
-    printf("%02X", state[i]);
-}
-printf("\n");
     //dumpState(state, "After SubBytes");
     shiftRows(state); // See Sec. 5.1.2
-printf("After shiftRows state: ");
-  for (i = 0; i < 4*Nb; i++)
-{
-    if (i > 0) printf(":");
-    printf("%02X", state[i]);
-}
-printf("\n");
     //dumpState(state, "After ShiftRows");
     mixColumns(state); // See Sec. 5.1.3
-printf("After mixColumns state: ");
-  for (i = 0; i < 4*Nb; i++)
-{
-    if (i > 0) printf(":");
-    printf("%02X", state[i]);
-}
-printf("\n");
     //dumpState(state, "After MixColumns");
     addRoundKey(state, _w, round*Nb);
-printf("After addRoundKey state: ");
-  for (i = 0; i < 4*Nb; i++)
-{
-    if (i > 0) printf(":");
-    printf("%02X", state[i]);
-}
-printf("\n");
     }
   }
 
   _Pragma("cipher round") {
   subBytes(state);
-printf("After last subBytes state: ");
-  for (i = 0; i < 4*Nb; i++)
-{
-    if (i > 0) printf(":");
-    printf("%02X", state[i]);
-}
-printf("\n");
   shiftRows(state);
-printf("After last shiftRows state: ");
-  for (i = 0; i < 4*Nb; i++)
-{
-    if (i > 0) printf(":");
-    printf("%02X", state[i]);
-}
-printf("\n");
   addRoundKey(state, _w, Nr*Nb);
-printf("After last addRoundKey state: ");
-  for (i = 0; i < 4*Nb; i++)
-{
-    if (i > 0) printf(":");
-    printf("%02X", state[i]);
-}
-printf("\n");
   }
 
   #pragma unroll

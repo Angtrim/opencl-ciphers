@@ -470,20 +470,11 @@ ret = clReleaseContext(context);
  
 free(source_str);
 
-//TO DO CALLING KERNEL
-
 if (memcmp(output, right, BLOCK_SIZE) == 0) {
 /* Display Result */
 puts(output);
 PASS;
 } else {
-int i;
-for (i = 0; i < BLOCK_SIZE; i++)
-{
-    if (i > 0) printf(":");
-    printf("%02X", output[i]);
-}
-printf("\n");
 FAIL;
 }
 //}
