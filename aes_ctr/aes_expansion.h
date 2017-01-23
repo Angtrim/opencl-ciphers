@@ -1,5 +1,7 @@
 #ifndef AES_EXPANSION_H
-# define AES_EXPANSION_H
+#define AES_EXPANSION_H
+
+#include <stdint.h>
 
 #define AES128
 
@@ -38,6 +40,6 @@
 typedef uint32_t word;
 typedef uint8_t byte;
 
-void aes_expand(word key[Nk] __attribute__((key)), byte in[4*Nb] __attribute__((plain)),byte out[4*Nb]);
+void KeyExpansion(word key[Nk], word w[Nb*(Nr+1)]);
 
 #endif

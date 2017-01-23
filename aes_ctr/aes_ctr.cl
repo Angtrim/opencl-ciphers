@@ -62,7 +62,6 @@ __kernel void mixColumns(__local uchar* arr){
     uchar a[4];
     uchar b[4];
 
-    uchar c;
     uchar h;
 
     #pragma unroll

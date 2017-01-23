@@ -1,0 +1,42 @@
+#include "aes_cipher.h"
+#include "ctr_test_vectors.h"
+
+/* 
+   This function load the plaintext divided in blocks 
+   from ctr_test_vect.h
+*/
+void loadPlaintextBlocks(byte plaintext[NUM_BLOCKS][BLOCK_SIZE]){
+ 
+ #pragma unroll 
+ for(int k = 0; k < NUM_BLOCKS; k++){
+  for(int i = 0; i < BLOCK_SIZE; i++){
+   plaintext[k][i] = plain[k][i]; 
+  }
+ }
+}
+
+/*  
+    This function load the plaintext divided in blocks 
+    from ctr_test_vect.h
+*/
+void loadCiphertextBlocks(byte plaintext[NUM_BLOCKS][BLOCK_SIZE]){
+
+ #pragma unroll 
+ for(int k = 0; k < NUM_BLOCKS; k++){
+  for(int i = 0; i < BLOCK_SIZE; i++){
+   plaintext[k][i] = cipher[k][i]; 
+  }
+ }
+}
+
+
+int main(){
+   byte plaintext[NUM_BLOCKS][BLOCK_SIZE];
+   byte output[NUM_BLOCKS][BLOCK_SIZE];
+   byte right[NUM_BLOCKS][BLOCK_SIZE];
+   loadPlaintextBlocks(plaintext);
+   loadCiphertextBlocks(right);
+   aesCtrEncript(plaintext,key,output);
+   return 0;
+   // check if right
+}

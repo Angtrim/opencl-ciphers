@@ -128,9 +128,4 @@ void KeyExpansion(word key[Nk], word w[Nb*(Nr+1)]) {
  #endif
 }
 
-void aes_expand(word key[Nk] __attribute__((key)), byte in[4*Nb] __attribute__((plain)),byte out[4*Nb]) {
- word w[Nb*(Nr+1)];
- BEGIN_KEYSCHED;
- KeyExpansion(key, w);
- END_KEYSCHED;
-}
+

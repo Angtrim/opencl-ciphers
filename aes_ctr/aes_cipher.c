@@ -1,8 +1,7 @@
 #include "benchmark.h"
-#include "aes_expansion.h"
-#include <stdint.h>
+#include "aes_cipher.h"
+
 #include <assert.h>
-#include "ctr_test_vectors.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -14,11 +13,9 @@
 #endif
 
 #define WORK_GROUP_SIZE 1
-
 #define MEM_SIZE (128)
 #define MAX_SOURCE_SIZE (0x100000)
 
-#define BLOCK_SIZE (128 / 8)
 
 
 /*
@@ -32,37 +29,7 @@ char* stradd(const char* a, const char* b){
 } 
 
 
-/* 
-   This function load the plaintext divided in blocks 
-   from ctr_test_vect.h
-*/
-void loadPlaintextBlocks(byte plaintext[NUM_BLOCKS][BLOCK_SIZE]){
-	
-	#pragma unroll 
-	for(int k = 0; k < NUM_BLOCKS; k++){
-		for(int i = 0; i < BLOCK_SIZE; i++){
-			plaintext[k][i] = plain[k][i]; 
-		}
-	}
-}
-
-/*  
-    This function load the plaintext divided in blocks 
-    from ctr_test_vect.h
-*/
-void loadCiphertextBlocks(byte plaintext[NUM_BLOCKS][BLOCK_SIZE]){
-
-	#pragma unroll 
-	for(int k = 0; k < NUM_BLOCKS; k++){
-		for(int i = 0; i < BLOCK_SIZE; i++){
-			plaintext[k][i] = cipher[k][i]; 
-		}
-	}
-}
-
-
-
-void aesCtrEncript(char* inputFile, word key[Nk] __attribute__((key)), char* outputFile) {
+void aesCtrEncript(byte inputText[NUM_BLOCKS][BLOCK_SIZE], word key[Nk],  byte output[NUM_BLOCKS][BLOCK_SIZE]) {
 	//opencl parameters initialization
 	//to run the kernel
 	cl_device_id device_id = NULL;
@@ -80,13 +47,6 @@ void aesCtrEncript(char* inputFile, word key[Nk] __attribute__((key)), char* out
 	cl_uint ret_num_platforms;
 	cl_int ret;
 	
-	// plaintext divided in blocks of dim BLOCK_SIZE
-	byte inputText[NUM_BLOCKS][BLOCK_SIZE];
-	// ciphertext divided in blocks of dim BLOCK_SIZE
-	byte output[NUM_BLOCKS][BLOCK_SIZE];
-	
-
-
 	// number of work-items equal to the number of blocks
  size_t global_item_size = NUM_BLOCKS;
  size_t local_item_size = WORK_GROUP_SIZE;
@@ -99,7 +59,7 @@ void aesCtrEncript(char* inputFile, word key[Nk] __attribute__((key)), char* out
  END_KEYSCHED;
 
  FILE *fp;
- char fileName[] = "./aes.cl";
+ char fileName[] = "aes_ctr/aes_ctr.cl";
 
 	// to pass the constant parameter Nb and mode of operation flag
  char *append_str = "";
@@ -178,7 +138,7 @@ void aesCtrEncript(char* inputFile, word key[Nk] __attribute__((key)), char* out
  }
 
 	/* Create OpenCL Kernel */
- kernel = clCreateKernel(program, "aesCipher", &ret);
+ kernel = clCreateKernel(program, "aesCipherCrt", &ret);
 
 	/* Set OpenCL Kernel Parameters */
  ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&in);
@@ -202,8 +162,6 @@ void aesCtrEncript(char* inputFile, word key[Nk] __attribute__((key)), char* out
  ret = clReleaseMemObject(out);
  ret = clReleaseCommandQueue(command_queue);
  ret = clReleaseContext(context);
-
  free(source_str);
- return 0;
 
 }
