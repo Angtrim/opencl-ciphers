@@ -14,6 +14,8 @@
 #define BLOCK_SIZE (128 / 8)
 #define AES128
 
+#define DUMP_ROUNDS
+
 #if defined(AES128)
 #  define KEYSIZE 128
 #  define NAME "AES 128"

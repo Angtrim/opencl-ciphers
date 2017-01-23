@@ -93,21 +93,18 @@ __kernel void addRoundKey(__local uchar* state,__local uint* w, int i){
   }
 } 
 
-/*#define BEGIN_ROUND \
-  printf("------- %2d --------\n\n", round)
-#else
-#  define dumpState(...)
-#  define BEGIN_ROUND
-#endif*/
+#ifdef __CTR_MODE__
 
-__kernel void aesCipher(__global uchar *in, __global uint *w, __global uchar *out){
-  
+__kernel void aesCipher(__global uchar in[NUM_BLOCKS][BLOCK_SIZE], __global uint *w, __global uchar out[NUM_BLOCKS][BLOCK_SIZE]){
+
+  int gid = get_global_id(0);  
+
   __local uchar state[4*Nb]; 
   __local uint _w[Nb*(Nr+1)];
   
   #pragma unroll
   for (int i = 0; i < 4*Nb; ++i) {
-    state[i] = in[i];
+    state[i] = in[gid][i];
   }
 
   #pragma unroll
@@ -116,22 +113,16 @@ __kernel void aesCipher(__global uchar *in, __global uint *w, __global uchar *ou
   }
 
   _Pragma("cipher round") {
-  //dumpState(state, "Input");
-  addRoundKey(state, _w, 0); // See Sec. 5.1.4
+  addRoundKey(state, _w, 0);
   }
 
   #pragma unroll
   for (int round = 1; round < Nr; ++round) {
 
-    //BEGIN_ROUND;
     _Pragma("cipher round") {
-    //dumpState(state, "Start of Round");
-    subBytes(state); // See Sec. 5.1.1
-    //dumpState(state, "After SubBytes");
-    shiftRows(state); // See Sec. 5.1.2
-    //dumpState(state, "After ShiftRows");
-    mixColumns(state); // See Sec. 5.1.3
-    //dumpState(state, "After MixColumns");
+    subBytes(state);
+    shiftRows(state); 
+    mixColumns(state);
     addRoundKey(state, _w, round*Nb);
     }
   }
@@ -144,6 +135,53 @@ __kernel void aesCipher(__global uchar *in, __global uint *w, __global uchar *ou
 
   #pragma unroll
   for (int i = 0; i < 4*Nb; ++i) {
-    out[i] = state[i];
+    out[gid][i] = state[i];
   }
 }
+
+#else
+
+__kernel void aesCipher(__global uchar in[NUM_BLOCKS][BLOCK_SIZE], __global uint *w, __global uchar out[NUM_BLOCKS][BLOCK_SIZE]){
+
+  int gid = get_global_id(0);
+  
+  __local uchar state[4*Nb]; 
+  __local uint _w[Nb*(Nr+1)];
+  
+  #pragma unroll
+  for (int i = 0; i < 4*Nb; ++i) {
+    state[i] = in[gid][i];
+  }
+
+  #pragma unroll
+  for (int i = 0; i < Nb*(Nr+1); ++i) {
+    _w[i] = w[i];
+  }
+
+  _Pragma("cipher round") {
+  addRoundKey(state, _w, 0);
+  }
+
+  #pragma unroll
+  for (int round = 1; round < Nr; ++round) {
+
+    _Pragma("cipher round") {
+    subBytes(state);
+    shiftRows(state); 
+    mixColumns(state); 
+    addRoundKey(state, _w, round*Nb);
+    }
+  }
+
+  _Pragma("cipher round") {
+  subBytes(state);
+  shiftRows(state);
+  addRoundKey(state, _w, Nr*Nb);
+  }
+
+  #pragma unroll
+  for (int i = 0; i < 4*Nb; ++i) {
+    out[gid][i] = state[i];
+  }
+}
+#endif
