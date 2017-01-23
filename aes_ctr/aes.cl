@@ -33,6 +33,11 @@ __constant uchar sbox[256] = {
   0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16	
 };
 
+//nonce added to the counter in ctr mode
+__constant uchar nonce[8] = {
+  0xf1, 0x42, 0x61, 0xbb, 0xfc, 0x34, 0xc5, 0xe9
+};
+
 __kernel void subBytes(__local uchar* s){
 
   #pragma unroll
@@ -97,14 +102,24 @@ __kernel void addRoundKey(__local uchar* state,__local uint* w, int i){
 
 __kernel void aesCipher(__global uchar in[NUM_BLOCKS][BLOCK_SIZE], __global uint *w, __global uchar out[NUM_BLOCKS][BLOCK_SIZE]){
 
-  int gid = get_global_id(0);  
+  int gid = get_global_id(0); 
+
+  __local uchar counter[16];
+  /* -- initialize counter -- */
+  for(int k = 0; k < 8; k++){
+    counter[k] = nonce[k];
+  }
+  uchar *countBytes = (uchar*)&gid:
+  for(int k = 8; k < 16; k++){
+    counter[k] = countBytes[k];
+  }
 
   __local uchar state[4*Nb]; 
   __local uint _w[Nb*(Nr+1)];
   
   #pragma unroll
   for (int i = 0; i < 4*Nb; ++i) {
-    state[i] = in[gid][i];
+    state[i] = counter[k];
   }
 
   #pragma unroll
@@ -135,7 +150,7 @@ __kernel void aesCipher(__global uchar in[NUM_BLOCKS][BLOCK_SIZE], __global uint
 
   #pragma unroll
   for (int i = 0; i < 4*Nb; ++i) {
-    out[gid][i] = state[i];
+    out[gid][i] = state[i] ^ in[gid][i];
   }
 }
 

@@ -8,7 +8,9 @@
 #include <CL/cl.h>
 #endif
 
-//#define __CTR_MODE__
+#define __CTR_MODE__
+#define ENCRYPT
+
 #define WORK_GROUP_SIZE 1
 #define __LITTLE_ENDIAN__
 
@@ -205,12 +207,24 @@ void aes_expand(word key[Nk] __attribute__((key)),
 
 // This function load the plaintext divided in blocks 
 // from ctr_test_vect.h
-void loadBlocks(byte plaintext[NUM_BLOCKS][BLOCK_SIZE]){
+void loadPlaintextBlocks(byte plaintext[NUM_BLOCKS][BLOCK_SIZE]){
 	
 	#pragma unroll 
 	for(int k = 0; k < NUM_BLOCKS; k++){
 		for(int i = 0; i < BLOCK_SIZE; i++){
 			plaintext[k][i] = plain[k][i]; 
+		}
+	}
+}
+
+// This function load the plaintext divided in blocks 
+// from ctr_test_vect.h
+void loadCiphertextBlocks(byte plaintext[NUM_BLOCKS][BLOCK_SIZE]){
+	
+	#pragma unroll 
+	for(int k = 0; k < NUM_BLOCKS; k++){
+		for(int i = 0; i < BLOCK_SIZE; i++){
+			plaintext[k][i] = cipher[k][i]; 
 		}
 	}
 }
@@ -238,9 +252,17 @@ int main() {
 	cl_int ret;
 	
 	// plaintext divided in blocks of dim BLOCK_SIZE
-	byte plaintext[NUM_BLOCKS][BLOCK_SIZE];
+	byte inputText[NUM_BLOCKS][BLOCK_SIZE];
+	// ciphertext divided in blocks of dim BLOCK_SIZE
+	byte output[NUM_BLOCKS][BLOCK_SIZE];
 	
-	loadBlocks(plaintext);
+	#ifdef ENCRYPT
+		loadPlaintextBlocks(inputText);
+	#else
+	#ifdef DECRYPT
+		loadCiphertextBlocks(inputText);
+	#endif
+	#endif
 	
 	// number of work-items equal to the number of blocks
 	size_t global_item_size = NUM_BLOCKS;
@@ -252,9 +274,6 @@ int main() {
 		// number of work-item per work-group
 		size_t local_item_size = 1;
 	#endif
-	
-	
-	byte output[NUM_BLOCKS][BLOCK_SIZE];
 	
 	//key expansion is performed on cpu
     int exKeyDim = Nb*(Nr+1);
@@ -321,7 +340,7 @@ int main() {
 	out = clCreateBuffer(context, CL_MEM_READ_WRITE, NUM_BLOCKS * BLOCK_SIZE * sizeof(byte), NULL, &ret);
 
 	/* Copy input data to Memory Buffer */
-	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, NUM_BLOCKS * BLOCK_SIZE * sizeof(byte), plaintext, 0, NULL, NULL);
+	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, NUM_BLOCKS * BLOCK_SIZE * sizeof(byte), inputText, 0, NULL, NULL);
 	ret = clEnqueueWriteBuffer(command_queue, exKey, CL_TRUE, 0, exKeyDim * sizeof(word), w, 0, NULL, NULL);
 
 	/* Create Kernel Program from the source */
@@ -375,20 +394,27 @@ int main() {
 	free(source_str);
 
     #ifdef __CTR_MODE__ 
-		/* -- testing enctryption for the cipher in ctr mode -- */
-		for(int k = 0; k < NUM_BLOCKS; k++){
-			if (memcmp(output[k], cipher[k], BLOCK_SIZE) == 0) {
-			/* Display Result */
-			for(int i = 0; i < BLOCK_SIZE; i++){
-				printf("%02x:", output[k][i]);
+		#ifdef ENCRYPT
+			/* -- testing enctryption for the cipher in ctr mode -- */
+			for(int k = 0; k < NUM_BLOCKS; k++){
+				/* Display Result */
+				for(int i = 0; i < BLOCK_SIZE; i++){
+					printf("%02x:", output[k][i]);
+				}
 			}
-			PASS;
-			} else {
-			FAIL;
+		#else
+			#ifdef DECRYPT
+			/* -- testing decryption for the cipher in ctr mode -- */
+			for(int k = 0; k < NUM_BLOCKS; k++){
+				/* Display Result */
+				for(int i = 0; i < BLOCK_SIZE; i++){
+					printf("%02x:", output[k][i]);
+				}
 			}
-		}
+			#endif
+		#endif
     #else
-		/* -- testing encryption for the cipher not in ctr mode -- */
+		/* -- testing enctryption for the cipher -- */
 		for(int k = 0; k < NUM_BLOCKS; k++){
 			if (memcmp(output[k], cipher[k], BLOCK_SIZE) == 0) {
 			/* Display Result */
@@ -401,20 +427,7 @@ int main() {
 			}
 		}
     #endif
-		// testing
-		for(int k = 0; k < NUM_BLOCKS; k++){
-			if (memcmp(output[k], cipher[k], BLOCK_SIZE) == 0) {
-			/* Display Result */
-			for(int i = 0; i < BLOCK_SIZE; i++){
-				printf("%02x:", output[k][i]);
-			}
-			PASS;
-			} else {
-			FAIL;
-			}
-		}
-	
-	//}
+		
 
 	#if 0
 	  byte output[BLOCK_SIZE];
