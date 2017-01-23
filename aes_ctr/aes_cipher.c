@@ -9,9 +9,6 @@
 #include <CL/cl.h>
 #endif
 
-#define __CTR_MODE__
-#define ENCRYPT
-
 #define WORK_GROUP_SIZE 1
 
 #define MEM_SIZE (128)
@@ -183,7 +180,7 @@ void KeyExpansion(word key[Nk], word w[Nb*(Nr+1)]) {
 
   w[i] = w[i-Nk] ^ temp;
  }
- 
+
 	#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 	  // Flip key on little endian platforms
 	  #pragma unroll
@@ -261,10 +258,10 @@ int main() {
  loadCiphertextBlocks(inputText);
 	#endif
 	#endif
- 
+
 	// number of work-items equal to the number of blocks
  size_t global_item_size = NUM_BLOCKS;
- 
+
 	#ifdef __CTR_MODE__
 		// number of work-item per work-group
  size_t local_item_size = WORK_GROUP_SIZE;
@@ -272,7 +269,7 @@ int main() {
 		// number of work-item per work-group
  size_t local_item_size = 1;
 	#endif
- 
+
 	//key expansion is performed on cpu
  int exKeyDim = Nb*(Nr+1);
  word w[exKeyDim];
@@ -308,7 +305,7 @@ int main() {
 	
 	char *source_str;
 	size_t source_size;
- 
+
 	/* Load the source code containing the kernel*/
 	fp = fopen(fileName, "r");
 	if (!fp) {
@@ -325,13 +322,13 @@ int main() {
 	/* Get Platform and Device Info */
  ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
  ret = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, &device_id, &ret_num_devices);
- 
+
 	/* Create OpenCL context */
  context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
- 
+
 	/* Create Command Queue */
  command_queue = clCreateCommandQueue(context, device_id, 0, &ret);
- 
+
 	/* Create Memory Buffers */
  in = clCreateBuffer(context, CL_MEM_READ_WRITE, NUM_BLOCKS * BLOCK_SIZE * sizeof(byte), NULL, &ret);
  exKey = clCreateBuffer(context, CL_MEM_READ_WRITE, exKeyDim * sizeof(word), NULL, &ret); 
@@ -344,7 +341,7 @@ int main() {
 	/* Create Kernel Program from the source */
  program = clCreateProgramWithSource(context, 1, (const char **)&append_str,
  (const size_t *)&source_size, &ret);
- 
+
 	/* Build Kernel Program */
  ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
  if(ret != CL_SUCCESS){
@@ -362,22 +359,22 @@ int main() {
 		// Print the log
   printf("%s\n", log);
  }
- 
+
 	/* Create OpenCL Kernel */
  kernel = clCreateKernel(program, "aesCipher", &ret);
- 
+
 	/* Set OpenCL Kernel Parameters */
  ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&in);
  ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&exKey);
  ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&out);
- 
+
 	/* Execute OpenCL Kernel instances */
  ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL,NULL);
- 
+
 	/* Copy results from the memory buffer */
  ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
  NUM_BLOCKS * BLOCK_SIZE * sizeof(byte),output, 0, NULL, NULL);
- 
+
 	/* Finalization */
  ret = clFlush(command_queue);
  ret = clFinish(command_queue);
@@ -388,7 +385,7 @@ int main() {
  ret = clReleaseMemObject(out);
  ret = clReleaseCommandQueue(command_queue);
  ret = clReleaseContext(context);
- 
+
  free(source_str);
 
     #ifdef __CTR_MODE__ 
@@ -427,7 +424,7 @@ int main() {
   }
  }
     #endif
- 
+
 
 	#if 0
 	  byte output[BLOCK_SIZE];
