@@ -400,6 +400,7 @@ int main() {
 				/* Display Result */
 				for(int i = 0; i < BLOCK_SIZE; i++){
 					printf("%02x:", output[k][i]);
+				        printf("\n");
 				}
 			}
 		#else
@@ -409,6 +410,7 @@ int main() {
 				/* Display Result */
 				for(int i = 0; i < BLOCK_SIZE; i++){
 					printf("%02x:", output[k][i]);
+				        printf("\n");
 				}
 			}
 			#endif

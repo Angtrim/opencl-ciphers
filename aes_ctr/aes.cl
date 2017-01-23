@@ -109,7 +109,7 @@ __kernel void aesCipher(__global uchar in[NUM_BLOCKS][BLOCK_SIZE], __global uint
   for(int k = 0; k < 8; k++){
     counter[k] = nonce[k];
   }
-  uchar *countBytes = (uchar*)&gid:
+  uchar *countBytes = (uchar*)&gid;
   for(int k = 8; k < 16; k++){
     counter[k] = countBytes[k];
   }
@@ -119,7 +119,7 @@ __kernel void aesCipher(__global uchar in[NUM_BLOCKS][BLOCK_SIZE], __global uint
   
   #pragma unroll
   for (int i = 0; i < 4*Nb; ++i) {
-    state[i] = counter[k];
+    state[i] = counter[i];
   }
 
   #pragma unroll
