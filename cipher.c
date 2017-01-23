@@ -4,6 +4,7 @@
 
 #define BLOCK_SIZE (128 / 8)
 #define AES128
+#define __LITTLE_ENDIAN__
 
 #if defined(AES128)
 #  define KEYSIZE 128

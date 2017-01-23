@@ -14,6 +14,8 @@
 #define BLOCK_SIZE (128 / 8)
 #define AES128
 
+#define DUMP_ROUNDS
+
 #if defined(AES128)
 #  define KEYSIZE 128
 #  define NAME "AES 128"
@@ -366,14 +368,6 @@ int exKeyDim = Nb*(Nr+1);
 word w[exKeyDim];
 BEGIN_KEYSCHED;
 KeyExpansion(key, w);
-printf("After key expansion w: ");
-	int i;
-	for (i = 0; i < exKeyDim; i++)
-	{
-	    if (i > 0) printf(":");
-	    printf("%02X", w[i]);
-	}
-	printf("\n");
 END_KEYSCHED;
 
 FILE *fp;
@@ -470,20 +464,11 @@ ret = clReleaseContext(context);
  
 free(source_str);
 
-//TO DO CALLING KERNEL
-
 if (memcmp(output, right, BLOCK_SIZE) == 0) {
 /* Display Result */
 puts(output);
 PASS;
 } else {
-int i;
-for (i = 0; i < BLOCK_SIZE; i++)
-{
-    if (i > 0) printf(":");
-    printf("%02X", output[i]);
-}
-printf("\n");
 FAIL;
 }
 //}
