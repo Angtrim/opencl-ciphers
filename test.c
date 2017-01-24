@@ -36,7 +36,14 @@ int main(){
    byte right[NUM_BLOCKS][BLOCK_SIZE];
    loadPlaintextBlocks(plaintext);
    loadCiphertextBlocks(right);
-   aesCtrEncript(plaintext,key,output);
+   aesCtrEncrypt(plaintext,key,output);
+   
+   for(int k = 0; k < NUM_BLOCKS; k++) {
+     for(int i = 0; i < BLOCK_SIZE; i++) {
+       printf("%02x:", output[k][i]);
+     }
+     printf("\n");
+   }
    return 0;
    // check if right
 }
