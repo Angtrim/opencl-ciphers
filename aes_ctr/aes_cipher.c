@@ -28,7 +28,7 @@ char* stradd(const char* a, const char* b){
 	return strcat(strcat(ret, a) ,b);
 } 
 
-void aesCtrEncrypt(byte inputText[NUM_BLOCKS][BLOCK_SIZE], word key[Nk],  byte output[NUM_BLOCKS][BLOCK_SIZE]) {
+void aesCtrEncrypt(long num_blocks, byte inputText[num_blocks][BLOCK_SIZE], word key[Nk],  byte output[num_blocks][BLOCK_SIZE]) {
 	//opencl parameters initialization
 	//to run the kernel
 	cl_device_id device_id = NULL;
