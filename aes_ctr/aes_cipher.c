@@ -93,15 +93,15 @@ void setUpOpenCl(byte* inputText, word* w,  byte* output, char* kernelName, char
 	/* Copy input data to Memory Buffer */
 	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(byte), inputText, 0, NULL, NULL);
 	ret = clEnqueueWriteBuffer(command_queue, exKey, CL_TRUE, 0, exKeyDim * sizeof(word), w, 0, NULL, NULL);
- ret = clEnqueueWriteBuffer(command_queue, Nb, CL_TRUE, 0, sizeof(int), _Nb, 0, NULL, NULL);
-	ret = clEnqueueWriteBuffer(command_queue, Nr, CL_TRUE, 0, sizeof(int), _Nr, 0, NULL, NULL);
+ ret = clEnqueueWriteBuffer(command_queue, Nb, CL_TRUE, 0, sizeof(int),&_Nb, 0, NULL, NULL);
+	ret = clEnqueueWriteBuffer(command_queue, Nr, CL_TRUE, 0, sizeof(int),&_Nr, 0, NULL, NULL);
 
 	/* Create Kernel Program from the source */
 	program = clCreateProgramWithSource(context, 1, (const char **)&source_str,
 	(const size_t *)&source_size, &ret);
 
 	/* Build Kernel Program */
-	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
+	ret = clBuildProgram(program, 1, &device_id, NULL, "-I aes_ctr", NULL);
 	if(ret != CL_SUCCESS){
 	printf("\nBuild Error = %i", ret);
 			// Determine the size of the log
@@ -119,7 +119,7 @@ void setUpOpenCl(byte* inputText, word* w,  byte* output, char* kernelName, char
 	}
 	
 	/* Create OpenCL Kernel */
-	kernel = clCreateKernel(program, &kernelName, &ret);
+	kernel = clCreateKernel(program, kernelName, &ret);
 
 	/* Set OpenCL Kernel Parameters */
 	ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&in);
@@ -129,7 +129,7 @@ void setUpOpenCl(byte* inputText, word* w,  byte* output, char* kernelName, char
 	ret = clSetKernelArg(kernel, 4, sizeof(cl_mem), (void *)&Nr);
 }
 
-void finalizeExecution(){
+void finalizeExecution(char* source_str){
 	/* Finalization */
 	ret = clFlush(command_queue);
 	ret = clFinish(command_queue);
@@ -160,7 +160,7 @@ void aes128Encrypt(char* fileName, word* key, byte* output,size_t local_item_siz
 	
 	setUpOpenCl(inputText, w, output, "aesCipher",source_str,source_size,exKeyDim,fileInfo.lenght,Nb128,Nr128);
 	
-	size_t global_item_size = fileInfo.lenght/BLOCK_SIZE
+	size_t global_item_size = fileInfo.lenght/BLOCK_SIZE;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL,NULL);
 
@@ -172,7 +172,7 @@ void aes128Encrypt(char* fileName, word* key, byte* output,size_t local_item_siz
 
 	output = outputBuffer;
 
-	finalizeExecution();
+	finalizeExecution(source_str);
 	
 }
 
@@ -193,7 +193,7 @@ void aesCtr128Encrypt(char* fileName, word* key, byte* output,size_t local_item_
 	
 	setUpOpenCl(inputText, w, output, "aesCTRCipher",source_str,source_size,exKeyDim,fileInfo.lenght,Nb128,Nr128);
 	
-	size_t global_item_size = fileInfo.lenght/BLOCK_SIZE
+	size_t global_item_size = fileInfo.lenght/BLOCK_SIZE;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL,NULL);
 
@@ -205,6 +205,6 @@ void aesCtr128Encrypt(char* fileName, word* key, byte* output,size_t local_item_
 
 	output = outputBuffer;
 
-	finalizeExecution();
+	finalizeExecution(source_str);
 
 }

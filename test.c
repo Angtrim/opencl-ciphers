@@ -31,7 +31,7 @@
 // }
 
 
-int main(){
+int mains(){
    // long num_blocks = 1000;
    
    // byte plaintext[num_blocks][BLOCK_SIZE];
@@ -49,4 +49,5 @@ int main(){
    // }
    // return 0;
    // // check if right
+	return 0;
 }

@@ -1,4 +1,4 @@
-#include "aes_cipher.h"
+#define BLOCK_SIZE (128 / 8)
 
 __constant uchar sbox[256] = {
   0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5,
@@ -40,7 +40,7 @@ __constant uchar nonce[8] = {
   0xf1, 0x42, 0x61, 0xbb, 0xfc, 0x34, 0xc5, 0xe9
 };
 
-__kernel void subBytes(__local uchar* s){
+__kernel void subBytes(__local uchar* s, int Nb){
 
   #pragma unroll
   for (int i = 0; i < 4*Nb; ++i) {
@@ -89,7 +89,7 @@ __kernel void shiftRows(__local uchar* s){
   t = s[ 7]; s[ 7] = s[ 3]; s[ 3] = s[15]; s[15] = s[11]; s[11] = t;
 }
 
-__kernel void addRoundKey(__local uchar* state,__local uint* w, int i){
+__kernel void addRoundKey(__local uchar* state,__local uint* w, int i, int Nb){
   
   __local uint* s = (__local uint*) state;
 
@@ -99,28 +99,28 @@ __kernel void addRoundKey(__local uchar* state,__local uint* w, int i){
   }
 } 
 
-__kernel void encrypt(__local uchar state[BLOCK_SIZE], __local uint *w, __local uchar out[BLOCK_SIZE]){
+__kernel void encrypt(__local uchar state[BLOCK_SIZE], __local uint *w, __local uchar out[BLOCK_SIZE], int Nb,  int Nr){
   
   
 
   _Pragma("cipher round") {
-  addRoundKey(state, w, 0);
+  addRoundKey(state, w, 0,Nb);
   }
 
   #pragma unroll
   for (int round = 1; round < Nr; ++round) {
     _Pragma("cipher round") {
-    subBytes(state);
+    subBytes(state,Nb);
     shiftRows(state); 
     mixColumns(state); 
-    addRoundKey(state, w, round*Nb);
+    addRoundKey(state, w, round*Nb,Nb);
     }
   }
 
   _Pragma("cipher round") {
-  subBytes(state);
+  subBytes(state,Nb);
   shiftRows(state);
-  addRoundKey(state, w, Nr*Nb);
+  addRoundKey(state, w, Nr*Nb,Nb);
   }
 
   #pragma unroll
@@ -129,12 +129,14 @@ __kernel void encrypt(__local uchar state[BLOCK_SIZE], __local uint *w, __local 
   }
 }
 
-__kernel void aesCipher(__global uchar* in, __global uint *w, __global uchar* out,__global int Nb, __global int Nr){
+__kernel void aesCipher(__global uchar* in, __global uint *w, __global uchar* out,__constant int Nb, __constant int Nr){
 
   int gid = get_global_id(0); 
 
   __local uchar state[4*Nb]; 
   __local uint _w[Nb*(Nr+1)];
+  int localNb = Nb;
+  int localNr = Nr;
   
   #pragma unroll
   for (int i = 0; i < 4*Nb; ++i) {
@@ -149,7 +151,7 @@ __kernel void aesCipher(__global uchar* in, __global uint *w, __global uchar* ou
 
   /* call encrypt and get output */
   __local uchar outCipher[BLOCK_SIZE];
-  encrypt(state, _w, outCipher);
+  encrypt(state, _w, outCipher,localNb,localNr);
   
   #pragma unroll
   for(int i = 0; i < BLOCK_SIZE; i++) {
@@ -167,6 +169,8 @@ __kernel void aesCipherCtr(__global uchar* in, __global uint *w, __global uchar*
   /* Create input for aesCipher */
   __local uchar counter[16];
   __local uint _w[Nb*(Nr+1)];
+   int localNb = Nb;
+   int localNr = Nr;
 
   /* Initialize local variable for key */
   #pragma unroll
@@ -187,7 +191,7 @@ __kernel void aesCipherCtr(__global uchar* in, __global uint *w, __global uchar*
 
   /* call encrypt and get output */
   __local uchar outCipher[BLOCK_SIZE];
-  encrypt(counter,_w,outCipher);
+  encrypt(counter,_w,outCipher,localNb,localNr);
 
 
   /* final xor */
