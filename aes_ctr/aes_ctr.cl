@@ -1,4 +1,4 @@
-#include "aes_expansion.h"
+#include "aes_cipher.h"
 
 __constant uchar sbox[256] = {
   0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5,
@@ -129,7 +129,7 @@ __kernel void encrypt(__local uchar state[BLOCK_SIZE], __local uint *w, __local 
   }
 }
 
-__kernel void aesCipher(__global uchar in[NUM_BLOCKS][BLOCK_SIZE], __global uint *w, __global uchar out[NUM_BLOCKS][BLOCK_SIZE]){
+__kernel void aesCipher(__global uchar* in, __global uint *w, __global uchar* out,__global int Nb, __global int Nr){
 
   int gid = get_global_id(0); 
 
@@ -138,7 +138,8 @@ __kernel void aesCipher(__global uchar in[NUM_BLOCKS][BLOCK_SIZE], __global uint
   
   #pragma unroll
   for (int i = 0; i < 4*Nb; ++i) {
-    state[i] = in[gid][i];
+  	 int offset = gid * BLOCK_SIZE + i;
+    state[i] = in[offset];
   }
 
   #pragma unroll
@@ -152,13 +153,14 @@ __kernel void aesCipher(__global uchar in[NUM_BLOCKS][BLOCK_SIZE], __global uint
   
   #pragma unroll
   for(int i = 0; i < BLOCK_SIZE; i++) {
-    out[gid][i] = outCipher[i];
+  	 int offset = gid * BLOCK_SIZE + i;
+    out[offset] = outCipher[i];
   } 
 }
 
 
 
-__kernel void aesCipherCtr(__global uchar in[NUM_BLOCKS][BLOCK_SIZE], __global uint *w, __global uchar out[NUM_BLOCKS][BLOCK_SIZE]){
+__kernel void aesCipherCtr(__global uchar* in, __global uint *w, __global uchar* out,__global int Nb, __global int Nr){
 
   int gid = get_global_id(0); 
 
@@ -191,7 +193,9 @@ __kernel void aesCipherCtr(__global uchar in[NUM_BLOCKS][BLOCK_SIZE], __global u
   /* final xor */
   #pragma unroll
   for (int i = 0; i < 4*Nb; ++i) {
-    out[gid][i] = outCipher[i] ^ in[gid][i];
+  	int offset = gid * BLOCK_SIZE + i;
+
+    out[offset] = outCipher[i] ^ in[offset];
   }
 }
 

@@ -100,7 +100,7 @@ SBox[byte(x, 0)])
 makeword(byte(x, 0), byte(x, 1), byte(x, 2), byte(x, 3))
 
 
-void KeyExpansion(word key[Nk], word w[Nb*(Nr+1)]) {
+void KeyExpansion(word* key, word* w, int Nk, int Nb, int Nr) {
  #pragma unroll
  for (int i = 0; i < Nk; ++i) {
   w[i] = key[i];
