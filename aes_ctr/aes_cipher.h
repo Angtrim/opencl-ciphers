@@ -13,6 +13,7 @@
 #define Nk256 8
 #define Nb256 4
 #define Nr256 14
+#define BLOCK_SIZE (128 / 8)
 
 void aesCtr128Encrypt(char* fileName, word* key, byte* output,size_t local_item_size);
 void aes128Encrypt(char* fileName, word* key, byte* output,size_t local_item_size);
