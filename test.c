@@ -1,7 +1,6 @@
 #include "aes_cipher.h"
 #include "ctr_test_vectors.h"
 
-
 /*
  * This function load the size in blocks of bytes 
  * of the plaintext generated from the makefile
@@ -22,13 +21,10 @@ long getPlainNumBlocks(){
    from ctr_test_vect.h
 */
 void loadPlaintextBlocks(byte plaintext[NUM_BLOCKS][BLOCK_SIZE]){
- 	
-	
-	return 0;
 	#pragma unroll 
 	for(int k = 0; k < NUM_BLOCKS; k++){
 		for(int i = 0; i < BLOCK_SIZE; i++){
-		plaintext[k][i] = plain[k][i]; 
+			plaintext[k][i] = plain[k][i]; 
 		}
 	}
 }
@@ -56,7 +52,7 @@ int main(){
    byte right[num_blocks][BLOCK_SIZE];
    loadPlaintextBlocks(plaintext);
    loadCiphertextBlocks(right);
-   aesCtrEncrypt(num_blocks,plaintext,key,output);
+   aesCtrEncrypt(plaintext,key,output);
    
    for(int k = 0; k < NUM_BLOCKS; k++) {
      for(int i = 0; i < BLOCK_SIZE; i++) {

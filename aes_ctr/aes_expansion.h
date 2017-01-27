@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define AES128
+//#define AES128
 
 #if defined(AES128)
 #  define KEYSIZE 128

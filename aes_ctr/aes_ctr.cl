@@ -1,3 +1,5 @@
+#include "aes_expansion.h"
+
 __constant uchar sbox[256] = {
   0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5,
   0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
@@ -127,14 +129,16 @@ __kernel void encrypt(__local uchar state[BLOCK_SIZE], __local uint *w, __local 
   }
 }
 
-__kernel void aesCipher(__global uchar in[BLOCK_SIZE], __global uint *w, __global uchar out[BLOCK_SIZE]){
+__kernel void aesCipher(__global uchar in[NUM_BLOCKS][BLOCK_SIZE], __global uint *w, __global uchar out[NUM_BLOCKS][BLOCK_SIZE]){
+
+  int gid = get_global_id(0); 
 
   __local uchar state[4*Nb]; 
   __local uint _w[Nb*(Nr+1)];
   
   #pragma unroll
   for (int i = 0; i < 4*Nb; ++i) {
-    state[i] = in[i];
+    state[i] = in[gid][i];
   }
 
   #pragma unroll
@@ -148,7 +152,7 @@ __kernel void aesCipher(__global uchar in[BLOCK_SIZE], __global uint *w, __globa
   
   #pragma unroll
   for(int i = 0; i < BLOCK_SIZE; i++) {
-    out[i] = outCipher[i];
+    out[gid][i] = outCipher[i];
   } 
 }
 
