@@ -101,7 +101,7 @@ void setUpOpenCl(byte* inputText, word* w,  byte* output, char* kernelName, char
 	(const size_t *)&source_size, &ret);
 
 	/* Build Kernel Program */
-	ret = clBuildProgram(program, 1, &device_id, NULL, "-I aes_ctr", NULL);
+	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
 	printf("\nBuild Error = %i", ret);
 			// Determine the size of the log
