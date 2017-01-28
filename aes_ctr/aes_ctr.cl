@@ -161,7 +161,10 @@ __kernel void aesCipher(__global uchar* in, __global uint *w, __global uchar* ou
 
 __kernel void aesCipherCtr(__global uchar* in, __global uint *w, __global uchar* out){
 
-  int gid = get_global_id(0);
+  __local int gid;
+gid = get_global_id(0);
+   
+  printf("Current gid: %d\n", gid);
 
   /* Create input for aesCipher */
   __local uchar counter[16];
@@ -178,11 +181,18 @@ __kernel void aesCipherCtr(__global uchar* in, __global uint *w, __global uchar*
   for(int k = 0; k < 8; k++){
     counter[k] = nonce[k];
   }
-  uchar *countBytes = (uchar*)&gid;
+  __local uchar countBytes[8];
+ countBytes[0] = gid;
   #pragma unroll
   for(int k = 8; k < 16; k++){
     counter[k] = countBytes[k];
   }
+
+  printf("Counter:\n");
+  for(int j = 0; j < 16; j++){
+    printf("%02x:", counter[j]);
+  }
+  printf("\n");
 
   /* call encrypt and get output */
   __local uchar outCipher[BLOCK_SIZE];
@@ -196,4 +206,3 @@ __kernel void aesCipherCtr(__global uchar* in, __global uint *w, __global uchar*
     out[offset] = outCipher[i] ^ in[offset];
   }
 }
-
