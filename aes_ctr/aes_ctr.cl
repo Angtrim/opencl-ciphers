@@ -1,3 +1,4 @@
+
 #define BLOCK_SIZE (128 / 8)
 
 __constant uchar sbox[256] = {

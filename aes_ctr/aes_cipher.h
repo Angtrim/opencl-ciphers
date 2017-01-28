@@ -16,6 +16,10 @@
 #define BLOCK_SIZE (128 / 8)
 
 byte* aesCtr128Encrypt(char* fileName, word* key, char* output,size_t local_item_size);
+byte* aesCtr192Encrypt(char* fileName, word* key, char* output,size_t local_item_size);
+byte* aesCtr256Encrypt(char* fileName, word* key, char* output,size_t local_item_size);
 byte* aes128Encrypt(char* fileName, word* key, char* output,size_t local_item_size);
+byte* aes192Encrypt(char* fileName, word* key, char* output,size_t local_item_size);
+byte* aes256Encrypt(char* fileName, word* key, char* output,size_t local_item_size);
 
 #endif
