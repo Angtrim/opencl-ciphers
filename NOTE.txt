@@ -1,0 +1,23 @@
+NOTE:
+
+CAMELLIA:
+-lavora con tipi ulong quindi ai kernel va passato un array di elementi da 64 bit come questo { 0x123456789ABCDEF0, 0x123456789ABCDEF0, ....} (uint64_t per intenderci --> ulong in .cl)
+ Quindi i plaintext sono ancora multipli di 16 ma bisogna cambiare la funzione di load del plaintext in modo tale che siano in questo formato. Non si può fare altrimenti...
+
+CLEFIA:
+-clefia ha più o meno la stessa struttura di aes ed è senza diverse modalità quindi dovrebbe essere abbastanza semplice
+
+DES:
+-des come plaintext prende array da 8 byte ma per come è scritto possiamo tranquillamente mantenere la struttura di aes per la costruzione dell'array dal plaintext
+
+HIGHT:
+-come camellia lavora con blocchi da 8 byte. gli serve array di ulong
+
+MISTY1:
+-anche misty1 cifra blocchi da 8 byte. Gli serve array ulong
+
+PRESENT:
+-come gli altri cifra blocchi da 8 byte. Gli serve array ulong
+
+SEED:
+-ha più o meno la struttura di camellia, quindi cifra blocchi da 16 byte ma vanno passanti sempre come array di ulong (uint64_t)
