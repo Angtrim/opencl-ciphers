@@ -395,7 +395,7 @@ __kernel void camellia192_256Cipher(__global ulong* in, __global ulong* kw, __gl
  
   __local ulong outCipher[2];
   
-  128encrypt(outCipher, M, _kw, _k, _ke);
+  192_256encrypt(outCipher, M, _kw, _k, _ke);
   
   out[2*gid] = outCipher[0];
   out[2*gid+1] = outCipher[1];
@@ -465,7 +465,7 @@ __kernel void camellia192_256CtrCipher(__global ulong* in, __global ulong* kw, _
  
   __local ulong outCipher[2];
   /* encryption */
-  128encrypt(outCipher, M, _kw, _k, _ke);
+  192_256encrypt(outCipher, M, _kw, _k, _ke);
   
   /* final xor */
   out[2*gid] = outCipher[0] ^ in[2*gid];

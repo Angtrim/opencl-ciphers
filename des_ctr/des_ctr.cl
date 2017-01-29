@@ -362,21 +362,21 @@ __kernel void desCtrCipher(__global uint SK[32], __global uchar* input, __global
   /* initialize counter */
   __local uchar counter[8]; 
   //initialize counter
-  countBytes[0] = (char)0;
-  countBytes[1] = (char)0;
-  countBytes[2] = (char)0;
-  countBytes[3] = (char)0;
-  countBytes[4] = (char)0;
-  countBytes[5] = (char)0;
-  countBytes[6] = (char)0;
-  countBytes[7] = (char)0;
+  counter[0] = (char)0;
+  counter[1] = (char)0;
+  counter[2] = (char)0;
+  counter[3] = (char)0;
+  counter[4] = (char)0;
+  counter[5] = (char)0;
+  counter[6] = (char)0;
+  counter[7] = (char)0;
   
   int n = 8, c = gid;
   /* increment the counter by gid */
   do {
     --n;
-    c += countBytes[n];
-    countBytes[n] = (char)c;
+    c += counter[n];
+    counter[n] = (char)c;
     c >>= 8;
   } while (n);
 
@@ -405,21 +405,21 @@ __kernel void des3CtrCipher(__global uint SK[32], __global uchar* input, __globa
   /* initialize counter */
   __local uchar counter[8]; 
   //initialize counter
-  countBytes[0] = (char)0;
-  countBytes[1] = (char)0;
-  countBytes[2] = (char)0;
-  countBytes[3] = (char)0;
-  countBytes[4] = (char)0;
-  countBytes[5] = (char)0;
-  countBytes[6] = (char)0;
-  countBytes[7] = (char)0;
+  counter[0] = (char)0;
+  counter[1] = (char)0;
+  counter[2] = (char)0;
+  counter[3] = (char)0;
+  counter[4] = (char)0;
+  counter[5] = (char)0;
+  counter[6] = (char)0;
+  counter[7] = (char)0;
  
   int n = 8, c = gid;
   /* increment the counter by gid */
   do {
     --n;
-    c += countBytes[n];
-    countBytes[n] = (char)c;
+    c += counter[n];
+    counter[n] = (char)c;
     c >>= 8;
   } while (n);
 
@@ -432,7 +432,7 @@ __kernel void des3CtrCipher(__global uint SK[32], __global uchar* input, __globa
 
   __local uchar outCipher[8];
   /* encryption */
-  des_crypt(_SK, counter, outCipher);
+  des3_crypt(_SK, counter, outCipher);
 
   #pragma unroll
   for(int i = 0; i < 8; i++) {
