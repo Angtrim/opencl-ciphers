@@ -202,7 +202,8 @@ __kernel void clefiaCipher(__global uchar *ct, __global uchar *pt, __global ucha
   __local uchar _pt[BLOCK_DIM];
   #pragma unroll
   for(int i = 0; i < BLOCK_DIM; i++){
-    _pt[i] = pt[i];
+    int offset = gid * BLOCK_SIZE + i;
+    _pt[i] = pt[offset];
   }
 
   __local uchar _rk[8 * 26 + 16];

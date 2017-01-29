@@ -401,7 +401,7 @@ __kernel void camellia192_256Cipher(__global ulong* in, __global ulong* kw, __gl
   out[2*gid+1] = outCipher[1];
 }
 
-__kernel void camellia128CtrCipher(__global uchar* in, __global ulong* kw, __global ulong* k, __global ulong* ke,  __global uchar* out){
+__kernel void camellia128CtrCipher(__global ulong* in, __global ulong* kw, __global ulong* k, __global ulong* ke,  __global ulong* out){
 
   __local int gid;
   gid = get_global_id(0);
@@ -437,7 +437,7 @@ __kernel void camellia128CtrCipher(__global uchar* in, __global ulong* kw, __glo
 }
 
 
-__kernel void camellia192_256CtrCipher(__global uchar* in, __global ulong* kw, __global ulong* k, __global ulong* ke,  __global uchar* out){
+__kernel void camellia192_256CtrCipher(__global ulong* in, __global ulong* kw, __global ulong* k, __global ulong* ke,  __global ulong* out){
   
   __local int gid;
   gid = get_global_id(0);
