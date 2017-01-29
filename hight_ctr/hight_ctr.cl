@@ -11,8 +11,17 @@
 
 #define byte(a, n) ((a >> (8*n)) & 0xff)
 
+__kernel void F0(__local uchar x, __local uchar F0_OUT) {
+  return rol8(x, 1) ^ rol8(x, 2) ^ rol8(x, 7);
+}
+
+__kernel void F1(__local uchar x, __local uchar F1_OUT) {
+  return rol8(x, 3) ^ rol8(x, 4) ^ rol8(x, 6);
+}
+
 __kernel void hight_encrypt(__local ulong P, __local uchar *WK, __local uchar *SK, __local ulong C) {
   __local uchar X0, X1, X2, X3, X4, X5, X6, X7;
+  __local uchar F0_OUT, F1_OUT;
 
   //cipher round
   X0 = byte(P, 0) + WK[0];
@@ -27,13 +36,17 @@ __kernel void hight_encrypt(__local ulong P, __local uchar *WK, __local uchar *S
   #pragma unroll
   for (int i = 0; i < 31; ++i) {
     //cipher round
-    uchar Xn0 = X7 ^ (F0(X6) + SK[4*i + 3]);
+    F0(X6, F0_OUT);
+    uchar Xn0 = X7 ^ (F0_OUT + SK[4*i + 3]);
     uchar Xn1 = X0;
-    uchar Xn2 = X1 + (F1(X0) ^ SK[4*i]);
+    F1(X0, F1_OUT);
+    uchar Xn2 = X1 + (F1_OUT ^ SK[4*i]);
     uchar Xn3 = X2;
-    uchar Xn4 = X3 ^ (F0(X2) + SK[4*i + 1]);
+    F0(X2, F0_OUT);
+    uchar Xn4 = X3 ^ (F0_OUT + SK[4*i + 1]);
     uchar Xn5 = X4;
-    uchar Xn6 = X5 + (F1(X4) ^ SK[4*i + 2]);
+    F1(X4, F1_OUT);
+    uchar Xn6 = X5 + (F1_OUT ^ SK[4*i + 2]);
     uchar Xn7 = X6;
 
     X0 = Xn0; X1 = Xn1; X2 = Xn2; X3 = Xn3;
@@ -43,13 +56,17 @@ __kernel void hight_encrypt(__local ulong P, __local uchar *WK, __local uchar *S
   // Last iteration (32th)
   //cipher round
   uchar Xn0 = X0;
-  uchar Xn1 = X1 + (F1(X0) ^ SK[124]);
+  F1(X0, F1_OUT);
+  uchar Xn1 = X1 + (F1_OUT ^ SK[124]);
   uchar Xn2 = X2;
-  uchar Xn3 = X3 ^ (F0(X2) + SK[125]);
+  F0(X2, F0_OUT);
+  uchar Xn3 = X3 ^ (F0_OUT + SK[125]);
   uchar Xn4 = X4;
-  uchar Xn5 = X5 + (F1(X4) ^ SK[126]);
+  F1(X4, F1_OUT);
+  uchar Xn5 = X5 + (F1_OUT ^ SK[126]);
   uchar Xn6 = X6;
-  uchar Xn7 = X7 ^ (F0(X6) + SK[127]);
+  F0(X6, F0_OUT);
+  uchar Xn7 = X7 ^ (F0_OUT + SK[127]);
 
   X0 = Xn0; X1 = Xn1; X2 = Xn2; X3 = Xn3;
   X4 = Xn4; X5 = Xn5; X6 = Xn6; X7 = Xn7;
