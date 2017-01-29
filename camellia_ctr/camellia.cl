@@ -1,7 +1,7 @@
 #define MASK8   0xff
 #define MASK32  0xffffffffu
 
-#define KEYLEN 128
+#define BLOCK_DIM = 16
 
 __constant uchar sbox1[256] = {
 112, 130,  44, 236, 179,  39, 192, 229, 228, 133,  87,  53, 234,  12, 174,  65,
@@ -78,6 +78,9 @@ __constant uchar sbox4[256] = {
 121, 140, 110, 142, 245, 182, 253,  89, 152, 106,  70, 186,  37,  66, 162, 250,
   7,  85, 238,  10,  73, 104,  56, 164,  40, 123, 201, 193, 227, 244, 199, 158
 };
+
+//nonce added to the counter in ctr mode
+__constant ulong nonce = { 0xf14261bbfc34c5e9 };
 
 // F-function takes two parameters.  One is 64-bit input data F_IN.  The
 // other is 64-bit subkey KE.  F-function returns 64-bit data F_OUT.
@@ -159,11 +162,9 @@ __kernel void FLINV(__local ulong *FLINV_IN, ulong KE, __local ulong *FLINV_OUT)
   FLINV_OUT[0] = ((ulong)y1 << 32) | y2;
 }
 
-#if KEYLEN == 128
-
 // ===---- Encryption for 128-bit keys ----===
 
-__kernel void camellia_encrypt(__global ulong *C, __global ulong *M, __global ulong *kw, __global ulong *k, __global ulong *ke) {
+__kernel void 128encrypt(__local ulong *C, __local ulong *M, __local ulong *kw, __local ulong *k, __local ulong *ke) {
    
   __local ulong D1[1];
   __local ulong D2[1];
@@ -238,13 +239,10 @@ __kernel void camellia_encrypt(__global ulong *C, __global ulong *M, __global ul
   C[1] = D1[0];
 }
 
-#else
-
 // ===---- Encryption for 192- and 256-bit keys ----===
 
-__kernel void camellia_encrypt(__global ulong *C, __global ulong *M, __global ulong *kw, __global ulong *k, __global ulong *ke) {
+__kernel void 192_256encrypt(__local ulong *C, __local ulong *M, __local ulong *kw, __local ulong *k, __local ulong *ke) {
 
-  printf("sono nel 192");
   __local ulong D1[1];
   __local ulong D2[1];
 
@@ -337,4 +335,139 @@ __kernel void camellia_encrypt(__global ulong *C, __global ulong *M, __global ul
   C[1] = D1[0];
 }
 
-#endif
+__kernel void camellia128Cipher(__global ulong* in, __global ulong* kw, __global ulong* k, __global ulong* ke,  __global ulong* out){
+  
+  __local int gid;
+  gid = get_global_id(0);
+
+  __local ulong M[2];
+  M[0] = in[2*gid];
+  M[1] = in[2*gid+1];
+
+  __local ulong _kw[4];
+  #pragma unroll
+  for(int i = 0; i < 4; i++){
+    _kw[i] = kw[i];
+  }
+
+  __local ulong _k[18];
+  for(int i = 0; i < 18; i++){
+    _k[i] = k[i];
+  }
+  
+  __local ulong _ke[4];
+  for(int i = 0; i < 4; i++){
+    _ke[i] = ke[i];
+  }
+ 
+  __local ulong outCipher[2];
+  
+  128encrypt(outCipher, M, _kw, _k, _ke);
+  
+  out[2*gid] = outCipher[0];
+  out[2*gid+1] = outCipher[1];
+}
+
+__kernel void camellia192_256Cipher(__global ulong* in, __global ulong* kw, __global ulong* k, __global ulong* ke,  __global uchar* out){
+
+  __local int gid;
+  gid = get_global_id(0);
+
+  __local ulong M[2];
+  M[0] = in[2*gid];
+  M[1] = in[2*gid+1];
+
+  __local ulong _kw[4];
+  #pragma unroll
+  for(int i = 0; i < 4; i++){
+    _kw[i] = kw[i];
+  }
+
+  __local ulong _k[24];
+  for(int i = 0; i < 24; i++){
+    _k[i] = k[i];
+  }
+  
+  __local ulong _ke[6];
+  for(int i = 0; i < 6; i++){
+    _ke[i] = ke[i];
+  }
+ 
+  __local ulong outCipher[2];
+  
+  128encrypt(outCipher, M, _kw, _k, _ke);
+  
+  out[2*gid] = outCipher[0];
+  out[2*gid+1] = outCipher[1];
+}
+
+__kernel void camellia128CtrCipher(__global uchar* in, __global ulong* kw, __global ulong* k, __global ulong* ke,  __global uchar* out){
+
+  __local int gid;
+  gid = get_global_id(0);
+ 
+  /* -- initialize counter */
+  __local ulong counter[2];
+  counter[0] = nonce;
+  counter[1] = (ulong)gid;
+
+  __local ulong _kw[4];
+  #pragma unroll
+  for(int i = 0; i < 4; i++){
+    _kw[i] = kw[i];
+  }
+
+  __local ulong _k[18];
+  for(int i = 0; i < 18; i++){
+    _k[i] = k[i];
+  }
+  
+  __local ulong _ke[4];
+  for(int i = 0; i < 4; i++){
+    _ke[i] = ke[i];
+  }
+ 
+  __local ulong outCipher[2];
+  /* encryption */
+  128encrypt(outCipher, counter, _kw, _k, _ke);
+  
+  /* final xor */
+  out[2*gid] = outCipher[0] ^ in[2*gid];
+  out[2*gid+1] = outCipher[1] ^ in[2*gid+1];
+}
+
+
+__kernel void camellia192_256CtrCipher(__global uchar* in, __global ulong* kw, __global ulong* k, __global ulong* ke,  __global uchar* out){
+  
+  __local int gid;
+  gid = get_global_id(0);
+
+  /* -- initialize counter */
+  __local ulong counter[2];
+  counter[0] = nonce;
+  counter[1] = (ulong)gid;
+
+  __local ulong _kw[4];
+  #pragma unroll
+  for(int i = 0; i < 4; i++){
+    _kw[i] = kw[i];
+  }
+
+  __local ulong _k[24];
+  for(int i = 0; i < 24; i++){
+    _k[i] = k[i];
+  }
+  
+  __local ulong _ke[6];
+  for(int i = 0; i < 6; i++){
+    _ke[i] = ke[i];
+  }
+ 
+  __local ulong outCipher[2];
+  /* encryption */
+  128encrypt(outCipher, M, _kw, _k, _ke);
+  
+  /* final xor */
+  out[2*gid] = outCipher[0] ^ in[2*gid];
+  out[2*gid+1] = outCipher[1] ^ in[2*gid+1];
+}

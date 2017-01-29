@@ -138,7 +138,7 @@ __kernel void aesCipher(__global uchar* in, __global uint *w, __global uchar* ou
   
   #pragma unroll
   for (int i = 0; i < 4*Nb; ++i) {
-  	 int offset = gid * BLOCK_SIZE + i;
+    int offset = gid * BLOCK_SIZE + i;
     state[i] = in[offset];
   }
 
