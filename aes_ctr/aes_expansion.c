@@ -1,6 +1,4 @@
 #include "aes_expansion.h"
-#include "benchmark.h"
-#include <stdint.h>
 
 
 #define makeword(a, b, c, d) \
@@ -127,5 +125,3 @@ void KeyExpansion(word* key, word* w, int Nk, int Nb, int Nr) {
  }
  #endif
 }
-
-

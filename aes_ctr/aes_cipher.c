@@ -1,12 +1,4 @@
-#include "benchmark.h"
 #include "aes_cipher.h"
-#include "cipher_utils.h"
-
-
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
 
 #ifdef __APPLE__
 #include <OpenCL/opencl.h>
@@ -14,44 +6,19 @@
 #include <CL/cl.h>
 #endif
 
-#define WORK_GROUP_SIZE 1
-#define MEM_SIZE (128)
 #define MAX_SOURCE_SIZE (0x100000)
-
-/** -- opencl parameters initialization to run the kernel -- **/
-cl_device_id device_id = NULL;
-cl_context context = NULL;
-cl_command_queue command_queue = NULL;
-
-cl_mem out = NULL;
-cl_mem in = NULL;
-cl_mem exKey = NULL;
-
-cl_program program = NULL;
-cl_kernel kernel = NULL;
-cl_platform_id platform_id = NULL;
-cl_uint ret_num_devices;
-cl_uint ret_num_platforms;
-cl_int ret;
-cl_event ev[32]; //to wait the kernels to finish
-
-//cl file parameters
-FILE *fp;
-char clFileName[] = "aes_ctr/aes_ctr.cl";
-
-char* source_str;
 
 /*
    This function adds two string pointers together
 */
-char* stradd(const char* a, const char* b){
+static char* stradd(const char* a, const char* b){
 	size_t len = strlen(a) + strlen(b);
 	char *ret = (char*)malloc(len * sizeof(char) + 1);
 	*ret = '\0';
 	return strcat(strcat(ret, a) ,b);
 } 
 
-void loadClProgramSource(){
+static void loadClProgramSource(){
 	/* Load the source code containing the kernel*/
 	fp = fopen(clFileName, "r");
 	if (!fp) {
@@ -63,7 +30,7 @@ void loadClProgramSource(){
 	fclose(fp);
 }
 
-char* setUpBuildOptions(int mode){
+static char* setUpBuildOptions(int mode){
 	char* res = "";
 	switch(mode){
 	case 128:
@@ -79,7 +46,7 @@ char* setUpBuildOptions(int mode){
 	return res;
 }
 
-void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source_str, long source_size, long exKeyDim, long bufferLenght, int mode){
+static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source_str, long source_size, long exKeyDim, long bufferLenght, int mode){
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
 	ret = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, &device_id, &ret_num_devices);
@@ -146,7 +113,7 @@ void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source_str, l
 	ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&out);
 }
 
-void finalizeExecution(char* source_str){
+static void finalizeExecution(char* source_str){
 	/* Finalization */
 	ret = clFlush(command_queue);
 	ret = clFinish(command_queue);
@@ -163,21 +130,16 @@ void finalizeExecution(char* source_str){
 byte* aes128Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
 	
 	struct FileInfo fileInfo = getFileBytes(fileName);
-	printf("AES128 encryption\n");
-	printf("file lenght: %d\n", fileInfo.lenght);
     
-    byte* inputText = fileInfo.filePointer;
-	//byte inputText[32] = { 0x53, 0x9c, 0x7a, 0x6e, 0x4c, 0x11, 0x35, 0xba, 0xe1, 0xa4, 0x8e, 0x7e, 0xb1, 0xe7, 0x57, 0x15, 0xd6, 0xea, 0x51, 0x91, 0x68, 0x66, 0x82, 0x03, 0x5c, 0xcc, 0x96, 0xf7, 0x87, 0xc9, 0x18, 0x03 };
+    	byte* inputText = fileInfo.filePointer;
 
 	long exKeyDim = Nb128*(Nr128+1);
 	//key expansion is performed on cpu
 	word w[exKeyDim];
-	BEGIN_KEYSCHED;
 	KeyExpansion(key, w, Nk128, Nb128, Nr128);
-	END_KEYSCHED;
     
-    // load program source to build the kernel program
-    if(source_str == NULL){
+    	// load program source to build the kernel program
+    	if(source_str == NULL){
 		loadClProgramSource();
 	}
     
@@ -206,21 +168,16 @@ byte* aes128Encrypt(char* fileName, word* key, char* outFileName,size_t local_it
 byte* aes192Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
 	
 	struct FileInfo fileInfo = getFileBytes(fileName);
-	printf("AES128 encryption\n");
-	printf("file lenght: %d\n", fileInfo.lenght);
     
-    byte* inputText = fileInfo.filePointer;
-	//byte inputText[32] = { 0x53, 0x9c, 0x7a, 0x6e, 0x4c, 0x11, 0x35, 0xba, 0xe1, 0xa4, 0x8e, 0x7e, 0xb1, 0xe7, 0x57, 0x15, 0xd6, 0xea, 0x51, 0x91, 0x68, 0x66, 0x82, 0x03, 0x5c, 0xcc, 0x96, 0xf7, 0x87, 0xc9, 0x18, 0x03 };
+        byte* inputText = fileInfo.filePointer;
 
 	long exKeyDim = Nb192*(Nr192+1);
 	//key expansion is performed on cpu
 	word w[exKeyDim];
-	BEGIN_KEYSCHED;
 	KeyExpansion(key, w, Nk192, Nb192, Nr192);
-	END_KEYSCHED;
     
-    // load program source to build the kernel program
-    if(source_str == NULL){
+        // load program source to build the kernel program
+        if(source_str == NULL){
 		loadClProgramSource();
 	}
     
@@ -249,21 +206,16 @@ byte* aes192Encrypt(char* fileName, word* key, char* outFileName,size_t local_it
 byte* aes256Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
 	
 	struct FileInfo fileInfo = getFileBytes(fileName);
-	printf("AES128 encryption\n");
-	printf("file lenght: %d\n", fileInfo.lenght);
     
-    byte* inputText = fileInfo.filePointer;
-	//byte inputText[32] = { 0x53, 0x9c, 0x7a, 0x6e, 0x4c, 0x11, 0x35, 0xba, 0xe1, 0xa4, 0x8e, 0x7e, 0xb1, 0xe7, 0x57, 0x15, 0xd6, 0xea, 0x51, 0x91, 0x68, 0x66, 0x82, 0x03, 0x5c, 0xcc, 0x96, 0xf7, 0x87, 0xc9, 0x18, 0x03 };
+        byte* inputText = fileInfo.filePointer;
 
 	long exKeyDim = Nb256*(Nr256+1);
 	//key expansion is performed on cpu
 	word w[exKeyDim];
-	BEGIN_KEYSCHED;
 	KeyExpansion(key, w, Nk256, Nb256, Nr256);
-	END_KEYSCHED;
     
-    // load program source to build the kernel program
-    if(source_str == NULL){
+        // load program source to build the kernel program
+        if(source_str == NULL){
 		loadClProgramSource();
 	}
     
@@ -293,18 +245,13 @@ byte* aes256Encrypt(char* fileName, word* key, char* outFileName,size_t local_it
 byte* aesCtr128Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
 	
 	struct FileInfo fileInfo = getFileBytes(fileName);
-	printf("AES128 CTR encryption\n");
-	printf("file lenght: %d\n", fileInfo.lenght);
 
-    byte* inputText = fileInfo.filePointer;
-	//byte inputText[32] = { 0x53, 0x9c, 0x7a, 0x6e, 0x4c, 0x11, 0x35, 0xba, 0xe1, 0xa4, 0x8e, 0x7e, 0xb1, 0xe7, 0x57, 0x15, 0xd6, 0xea, 0x51, 0x91, 0x68, 0x66, 0x82, 0x03, 0x5c, 0xcc, 0x96, 0xf7, 0x87, 0xc9, 0x18, 0x03 };
+        byte* inputText = fileInfo.filePointer;
 
 	long exKeyDim = Nb128*(Nr128+1);
 	//key expansion is performed on cpu
 	word w[exKeyDim];
-	BEGIN_KEYSCHED;
 	KeyExpansion(key, w, Nk128, Nb128, Nr128);
-	END_KEYSCHED;
 
 	// load program source to build the kernel program
 	if(source_str == NULL){
@@ -339,18 +286,13 @@ byte* aesCtr128Encrypt(char* fileName, word* key, char* outFileName,size_t local
 byte* aesCtr192Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
 	
 	struct FileInfo fileInfo = getFileBytes(fileName);
-	printf("AES128 CTR encryption\n");
-	printf("file lenght: %d\n", fileInfo.lenght);
 
-    byte* inputText = fileInfo.filePointer;
-	//byte inputText[32] = { 0x53, 0x9c, 0x7a, 0x6e, 0x4c, 0x11, 0x35, 0xba, 0xe1, 0xa4, 0x8e, 0x7e, 0xb1, 0xe7, 0x57, 0x15, 0xd6, 0xea, 0x51, 0x91, 0x68, 0x66, 0x82, 0x03, 0x5c, 0xcc, 0x96, 0xf7, 0x87, 0xc9, 0x18, 0x03 };
+        byte* inputText = fileInfo.filePointer;
 
 	long exKeyDim = Nb192*(Nr192+1);
 	//key expansion is performed on cpu
 	word w[exKeyDim];
-	BEGIN_KEYSCHED;
 	KeyExpansion(key, w, Nk192, Nb192, Nr192);
-	END_KEYSCHED;
 
 	// load program source to build the kernel program
 	if(source_str == NULL){
@@ -394,9 +336,7 @@ byte* aesCtr256Encrypt(char* fileName, word* key, char* outFileName,size_t local
 	long exKeyDim = Nb256*(Nr256+1);
 	//key expansion is performed on cpu
 	word w[exKeyDim];
-	BEGIN_KEYSCHED;
 	KeyExpansion(key, w, Nk256, Nb256, Nr256);
-	END_KEYSCHED;
 
 	// load program source to build the kernel program
 	if(source_str == NULL){
@@ -428,7 +368,7 @@ byte* aesCtr256Encrypt(char* fileName, word* key, char* outFileName,size_t local
 
 }
 
-void writeOutputToFile(char* outFileName,char* output, long lenght){
+static void writeOutputToFile(char* outFileName,char* output, long lenght){
 	fp = fopen(outFileName, "wb");
 	if (!fp) {
 	fprintf(stderr, "Failed to load kernel.\n");

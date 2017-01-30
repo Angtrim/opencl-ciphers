@@ -1,8 +1,4 @@
 #include "cipher_utils.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 
 /*
  * This function load the size in blocks of bytes 

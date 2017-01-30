@@ -164,7 +164,7 @@ __kernel void FLINV(__local ulong *FLINV_IN, ulong KE, __local ulong *FLINV_OUT)
 
 // ===---- Encryption for 128-bit keys ----===
 
-__kernel void 128encrypt(__local ulong *C, __local ulong *M, __local ulong *kw, __local ulong *k, __local ulong *ke) {
+__kernel void shortEncrypt(__local ulong *C, __local ulong *M, __local ulong *kw, __local ulong *k, __local ulong *ke) {
    
   __local ulong D1[1];
   __local ulong D2[1];
@@ -241,7 +241,7 @@ __kernel void 128encrypt(__local ulong *C, __local ulong *M, __local ulong *kw, 
 
 // ===---- Encryption for 192- and 256-bit keys ----===
 
-__kernel void 192_256encrypt(__local ulong *C, __local ulong *M, __local ulong *kw, __local ulong *k, __local ulong *ke) {
+__kernel void longEncrypt(__local ulong *C, __local ulong *M, __local ulong *kw, __local ulong *k, __local ulong *ke) {
 
   __local ulong D1[1];
   __local ulong D2[1];
@@ -310,9 +310,9 @@ __kernel void 192_256encrypt(__local ulong *C, __local ulong *M, __local ulong *
 
   //FL and FLINV rounds
   FL(D1, ke[4], FL_OUT);
-  D1 = FL_OUT;
+  D1[0] = FL_OUT[0];
   FLINV(D2, ke[5], FLINV_OUT);
-  D2 = FLINV_OUT;
+  D2[0] = FLINV_OUT[0];
 
   F(D1, k[18], F_OUT);
   D2[0] = D2[0] ^ F_OUT[0]; 
@@ -339,6 +339,7 @@ __kernel void camellia128Cipher(__global ulong* in, __global ulong* kw, __global
   
   __local int gid;
   gid = get_global_id(0);
+  printf("I'm gid: %d\n", gid);
 
   __local ulong M[2];
   M[0] = in[2*gid];
@@ -362,13 +363,13 @@ __kernel void camellia128Cipher(__global ulong* in, __global ulong* kw, __global
  
   __local ulong outCipher[2];
   
-  128encrypt(outCipher, M, _kw, _k, _ke);
+  shortEncrypt(outCipher, M, _kw, _k, _ke);
   
   out[2*gid] = outCipher[0];
   out[2*gid+1] = outCipher[1];
 }
 
-__kernel void camellia192_256Cipher(__global ulong* in, __global ulong* kw, __global ulong* k, __global ulong* ke,  __global uchar* out){
+__kernel void camellia192256Cipher(__global ulong* in, __global ulong* kw, __global ulong* k, __global ulong* ke,  __global ulong* out){
 
   __local int gid;
   gid = get_global_id(0);
@@ -395,7 +396,7 @@ __kernel void camellia192_256Cipher(__global ulong* in, __global ulong* kw, __gl
  
   __local ulong outCipher[2];
   
-  192_256encrypt(outCipher, M, _kw, _k, _ke);
+  longEncrypt(outCipher, M, _kw, _k, _ke);
   
   out[2*gid] = outCipher[0];
   out[2*gid+1] = outCipher[1];
@@ -429,7 +430,7 @@ __kernel void camellia128CtrCipher(__global ulong* in, __global ulong* kw, __glo
  
   __local ulong outCipher[2];
   /* encryption */
-  128encrypt(outCipher, counter, _kw, _k, _ke);
+  shortEncrypt(outCipher, counter, _kw, _k, _ke);
   
   /* final xor */
   out[2*gid] = outCipher[0] ^ in[2*gid];
@@ -437,7 +438,7 @@ __kernel void camellia128CtrCipher(__global ulong* in, __global ulong* kw, __glo
 }
 
 
-__kernel void camellia192_256CtrCipher(__global ulong* in, __global ulong* kw, __global ulong* k, __global ulong* ke,  __global ulong* out){
+__kernel void camellia192256CtrCipher(__global ulong* in, __global ulong* kw, __global ulong* k, __global ulong* ke,  __global ulong* out){
   
   __local int gid;
   gid = get_global_id(0);
@@ -465,7 +466,7 @@ __kernel void camellia192_256CtrCipher(__global ulong* in, __global ulong* kw, _
  
   __local ulong outCipher[2];
   /* encryption */
-  192_256encrypt(outCipher, M, _kw, _k, _ke);
+  longEncrypt(outCipher, counter, _kw, _k, _ke);
   
   /* final xor */
   out[2*gid] = outCipher[0] ^ in[2*gid];
