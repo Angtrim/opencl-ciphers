@@ -347,134 +347,161 @@ __constant ulong nonce = { 0xf14261bbfc34c5e9 };
 #define m2_old 0xCF
 #define m3_old 0x3F
 
-__kernel void G(__local uint X, __local uint G_OUT) {
-  __local uchar X0 = (X >> 8*0) & 0xff;
-  __local uchar = (X >> 8*1) & 0xff;
-  __local uchar X2 = (X >> 8*2) & 0xff;
-  __local uchar X3 = (X >> 8*3) & 0xff;
-
-  G_OUT = SS0[X0] ^ SS1[X1] ^ SS2[X2] ^ SS3[X3];
-}
-
-__kernel void F(__local uint *Ki, __local ulong R, __local ulong F_OUT) {
-  __local uint R0 = R >> 32;
-  __local uint R1 = R & 0xffffffff;
-  __local uint Ki0 = Ki[0];
-  __local uint Ki1 = Ki[1];
-
-  __local uint G_OUT1;
-  __local uint G_OUT2;
-   
-  G((R0 ^ Ki0) ^ (R1 ^ Ki1), G_OUT1);
-  G(G_OUT1 + (R0 ^ Ki0), G_OUT2);
-  G((R0 ^ Ki0) ^ (R1 ^ Ki1), G_OUT1);
-  G(G_OUT2 + G_OUT1, G_OUT1);
-  G((R0 ^ Ki0) ^ (R1 ^ Ki1), G_OUT2);
-  G(G_OUT2 + (R0 ^ Ki0), G_OUT2);
-
-  __local uint oR0 = G_OUT1 + G_OUT2;
+__kernel void G(__local uint* X, __local uint* G_OUT) {
   
-  G((R0 ^ Ki0) ^ (R1 ^ Ki1), G_OUT1);
-  G(G_OUT1 + (R0 ^ Ki0), G_OUT1);
-  G((R0 ^ Ki0) ^ (R1 ^ Ki1), G_OUT2);
-  G(G_OUT1 + G_OUT2, G_OUT2);
-
-  __local uint oR1 = G_OUT2;
-
-  F_OUT = ((ulong)oR0 << 32) | oR1;
-}
-
-__kernel void G_OLD(__local uint X, __local uint G_OLD_OUT) {
-  __local uchar X0 = (X >> 8*0) & 0xff;
-  __local uchar X1 = (X >> 8*1) & 0xff;
-  __local uchar X2 = (X >> 8*2) & 0xff;
-  __local uchar X3 = (X >> 8*3) & 0xff;
-
-  __local uint Z0 = (S0[X0] & m0_old) ^ (S1[X1] & m1_old) ^ (S0[X2] & m2_old) ^ (S1[X3] & m3_old);
-  __local uint Z1 = (S0[X0] & m1_old) ^ (S1[X1] & m2_old) ^ (S0[X2] & m3_old) ^ (S1[X3] & m0_old);
-  __local uint Z2 = (S0[X0] & m2_old) ^ (S1[X1] & m3_old) ^ (S0[X2] & m0_old) ^ (S1[X3] & m1_old);
-  __local uint Z3 = (S0[X0] & m3_old) ^ (S1[X1] & m0_old) ^ (S0[X2] & m1_old) ^ (S1[X3] & m2_old);
-
-  G_OLD_OUT = (Z3 & 0xff) << 24 | (Z2 & 0xff) << 16 | (Z1 & 0xff) << 8 | (Z0 & 0xff);
-}
-
-__kernel void F_OLD(__local uint *Ki, __local ulong R, __local ulong F_OLD_OUT) {
-  __local uint R0 = R >> 32;
-  __local uint R1 = R & 0xffffffff;
-  __local uint Ki0 = Ki[0];
-  __local uint Ki1 = Ki[1];
-
-  __local uint G_OLD_OUT1;
-  __local uint G_OLD_OUT2;
-   
-  G_OLD((R0 ^ Ki0) ^ (R1 ^ Ki1), G_OLD_OUT1);
-  G_OLD(G_OLD_OUT1 + (R0 ^ Ki0), G_OLD_OUT2);
-  G_OLD((R0 ^ Ki0) ^ (R1 ^ Ki1), G_OLD_OUT1);
-  G_OLD(G_OLD_OUT2 + G_OLD_OUT1, G_OLD_OUT1);
-  G_OLD((R0 ^ Ki0) ^ (R1 ^ Ki1), G_OLD-OUT2);
-  G_OLD(G_OLD_OUT2 + (R0 ^ Ki0), G_OLD_OUT2);
-
-  __local uint oR0 = G_OLD_OUT1 + G_OLD_OUT2;
+  uchar X0,X1,X2,X3;
   
-  G_OLD((R0 ^ Ki0) ^ (R1 ^ Ki1), G_OLD_OUT1);
-  G_OLD(G_OLD_OUT1 + (R0 ^ Ki0), G_OLD_OUT1);
-  G_OLD((R0 ^ Ki0) ^ (R1 ^ Ki1), G_OLD_OUT2);
-  G_OLD(G_OLD_OUT1 + G_OLD_OUT2, G_OLD_OUT2);
+  X0 = (X[0] >> 8*0) & 0xff;
+  X1 = (X[0] >> 8*1) & 0xff;
+  X2 = (X[0] >> 8*2) & 0xff;
+  X3 = (X[0] >> 8*3) & 0xff;
 
-  __local uint oR1 = G_OLD_OUT2;
+  G_OUT[0] = SS0[X0] ^ SS1[X1] ^ SS2[X2] ^ SS3[X3];
+}
 
-  F_OLD_OUT = ((ulong)oR0 << 32) | oR1;
+__kernel void F(__local uint *Ki, __local ulong* R, __local ulong* F_OUT) {
+  uint R0 = R[0] >> 32;
+  uint R1 = R[0] & 0xffffffff;
+  uint Ki0 = Ki[0];
+  uint Ki1 = Ki[1];
+
+  __local uint G_OUT1[1];
+  __local uint G_OUT2[1];
+  __local uint temp[1];
+
+  temp[0] = (R0 ^ Ki0) ^ (R1 ^ Ki1);  
+  G(temp, G_OUT1);
+  temp[0] = G_OUT1[0] + (R0 ^ Ki0);
+  G(temp, G_OUT2);
+  temp[0] = (R0 ^ Ki0) ^ (R1 ^ Ki1);
+  G(temp, G_OUT1);
+  temp[0] = G_OUT2[0] + G_OUT1[0];
+  G(temp, G_OUT1);
+  temp[0] = (R0 ^ Ki0) ^ (R1 ^ Ki1);
+  G(temp, G_OUT2);
+  temp[0] = G_OUT2[0] + (R0 ^ Ki0);
+  G(temp, G_OUT2);
+
+  uint oR0 = G_OUT1[0] + G_OUT2[0];
+  
+  temp[0] = (R0 ^ Ki0) ^ (R1 ^ Ki1);
+  G(temp, G_OUT1);
+  temp[0] = G_OUT1[0] + (R0 ^ Ki0);
+  G(temp, G_OUT1);
+  temp[0] = (R0 ^ Ki0) ^ (R1 ^ Ki1);
+  G(temp, G_OUT2);
+  temp[0] = G_OUT1[0] + G_OUT2[0];
+  G(temp, G_OUT2);
+
+  uint oR1 = G_OUT2[0];
+
+  F_OUT[0] = ((ulong)oR0 << 32) | oR1;
+}
+
+__kernel void G_OLD(__local uint* X, __local uint* G_OLD_OUT) {
+  uchar X0 = (X[0] >> 8*0) & 0xff;
+  uchar X1 = (X[0] >> 8*1) & 0xff;
+  uchar X2 = (X[0] >> 8*2) & 0xff;
+  uchar X3 = (X[0] >> 8*3) & 0xff;
+
+  uint Z0 = (S0[X0] & m0_old) ^ (S1[X1] & m1_old) ^ (S0[X2] & m2_old) ^ (S1[X3] & m3_old);
+  uint Z1 = (S0[X0] & m1_old) ^ (S1[X1] & m2_old) ^ (S0[X2] & m3_old) ^ (S1[X3] & m0_old);
+  uint Z2 = (S0[X0] & m2_old) ^ (S1[X1] & m3_old) ^ (S0[X2] & m0_old) ^ (S1[X3] & m1_old);
+  uint Z3 = (S0[X0] & m3_old) ^ (S1[X1] & m0_old) ^ (S0[X2] & m1_old) ^ (S1[X3] & m2_old);
+
+  G_OLD_OUT[0] = (Z3 & 0xff) << 24 | (Z2 & 0xff) << 16 | (Z1 & 0xff) << 8 | (Z0 & 0xff);
+}
+
+__kernel void F_OLD(__local uint *Ki, __local ulong* R, __local ulong* F_OLD_OUT) {
+  uint R0 = R[0] >> 32;
+  uint R1 = R[0] & 0xffffffff;
+  uint Ki0 = Ki[0];
+  uint Ki1 = Ki[1];
+
+  __local uint G_OLD_OUT1[1];
+  __local uint G_OLD_OUT2[1];
+  __local uint temp[1];
+   
+  temp[0] = (R0 ^ Ki0) ^ (R1 ^ Ki1);
+  G_OLD(temp, G_OLD_OUT1);
+  temp[0] = G_OLD_OUT1[0] + (R0 ^ Ki0);
+  G_OLD(temp, G_OLD_OUT2);
+  temp[0] = (R0 ^ Ki0) ^ (R1 ^ Ki1);
+  G_OLD(temp, G_OLD_OUT1);
+  temp[0] = G_OLD_OUT2[0] + G_OLD_OUT1[0];
+  G_OLD(temp, G_OLD_OUT1);
+  temp[0] = (R0 ^ Ki0) ^ (R1 ^ Ki1);
+  G_OLD(temp, G_OLD_OUT2);
+  temp[0] = G_OLD_OUT2[0] + (R0 ^ Ki0);
+  G_OLD(temp, G_OLD_OUT2);
+
+  uint oR0 = G_OLD_OUT1[0] + G_OLD_OUT2[0];
+  
+  temp[0] = (R0 ^ Ki0) ^ (R1 ^ Ki1);
+  G_OLD(temp, G_OLD_OUT1);
+  temp[0] = G_OLD_OUT1[0] + (R0 ^ Ki0);
+  G_OLD(temp, G_OLD_OUT1);
+  temp[0] = (R0 ^ Ki0) ^ (R1 ^ Ki1);
+  G_OLD(temp, G_OLD_OUT2);
+  temp[0] = G_OLD_OUT1[0] + G_OLD_OUT2[0];
+  G_OLD(temp, G_OLD_OUT2);
+
+  uint oR1 = G_OLD_OUT2[0];
+
+  F_OLD_OUT[0] = ((ulong)oR0 << 32) | oR1;
 }
 
 __kernel void seed_old_encrypt(__local ulong *C, __local ulong *P, __local uint K[16][2]) {
   
-  __local ulong L = P[0];
-  __local ulong R = P[1];
+  __local ulong L[1];
+  L[0] = P[0];
+  __local ulong R[1];
+  R[0] = P[1];
 
-  __local ulong F_OLD_OUT;
+  __local ulong F_OLD_OUT[1];
 
   #pragma unroll
   for (int i = 0; i < 15; ++i) {
-    ulong T = R;
+    ulong T = R[0];
     F_OLD(K[i], R, F_OLD_OUT);
-    R = L ^ F_OLD_OUT
-    L = T;
-    }
+    R[0] = L[0] ^ F_OLD_OUT[0];
+    L[0] = T;
   }
 
   F_OLD(K[15], R, F_OLD_OUT);
-  L = L ^ F_OLD_OUT;
+  L[0] = L[0] ^ F_OLD_OUT[0];
   //R = R;
 
-  C[0] = L;
-  C[1] = R;
+  C[0] = L[0];
+  C[1] = R[0];
 }
 
 __kernel void seed_encrypt(__local ulong *C, __local ulong *P, __local uint K[16][2]) {
   
-  __local ulong L = P[0];
-  __local ulong R = P[1];
+  __local ulong L[1];
+  L[0] = P[0];
+  __local ulong R[1]; 
+  R[0] = P[1];
 
-  __local ulong F_OUT;
+  __local ulong F_OUT[1];
 
   #pragma unroll
   for (int i = 0; i < 15; ++i) {
-    ulong T = R;
+    ulong T = R[0];
     F(K[i], R, F_OUT);
-    R = L ^ F_OUT
-    L = T;
-    }
+    R[0] = L[0] ^ F_OUT[0];
+    L[0] = T;
   }
 
   F(K[15], R, F_OUT);
-  L = L ^ F_OUT;
+  L[0] = L[0] ^ F_OUT[0];
   //R = R;
 
-  C[0] = L;
-  C[1] = R;
+  C[0] = L[0];
+  C[1] = R[0];
 }
 
-__kernel void seed_oldCipher(__global ulong *C, __global ulong *P, __global uint K[16][2]) {
+__kernel void seed_oldCipher(__global ulong *C, __global ulong *P, __global uint* K) {
 
   __local int gid;
   gid = get_global_id(0);
@@ -486,8 +513,8 @@ __kernel void seed_oldCipher(__global ulong *C, __global ulong *P, __global uint
   __local uint _K[16][2];
   #pragma unroll
   for(int i = 0; i < 16; i++){
-    _K[i][0] = K[i][0];
-    _K[i][1] = K[i][1];
+    _K[i][0] = K[2*i];
+    _K[i][1] = K[2*i+1];
   }
 
   __local ulong outCipher[2];
@@ -496,10 +523,14 @@ __kernel void seed_oldCipher(__global ulong *C, __global ulong *P, __global uint
   seed_old_encrypt(outCipher, _P, _K);
   
   C[2*gid] = outCipher[0];
+  printf("\nout0:\n");
+  printf("%016llx\n", outCipher[0]);
   C[2*gid+1] = outCipher[1];
+  printf("\nout1:\n");
+  printf("%016llx\n", outCipher[1]);
 }
 
-__kernel void seedCipher(__global ulong *C, __global ulong *P, __global uint K[16][2]) {
+__kernel void seedCipher(__global ulong *C, __global ulong *P, __global uint* K) {
   
   __local int gid;
   gid = get_global_id(0);
@@ -511,8 +542,8 @@ __kernel void seedCipher(__global ulong *C, __global ulong *P, __global uint K[1
   __local uint _K[16][2];
   #pragma unroll
   for(int i = 0; i < 16; i++){
-    _K[i][0] = K[i][0];
-    _K[i][1] = K[i][1];
+    _K[i][0] = K[2*i];
+    _K[i][1] = K[2*i+1];
   }
 
   __local ulong outCipher[2];
@@ -524,7 +555,7 @@ __kernel void seedCipher(__global ulong *C, __global ulong *P, __global uint K[1
   C[2*gid+1] = outCipher[1];
 }
 
-__kernel void seed_oldCtrCipher(__global ulong *C, __global ulong *P, __global uint K[16][2]) {
+__kernel void seed_oldCtrCipher(__global ulong *C, __global ulong *P, __global uint* K) {
 
   __local int gid;
   gid = get_global_id(0);
@@ -537,8 +568,8 @@ __kernel void seed_oldCtrCipher(__global ulong *C, __global ulong *P, __global u
   __local uint _K[16][2];
   #pragma unroll
   for(int i = 0; i < 16; i++){
-    _K[i][0] = K[i][0];
-    _K[i][1] = K[i][1];
+    _K[i][0] = K[2*i];
+    _K[i][1] = K[2*i+1];
   }
 
   __local ulong outCipher[2];
@@ -550,7 +581,7 @@ __kernel void seed_oldCtrCipher(__global ulong *C, __global ulong *P, __global u
   C[2*gid+1] = outCipher[1] ^ P[2*gid+1];
 }
 
-__kernel void seedCtrCipher(__global ulong *C, __global ulong *P, __global uint K[16][2]) {
+__kernel void seedCtrCipher(__global ulong *C, __global ulong *P, __global uint* K) {
   
   __local int gid;
   gid = get_global_id(0);
@@ -563,8 +594,8 @@ __kernel void seedCtrCipher(__global ulong *C, __global ulong *P, __global uint 
   __local uint _K[16][2];
   #pragma unroll
   for(int i = 0; i < 16; i++){
-    _K[i][0] = K[i][0];
-    _K[i][1] = K[i][1];
+    _K[i][0] = K[2*i];
+    _K[i][1] = K[2*i+1];
   }
 
   __local ulong outCipher[2];

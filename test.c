@@ -7,10 +7,12 @@
 int main(){
 
  //TODO: different test cases
-
+/*
  uint64_t* output;
  uint32_t Key[4] = {0x00000000, 0x00000000, 0x00000000, 0x00000000};
  uint64_t Ciphertext[2] = { 0x5EBAC6E0054E1668ul, 0x19AFF1CC6D346CDBul};
+
+ output = seed_encrypt("plaintext.txt", Key, "ciphertext.txt", 1);
  for(int i=0; i < 2; i++){
  	printf("%016llx\n", output[i]);
  }
