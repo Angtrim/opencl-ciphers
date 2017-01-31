@@ -42,7 +42,7 @@ struct FileInfo64 getFileUint64(char* filePath){
                 
                 int k = 0;
 		while(fread(temp, sizeof(uint64_t), 1, fileptr) == 1){
-                	sscanf(temp, "%" SCNu64, buffer[k]);
+			buffer[k] = *(uint64_t *)temp;
 			k++;
                 } 
 		fclose(fileptr); // Close the file

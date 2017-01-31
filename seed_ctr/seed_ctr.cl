@@ -523,11 +523,7 @@ __kernel void seed_oldCipher(__global ulong *C, __global ulong *P, __global uint
   seed_old_encrypt(outCipher, _P, _K);
   
   C[2*gid] = outCipher[0];
-  printf("\nout0:\n");
-  printf("%016llx\n", outCipher[0]);
   C[2*gid+1] = outCipher[1];
-  printf("\nout1:\n");
-  printf("%016llx\n", outCipher[1]);
 }
 
 __kernel void seedCipher(__global ulong *C, __global ulong *P, __global uint* K) {
