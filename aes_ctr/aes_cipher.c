@@ -133,9 +133,9 @@ static void finalizeExecution(char* source_str){
 
 byte* aesEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, int mode, int isCtr) {
 
-int Nk;
-int Nr;
-int Nb;
+	int Nk;
+	int Nr;
+	int Nb;
 	switch(mode){
 		case 128:
 			Nk = Nk128;
@@ -156,7 +156,7 @@ int Nb;
 	
 	struct FileInfo fileInfo = getFileBytes(fileName);
     
- byte* inputText = fileInfo.filePointer;
+ 	byte* inputText = fileInfo.filePointer;
 
 	long exKeyDim = Nb*(Nr+1);
 	//key expansion is performed on cpu
@@ -164,7 +164,7 @@ int Nb;
 	KeyExpansion(key, w, Nk, Nb, Nr);
     
     	// load program source to build the kernel program
- if(source_str == NULL){
+ 	if(source_str == NULL){
 		loadClProgramSource();
 	}
     

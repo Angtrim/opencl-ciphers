@@ -2,7 +2,7 @@
 #define AES_CIPHER_H
 
 #include "aes_expansion.h"
-#include "cipher_utils.h"
+#include "../cipher_utils.h"
 
 #include <assert.h>
 #include <stdio.h>
