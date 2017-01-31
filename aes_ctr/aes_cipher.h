@@ -9,6 +9,12 @@
 #include <string.h>
 #include <stdbool.h>
 
+#ifdef __APPLE__
+#include <OpenCL/opencl.h>
+#else
+#include <CL/cl.h>
+#endif
+
 #define Nk128 4
 #define Nb128 4
 #define Nr128 10

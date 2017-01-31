@@ -1,11 +1,5 @@
 #include "aes_cipher.h"
 
-#ifdef __APPLE__
-#include <OpenCL/opencl.h>
-#else
-#include <CL/cl.h>
-#endif
-
 #define MAX_SOURCE_SIZE (0x100000)
 
 /*
@@ -27,6 +21,16 @@ static void loadClProgramSource(){
 	}
 	source_str = (char*)malloc(MAX_SOURCE_SIZE);
 	fread(source_str, 1, MAX_SOURCE_SIZE, fp);
+	fclose(fp);
+}
+
+static void writeOutputToFile(char* outFileName,char* output, long lenght){
+	fp = fopen(outFileName, "wb");
+	if (!fp) {
+	fprintf(stderr, "Failed to load kernel.\n");
+	exit(1);
+	}
+	fwrite(output, sizeof(char), lenght, fp);
 	fclose(fp);
 }
 
@@ -366,14 +370,4 @@ byte* aesCtr256Encrypt(char* fileName, word* key, char* outFileName,size_t local
 	
 	return output;
 
-}
-
-static void writeOutputToFile(char* outFileName,char* output, long lenght){
-	fp = fopen(outFileName, "wb");
-	if (!fp) {
-	fprintf(stderr, "Failed to load kernel.\n");
-	exit(1);
-	}
-	fwrite(output, sizeof(char), lenght, fp);
-	fclose(fp);
 }

@@ -1,5 +1,5 @@
 SOURCES := $(shell find . -name '*.c')
-COMPILE_LINUX := cc -I /usr/local/cuda-8.0/include/ -L /usr/local/cuda-8.0/lib64/ -o test prova.c  $(SOURCES) -lOpenCL
+COMPILE_LINUX := cc -I /usr/local/cuda-8.0/include/ -L /usr/local/cuda-8.0/lib64/ -o test $(SOURCES) -lOpenCL
 COMPILE_APPLE := gcc -o test $(SOURCES) -framework opencl -I aes_ctr
 
 

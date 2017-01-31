@@ -1,6 +1,6 @@
 //#include "aes_cipher.h"
-#include "camellia_cipher.h"
-#include "aes_cipher.h"
+//#include "camellia_cipher.h"
+//#include "aes_cipher.h"
 #include <stdio.h>
 #include <inttypes.h>
 #include <stdlib.h>
