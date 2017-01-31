@@ -131,28 +131,53 @@ static void finalizeExecution(char* source_str){
 	//free(source_str);
 }
 
-byte* aes128Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
+byte* aesEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, int mode, int isCtr) {
+
+int Nk;
+int Nr;
+int Nb;
+	switch(mode){
+		case 128:
+			Nk = Nk128;
+			Nr = Nr128;
+			Nb = Nb128;
+			break;
+		case 192:
+			Nk = Nk192;
+			Nr = Nr192;
+			Nb = Nb192;
+			break;
+		case 256:
+			Nk = Nk256;
+			Nr = Nr256;
+			Nb = Nb256;
+			break;
+	}
 	
 	struct FileInfo fileInfo = getFileBytes(fileName);
     
-    	byte* inputText = fileInfo.filePointer;
+ byte* inputText = fileInfo.filePointer;
 
-	long exKeyDim = Nb128*(Nr128+1);
+	long exKeyDim = Nb*(Nr+1);
 	//key expansion is performed on cpu
 	word w[exKeyDim];
-	KeyExpansion(key, w, Nk128, Nb128, Nr128);
+	KeyExpansion(key, w, Nk, Nb, Nr);
     
     	// load program source to build the kernel program
-    	if(source_str == NULL){
+ if(source_str == NULL){
 		loadClProgramSource();
 	}
     
 	long source_size = strlen(source_str);
+	char* modality;
+
+	if(isCtr){
+		modality = "aesCipherCtr";
+	}else{
+		modality = "aesCipher";
+	}
 	
-	//aes mode
-	int mode = 128;
-	
-	setUpOpenCl(inputText, w, "aesCipher",source_str,source_size,exKeyDim,fileInfo.lenght,mode);
+	setUpOpenCl(inputText, w, modality,source_str,source_size,exKeyDim,fileInfo.lenght,mode);
 	
 	size_t global_item_size = fileInfo.lenght/BLOCK_SIZE;
 	/* Execute OpenCL Kernel instances */
@@ -167,207 +192,37 @@ byte* aes128Encrypt(char* fileName, word* key, char* outFileName,size_t local_it
 	finalizeExecution(source_str);
 	
 	return output;
+}	
+
+
+byte* aes128Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
+		int mode = 128;
+		return aesEncrypt(fileName,key,outFileName,local_item_size,mode,0);
 }	
 
 byte* aes192Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
-	
-	struct FileInfo fileInfo = getFileBytes(fileName);
-    
-        byte* inputText = fileInfo.filePointer;
-
-	long exKeyDim = Nb192*(Nr192+1);
-	//key expansion is performed on cpu
-	word w[exKeyDim];
-	KeyExpansion(key, w, Nk192, Nb192, Nr192);
-    
-        // load program source to build the kernel program
-        if(source_str == NULL){
-		loadClProgramSource();
-	}
-    
-	long source_size = strlen(source_str);
-	
-	//aes mode
-	int mode = 192;
-	
-	setUpOpenCl(inputText, w, "aesCipher",source_str,source_size,exKeyDim,fileInfo.lenght,mode);
-	
-	size_t global_item_size = fileInfo.lenght/BLOCK_SIZE;
-	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
-
-	/* Copy results from the memory buffer */
-	byte* output = (byte*)malloc((fileInfo.lenght+1)*sizeof(byte)); // Enough memory for file + \0
-	
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	fileInfo.lenght * sizeof(byte),output, 0, NULL, NULL);
-	
-	finalizeExecution(source_str);
-	
-	return output;
+		int mode = 192;
+		return aesEncrypt(fileName,key,outFileName,local_item_size,mode,0);
 }	
 
 byte* aes256Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
-	
-	struct FileInfo fileInfo = getFileBytes(fileName);
-    
-        byte* inputText = fileInfo.filePointer;
+		int mode = 256;
+		return aesEncrypt(fileName,key,outFileName,local_item_size,mode,0);
+}
 
-	long exKeyDim = Nb256*(Nr256+1);
-	//key expansion is performed on cpu
-	word w[exKeyDim];
-	KeyExpansion(key, w, Nk256, Nb256, Nr256);
-    
-        // load program source to build the kernel program
-        if(source_str == NULL){
-		loadClProgramSource();
-	}
-    
-	long source_size = strlen(source_str);
-	
-	//aes mode
-	int mode = 256;
-	
-	setUpOpenCl(inputText, w, "aesCipher",source_str,source_size,exKeyDim,fileInfo.lenght,mode);
-	
-	size_t global_item_size = fileInfo.lenght/BLOCK_SIZE;
-	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
-
-	/* Copy results from the memory buffer */
-	byte* output = (byte*)malloc((fileInfo.lenght+1)*sizeof(byte)); // Enough memory for file + \0
-	
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	fileInfo.lenght * sizeof(byte),output, 0, NULL, NULL);
-	
-	finalizeExecution(source_str);
-	
-	return output;
+byte* aes128CtrEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
+		int mode = 128;
+		return aesEncrypt(fileName,key,outFileName,local_item_size,mode,1);
 }	
 
+byte* aes192CtrEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
+		int mode = 192;
+		return aesEncrypt(fileName,key,outFileName,local_item_size,mode,1);
+}	
 
-byte* aesCtr128Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
-	
-	struct FileInfo fileInfo = getFileBytes(fileName);
-
-        byte* inputText = fileInfo.filePointer;
-
-	long exKeyDim = Nb128*(Nr128+1);
-	//key expansion is performed on cpu
-	word w[exKeyDim];
-	KeyExpansion(key, w, Nk128, Nb128, Nr128);
-
-	// load program source to build the kernel program
-	if(source_str == NULL){
-		loadClProgramSource();
-	}
-	
-	long source_size = strlen(source_str);
-	
-	//aes mode
-	int mode = 128;
-	
-	setUpOpenCl(inputText, w, "aesCipherCtr",source_str,source_size,exKeyDim,fileInfo.lenght,mode);
-	
-	size_t global_item_size = fileInfo.lenght/BLOCK_SIZE;
-	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL,NULL);
-
-	/* Copy results from the memory buffer */
-	byte* output = (byte *)malloc((fileInfo.lenght)*sizeof(byte)); // Enough memory for file + \0
-	
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	fileInfo.lenght* sizeof(byte),output, 0, NULL, NULL);
-	
-	finalizeExecution(source_str);
-	
-	writeOutputToFile(outFileName,output, fileInfo.lenght);
-	
-	return output;
-
+byte* aes256CtrEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
+		int mode = 256;
+		return aesEncrypt(fileName,key,outFileName,local_item_size,mode,1);
 }
 
-byte* aesCtr192Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
-	
-	struct FileInfo fileInfo = getFileBytes(fileName);
 
-        byte* inputText = fileInfo.filePointer;
-
-	long exKeyDim = Nb192*(Nr192+1);
-	//key expansion is performed on cpu
-	word w[exKeyDim];
-	KeyExpansion(key, w, Nk192, Nb192, Nr192);
-
-	// load program source to build the kernel program
-	if(source_str == NULL){
-		loadClProgramSource();
-	}
-	
-	long source_size = strlen(source_str);
-	
-	//aes mode
-	int mode = 192;
-	
-	setUpOpenCl(inputText, w, "aesCipherCtr",source_str,source_size,exKeyDim,fileInfo.lenght,mode);
-	
-	size_t global_item_size = fileInfo.lenght/BLOCK_SIZE;
-	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL,NULL);
-
-	/* Copy results from the memory buffer */
-	byte* output = (byte *)malloc((fileInfo.lenght)*sizeof(byte)); // Enough memory for file + \0
-	
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	fileInfo.lenght* sizeof(byte),output, 0, NULL, NULL);
-	
-	finalizeExecution(source_str);
-	
-	writeOutputToFile(outFileName,output, fileInfo.lenght);
-	
-	return output;
-
-}
-
-byte* aesCtr256Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size) {
-	
-	struct FileInfo fileInfo = getFileBytes(fileName);
-	printf("AES128 CTR encryption\n");
-	printf("file lenght: %d\n", fileInfo.lenght);
-
-    byte* inputText = fileInfo.filePointer;
-	//byte inputText[32] = { 0x53, 0x9c, 0x7a, 0x6e, 0x4c, 0x11, 0x35, 0xba, 0xe1, 0xa4, 0x8e, 0x7e, 0xb1, 0xe7, 0x57, 0x15, 0xd6, 0xea, 0x51, 0x91, 0x68, 0x66, 0x82, 0x03, 0x5c, 0xcc, 0x96, 0xf7, 0x87, 0xc9, 0x18, 0x03 };
-
-	long exKeyDim = Nb256*(Nr256+1);
-	//key expansion is performed on cpu
-	word w[exKeyDim];
-	KeyExpansion(key, w, Nk256, Nb256, Nr256);
-
-	// load program source to build the kernel program
-	if(source_str == NULL){
-		loadClProgramSource();
-	}
-	
-	long source_size = strlen(source_str);
-	
-	//aes mode
-	int mode = 256;
-	
-	setUpOpenCl(inputText, w, "aesCipherCtr",source_str,source_size,exKeyDim,fileInfo.lenght,mode);
-	
-	size_t global_item_size = fileInfo.lenght/BLOCK_SIZE;
-	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL,NULL);
-
-	/* Copy results from the memory buffer */
-	byte* output = (byte *)malloc((fileInfo.lenght)*sizeof(byte)); // Enough memory for file + \0
-	
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	fileInfo.lenght* sizeof(byte),output, 0, NULL, NULL);
-	
-	finalizeExecution(source_str);
-	
-	writeOutputToFile(outFileName,output, fileInfo.lenght);
-	
-	return output;
-
-}
