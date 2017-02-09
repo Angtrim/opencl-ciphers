@@ -12,7 +12,7 @@ int main(){
  uint32_t Key[4] = {0x00000000, 0x00000000, 0x00000000, 0x00000000};
  uint64_t Ciphertext[2] = { 0x5EBAC6E0054E1668ul, 0x19AFF1CC6D346CDBul};
 
- output = seed_encrypt("seed_plaintext", Key, "ciphertext.txt", 1);
+ output = seed_old_encrypt("seed_plaintext", Key, "ciphertext.txt", 1);
  for(int i=0; i < 2; i++){
  	printf("%016llx\n", output[i]);
  }
@@ -38,6 +38,25 @@ int main(){
  } else {
    printf("no\n");
  }
+
+ free(output);
+
+ uint64_t Key3[2] = {0, 0};
+ uint64_t ptx = 0; 
+ uint64_t correct = 0x5579c1387b228445ul;
+
+ output = present_memory_encrypt("present_plaintext", Key3, "ciphertext.txt", 1);
+ for(int i=0; i < 1; i++){
+ 	printf("%016llx\n", output[i]);
+ }
+
+ if (output[0] == correct) {
+   printf("ok\n");
+ } else {
+   printf("no\n");
+ }
+ 
+ free(output);
 /*
  uint64_t* output;
  uint64_t Key1[2] = {0x0123456789abcdef, 0xfedcba9876543210};
