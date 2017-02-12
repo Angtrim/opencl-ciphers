@@ -1,6 +1,6 @@
 #include "present_cipher.h"
 
-#define MAX_SOURCE_SIZE (0x100000)
+#define MAX_SOURCE_SIZE (0x1000000)
 
 /* Function to load cl source */
 static void loadClProgramSource(){
@@ -10,8 +10,9 @@ static void loadClProgramSource(){
 	fprintf(stderr, "Failed to load kernel.\n");
 	exit(1);
 	}
-	source_str = (char*)malloc(MAX_SOURCE_SIZE);
+	source_str = (char*)malloc(MAX_SOURCE_SIZE+1);
 	fread(source_str, 1, MAX_SOURCE_SIZE, fp);
+	strcat(source_str, "\0");
 	fclose(fp);
 }
 /* set up the opencl parameters */
@@ -34,15 +35,27 @@ static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName, cha
 
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
+	if(ret != CL_SUCCESS){
+        	printf("failed to create in\n");
+        }
 	_SK = clCreateBuffer(context, CL_MEM_READ_WRITE, 32 * sizeof(uint64_t), NULL, &ret); 
+        if(ret != CL_SUCCESS){
+        	printf("failed to create _SK\n");
+        }
         out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
+	if(ret != CL_SUCCESS){
+        	printf("failed to create out\n");
+        }
 
 
 	/* Copy input data to Memory Buffer */
 	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(uint64_t), inputText, 0, NULL, NULL);
+	if(ret != CL_SUCCESS){
+        	printf("failed to write in\n");
+        }
 	ret = clEnqueueWriteBuffer(command_queue, _SK, CL_TRUE, 0, 32 * sizeof(uint64_t), SK, 0, NULL, NULL);
         if(ret != CL_SUCCESS){
-        	printf("failed to create Ki\n");
+        	printf("failed to write SK\n");
         }
 
 	/* Create Kernel Program from the source */
@@ -173,7 +186,7 @@ uint64_t* present_speed_encrypt(char* fileName, uint64_t* Key, char* outFileName
 	return output;
 }
 
-uint64_t* present_memory_Ctrencrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size){
+uint64_t* present_memory_CtrEncrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size){
 
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
 
@@ -211,7 +224,7 @@ uint64_t* present_memory_Ctrencrypt(char* fileName, uint64_t* Key, char* outFile
 	return output;
 }
 
-uint64_t* present_speed_Ctrencrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size){
+uint64_t* present_speed_CtrEncrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size){
 
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
 

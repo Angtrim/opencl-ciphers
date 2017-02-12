@@ -339,7 +339,6 @@ __kernel void camellia128Cipher(__global ulong* in, __global ulong* kw, __global
   
   __local int gid;
   gid = get_global_id(0);
-  printf("I'm gid: %d\n", gid);
 
   __local ulong M[2];
   M[0] = in[2*gid];

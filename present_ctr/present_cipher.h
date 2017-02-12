@@ -37,7 +37,7 @@ static char* source_str;
 
 uint64_t* present_memory_encrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size);
 uint64_t* present_speed_encrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size);
-uint64_t* present_memory_Ctrencrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size);
-uint64_t* present_speed_Ctrencrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size);
+uint64_t* present_memory_CtrEncrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size);
+uint64_t* present_speed_CtrEncrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size);
 
 #endif

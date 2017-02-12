@@ -278,7 +278,7 @@ __constant ushort sBox4_M80[] = {12,5,6,11,9,0,10,13,3,14,15,8,4,7,1,2};
 #define rotate1l_64(r1lin)	 ( high1_64(r1lin) | ( r1lin << 1 ) )	//input rotated left (1x)
 #define rotate4l_64(r4lin)	 ( high4_64(r4lin) | ( r4lin << 4 ) )	//input rotated left (4x)
 
-__kernel void present_speed_ecrypt(__local ulong* state, __local ulong* SK, __local ulong* out){
+__kernel void present_speed_encrypt(__local ulong* state, __local ulong* SK, __local ulong* out){
  
   __local ulong temp_0, temp_1, temp_2, temp_3, temp_4, temp_5, temp_6, temp_7;
   #pragma unroll

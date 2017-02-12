@@ -20,8 +20,11 @@
 
 /** -- opencl parameters initialization to run the kernel -- **/
 static cl_device_id device_id = NULL;
+static cl_device_type device_type;
 static cl_context context = NULL;
 static cl_command_queue command_queue = NULL;
+static cl_event event = NULL;
+static cl_ulong time_start, time_end;
 
 static cl_mem out = NULL;
 static cl_mem in = NULL;
@@ -39,7 +42,7 @@ static FILE *fp;
 static char clFileName[] = "misty1_ctr/misty1_ctr.cl";
 
 static char* source_str;
-byte* misty1Encrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size);
-byte* misty1CtrEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size);
+byte* misty1Encrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType);
+byte* misty1CtrEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType);
 
 #endif

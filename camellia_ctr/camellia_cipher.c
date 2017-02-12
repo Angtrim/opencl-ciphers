@@ -4,7 +4,7 @@
 #define MASK8   0xff
 #define MASK32  0xffffffffu
 
-#define MAX_SOURCE_SIZE (0x100000)
+#define MAX_SOURCE_SIZE (0x1000000)
 
 /* Function to load cl source */
 static void loadClProgramSource(){
@@ -14,26 +14,46 @@ static void loadClProgramSource(){
 	fprintf(stderr, "Failed to load kernel.\n");
 	exit(1);
 	}
-	source_str = (char*)malloc(MAX_SOURCE_SIZE);
+	source_str = (char*)malloc(MAX_SOURCE_SIZE+2);
 	fread(source_str, 1, MAX_SOURCE_SIZE, fp);
+	strcat(source_str, "\0");
 	fclose(fp);
 }
 /* set up the opencl parameters */
 static void setUpOpenCl(uint64_t* inputText, uint64_t* k, uint64_t* ke, uint64_t* kw, char* kernelName, char* source_str, long source_size, int kdim, int kedim, int kwdim, long bufferLenght){
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
-	ret = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, &device_id, &ret_num_devices);
+	// allocate memory, get list of platforms
+  	cl_platform_id *platforms = (cl_platform_id *) malloc(ret_num_platforms*sizeof(platform_id));
+
+   	clGetPlatformIDs(ret_num_platforms, platforms, NULL);
+
+	// iterate over platforms
+	for (cl_uint i = 0; i < ret_num_platforms; ++i)
+	{
+		ret = clGetDeviceIDs(platforms[i], device_type, 1, &device_id, &ret_num_devices);
+		if(ret == CL_SUCCESS){
+			if(device_type == CL_DEVICE_TYPE_CPU){
+				printf("\nCPU DEVICE FOUND\n");			
+			}
+			else {
+				printf("\nGPU DEVICE FOUND\n");
+			}	
+		}   
+	}
+
+	free(platforms);
 
 	/* Create OpenCL context */
 	context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
 	if(ret != CL_SUCCESS){
-		printf("failed to create context\n");
+		printf("Failed to create context\n");
 	}
 
 	/* Create Command Queue */
-	command_queue = clCreateCommandQueue(context, device_id, 0, &ret);
+	command_queue = clCreateCommandQueue(context, device_id, CL_QUEUE_PROFILING_ENABLE, &ret);
 	if(ret != CL_SUCCESS){
-		printf("failed to create commandqueue\n");
+		printf("Failed to create command queue\n");
 	}
 
 	/* Create Memory Buffers */
@@ -54,7 +74,7 @@ static void setUpOpenCl(uint64_t* inputText, uint64_t* k, uint64_t* ke, uint64_t
 	program = clCreateProgramWithSource(context, 1, (const char **)&source_str,
 	(const size_t *)&source_size, &ret);
 	if(ret != CL_SUCCESS){
-		printf("failed to create program with source\n");
+		printf("Failed to create program with source\n");
 	}
 	
 	/* Build Kernel Program */
@@ -79,7 +99,7 @@ static void setUpOpenCl(uint64_t* inputText, uint64_t* k, uint64_t* ke, uint64_t
 	/* Create OpenCL Kernel */
 	kernel = clCreateKernel(program, kernelName, &ret);
 	if(ret != CL_SUCCESS){
-		printf("failed to create kernel error: %d\n", ret);
+		printf("Failed to create kernel error: %d\n", ret);
 	}
 
 	/* Set OpenCL Kernel Parameters */
@@ -106,25 +126,82 @@ static void finalizeExecution(char* source_str){
 	//free(source_str);
 }
 
-uint64_t* camellia128Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size){
+/* Selecting the device */
+static void setDeviceType(char* deviceType){
 
-        struct FileInfo64 fileInfo = getFileUint64(fileName);
+	if(strcmp(deviceType,"CPU") == 0)
+		device_type = CL_DEVICE_TYPE_CPU;
+	else if(strcmp(deviceType, "GPU") == 0)
+		device_type = CL_DEVICE_TYPE_GPU;
+}
+
+uint64_t* camellia_encryption(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, int mode, int isCtr){
+	
+	struct FileInfo64 fileInfo = getFileUint64(fileName);
         
         //plaintext divided in blocks of uint64_t
         uint64_t* inputText = fileInfo.filePointer;
         //number of blocks 
         long lenght = fileInfo.lenght;
 
-        int kdim = 18;
-        int kedim = 4;
-        int kwdim = 4;
+	int kdim;
+        int kedim;
+        int kwdim;
+
+	char* modality;
+
+	switch(mode){
+	case 128:
+		kdim = 18;
+		kedim = 4;
+		kwdim = 4;
+		
+		if(isCtr)
+		modality = "camellia128CtrCipher";
+		else
+		modality = "camellia128Cipher";
+		break;	
+	case 192:
+		kdim = 24;
+		kedim = 6;
+		kwdim = 4;
+		
+		if(isCtr)
+		modality = "camellia192256CtrCipher";
+		else
+		modality = "camellia192256Cipher";
+		break;	
+	case 256:
+		kdim = 24;
+		kedim = 6;
+		kwdim = 4;
+		
+		if(isCtr)
+		modality = "camellia192256CtrCipher";
+		else
+		modality = "camellia192256Cipher";
+		break;				
+	}
+
+        
 
 	uint64_t k[kdim];
 	uint64_t ke[kedim];
 	uint64_t kw[kwdim];
 
 	//key expansion is performed on cpu
-	camellia_128_expandkey(K, kw, k, ke);
+	switch(mode){
+	case 128:
+		camellia_128_expandkey(K, kw, k, ke);
+		break;
+	case 192:
+		camellia_192_expandkey(K, kw, k, ke);
+		break;
+	case 256:
+		camellia_256_expandkey(K, kw, k, ke);
+		break;
+	}
+	
 
 	// load program source to build the kernel program
 	if(source_str == NULL){
@@ -133,239 +210,78 @@ uint64_t* camellia128Encrypt(char* fileName, uint64_t* K, char* outFileName, siz
 
 	long source_size = strlen(source_str);
         
-        setUpOpenCl(inputText, k, ke, kw, "camellia128Cipher",source_str,source_size,kdim, kedim, kwdim, lenght);
+        setUpOpenCl(inputText, k, ke, kw, modality,source_str,source_size,kdim, kedim, kwdim, lenght);
 
         size_t global_item_size = lenght/2;
 	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
+	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
+
+	clWaitForEvents(1, &event);
+	clFinish(command_queue);
+	
+	/* compute execution time */
+	double total_time;
+	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
+        clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
+        total_time = time_end-time_start;
+
+        printf("OpenCl Execution time is: %0.3f ms\n",total_time/1000000.0);
 
 	/* Copy results from the memory buffer */
 	uint64_t* output = (uint64_t*)malloc((lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
 	
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
 	lenght * sizeof(uint64_t),output, 0, NULL, NULL);
-	
+
 	finalizeExecution(source_str);
 	
 	return output;
 }
 
-uint64_t* camellia192Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size){
-        
-        struct FileInfo64 fileInfo = getFileUint64(fileName);
-        
-        //plaintext divided in blocks of uint64_t
-        uint64_t* inputText = fileInfo.filePointer;
-        //number of blocks 
-        long lenght = fileInfo.lenght;
+uint64_t* camellia128Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, char* deviceType){
 
-        int kdim = 24;
-        int kedim = 6;
-        int kwdim = 4;
+	setDeviceType(deviceType);
 
-	uint64_t k[kdim];
-	uint64_t ke[kedim];
-	uint64_t kw[kwdim];
-
-	//key expansion is performed on cpu
-	camellia_192_expandkey(K, kw, k, ke);
-
-	// load program source to build the kernel program
-	if(source_str == NULL){
-		loadClProgramSource();
-	}
-
-	long source_size = strlen(source_str);
-        
-        setUpOpenCl(inputText, k, ke, kw, "camellia192256Cipher",source_str,source_size,kdim, kedim, kwdim, lenght);
-
-        size_t global_item_size = lenght/2;
-	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
-
-	/* Copy results from the memory buffer */
-	uint64_t* output1 = (uint64_t*)malloc((lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
-	
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	lenght * sizeof(uint64_t),output1, 0, NULL, NULL);
-	
-	finalizeExecution(source_str);
-	
-	return output1;
+        int mode = 128;
+	return camellia_encryption(fileName, K, outFileName, local_item_size, mode, 0);
 }
 
-uint64_t* camellia256Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size){
+uint64_t* camellia192Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, char* deviceType){
 
-        struct FileInfo64 fileInfo = getFileUint64(fileName);
+	setDeviceType(deviceType);
         
-        //plaintext divided in blocks of uint64_t
-        uint64_t* inputText = fileInfo.filePointer;
-        //number of blocks 
-        long lenght = fileInfo.lenght;
-
-        int kdim = 24;
-        int kedim = 6;
-        int kwdim = 4;
-
-	uint64_t k[kdim];
-	uint64_t ke[kedim];
-	uint64_t kw[kwdim];
-
-	//key expansion is performed on cpu
-	camellia_256_expandkey(K, kw, k, ke);
-
-	// load program source to build the kernel program
-	if(source_str == NULL){
-		loadClProgramSource();
-	}
-
-	long source_size = strlen(source_str);
-        
-        setUpOpenCl(inputText, k, ke, kw, "camellia192256Cipher",source_str,source_size,kdim, kedim, kwdim, lenght);
-
-        size_t global_item_size = lenght/2;
-	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
-
-	/* Copy results from the memory buffer */
-	uint64_t* output = (uint64_t*)malloc((lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
-	
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	lenght * sizeof(uint64_t),output, 0, NULL, NULL);
-	
-	finalizeExecution(source_str);
-	
-	return output;
+        int mode = 192;
+	return camellia_encryption(fileName, K, outFileName, local_item_size, mode, 0);
 }
 
-uint64_t* camelliaCtr128Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size){
+uint64_t* camellia256Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, char* deviceType){
 
-        struct FileInfo64 fileInfo = getFileUint64(fileName);
-        
-        //plaintext divided in blocks of uint64_t
-        uint64_t* inputText = fileInfo.filePointer;
-        //number of blocks 
-        long lenght = fileInfo.lenght;
+	setDeviceType(deviceType);
 
-        int kdim = 18;
-        int kedim = 4;
-        int kwdim = 4;
-
-	uint64_t k[kdim];
-	uint64_t ke[kedim];
-	uint64_t kw[kwdim];
-
-	//key expansion is performed on cpu
-	camellia_128_expandkey(K, kw, k, ke);
-
-	// load program source to build the kernel program
-	if(source_str == NULL){
-		loadClProgramSource();
-	}
-
-	long source_size = strlen(source_str);
-        
-        setUpOpenCl(inputText, k, ke, kw, "camellia128CtrCipher",source_str,source_size,kdim, kedim, kwdim, lenght);
-
-        size_t global_item_size = lenght/2;
-	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
-
-	/* Copy results from the memory buffer */
-	uint64_t* output = (uint64_t*)malloc((lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
-	
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	lenght * sizeof(uint64_t),output, 0, NULL, NULL);
-	
-	finalizeExecution(source_str);
-	
-	return output;
+        int mode = 256;
+	return camellia_encryption(fileName, K, outFileName, local_item_size, mode, 0);
 }
 
-uint64_t* camelliaCtr192Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size){
+uint64_t* camelliaCtr128Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, char* deviceType){
 
-        struct FileInfo64 fileInfo = getFileUint64(fileName);
-        
-        //plaintext divided in blocks of uint64_t
-        uint64_t* inputText = fileInfo.filePointer;
-        //number of blocks 
-        long lenght = fileInfo.lenght;
+	setDeviceType(deviceType);
 
-        int kdim = 24;
-        int kedim = 6;
-        int kwdim = 4;
-
-	uint64_t k[kdim];
-	uint64_t ke[kedim];
-	uint64_t kw[kwdim];
-
-	//key expansion is performed on cpu
-	camellia_192_expandkey(K, kw, k, ke);
-
-	// load program source to build the kernel program
-	if(source_str == NULL){
-		loadClProgramSource();
-	}
-
-	long source_size = strlen(source_str);
-        
-        setUpOpenCl(inputText, k, ke, kw, "camellia192256CtrCipher",source_str,source_size,kdim, kedim, kwdim, lenght);
-
-        size_t global_item_size = lenght/2;
-	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
-
-	/* Copy results from the memory buffer */
-	uint64_t* output = (uint64_t*)malloc((lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
-	
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	lenght * sizeof(uint64_t),output, 0, NULL, NULL);
-	
-	finalizeExecution(source_str);
-	
-	return output;
+	int mode = 128;
+	return camellia_encryption(fileName, K, outFileName, local_item_size, mode, 1);
 }
 
-uint64_t* camelliaCtr256Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size){
+uint64_t* camelliaCtr192Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, char* deviceType){
 
-        struct FileInfo64 fileInfo = getFileUint64(fileName);
-        
-        //plaintext divided in blocks of uint64_t
-        uint64_t* inputText = fileInfo.filePointer;
-        //number of blocks 
-        long lenght = fileInfo.lenght;
+	setDeviceType(deviceType);
 
-        int kdim = 24;
-        int kedim = 6;
-        int kwdim = 4;
+        int mode = 192;
+	return camellia_encryption(fileName, K, outFileName, local_item_size, mode, 1);
+}
 
-	uint64_t k[kdim];
-	uint64_t ke[kedim];
-	uint64_t kw[kwdim];
+uint64_t* camelliaCtr256Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, char* deviceType){
 
-	//key expansion is performed on cpu
-	camellia_256_expandkey(K, kw, k, ke);
+	setDeviceType(deviceType);
 
-	// load program source to build the kernel program
-	if(source_str == NULL){
-		loadClProgramSource();
-	}
-
-	long source_size = strlen(source_str);
-        
-        setUpOpenCl(inputText, k, ke, kw, "camellia192256CtrCipher",source_str,source_size,kdim, kedim, kwdim, lenght);
-
-        size_t global_item_size = lenght/2;
-	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
-
-	/* Copy results from the memory buffer */
-	uint64_t* output = (uint64_t*)malloc((lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
-	
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	lenght * sizeof(uint64_t),output, 0, NULL, NULL);
-	
-	finalizeExecution(source_str);
-	
-	return output;
+ 	int mode = 256;
+	return camellia_encryption(fileName, K, outFileName, local_item_size, mode, 1);       
 }

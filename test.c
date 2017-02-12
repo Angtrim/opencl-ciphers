@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <stdlib.h>
+
+#define CPU_DEVICE "CPU"
+#define GPU_DEVICE "GPU"
+
 int main(){
 
  //TODO: different test cases
@@ -12,7 +16,7 @@ int main(){
  uint32_t Key[4] = {0x00000000, 0x00000000, 0x00000000, 0x00000000};
  uint64_t Ciphertext[2] = { 0x5EBAC6E0054E1668ul, 0x19AFF1CC6D346CDBul};
 
- output = seed_old_encrypt("seed_plaintext", Key, "ciphertext.txt", 1);
+ output = seed_old_Encrypt("seed_plaintext", Key, "ciphertext.txt", 1, GPU_DEVICE);
  for(int i=0; i < 2; i++){
  	printf("%016llx\n", output[i]);
  }
@@ -23,12 +27,38 @@ int main(){
    printf("no\n");
  }
 
+ free(output);
+
+ output = seed_Encrypt("seed_plaintext", Key, "ciphertext.txt", 1, CPU_DEVICE);
+ for(int i=0; i < 2; i++){
+ 	printf("%016llx\n", output[i]);
+ }
+
+ if (output[0] == Ciphertext[0] && output[1] == Ciphertext[1]) {
+   printf("ok\n");
+ } else {
+   printf("no\n");
+ }
+
+ free(output);
+
  uint64_t Ciphertext2[2] = {0x6767313854966973, 0x0857065648eabe43};
  uint64_t Key2[2] = {0x0123456789abcdef, 0xfedcba9876543210};
  
+ output = camellia128Encrypt("camellia_plaintext", Key2, "ciphertext.txt", 1, GPU_DEVICE);
+ for(int i=0; i < 2; i++){
+ 	printf("%016llx\n", output[i]);
+ }
+
+ if (output[0] == Ciphertext2[0] && output[1] == Ciphertext2[1]) {
+   printf("ok\n");
+ } else {
+   printf("no\n");
+ }
+
  free(output);
 
- output = camellia128Encrypt("camellia_plaintext", Key2, "ciphertext.txt", 1);
+ output = camellia128Encrypt("camellia_plaintext", Key2, "ciphertext.txt", 1, CPU_DEVICE);
  for(int i=0; i < 2; i++){
  	printf("%016llx\n", output[i]);
  }
@@ -43,7 +73,7 @@ int main(){
 
  uint64_t Key3[2] = {0, 0};
  uint64_t ptx = 0; 
- uint64_t correct = 0x5579c1387b228445ul;
+ uint64_t correct = 0x5579c1387b228445;
 
  output = present_memory_encrypt("present_plaintext", Key3, "ciphertext.txt", 1);
  for(int i=0; i < 1; i++){
@@ -57,6 +87,48 @@ int main(){
  }
  
  free(output);
+
+ output = present_memory_CtrEncrypt("present_plaintext", Key3, "ciphertext.txt", 1);
+ for(int i=0; i < 1; i++){
+ 	printf("%016llx\n", output[i]);
+ }
+
+ if (output[0] == correct) {
+   printf("ok\n");
+ } else {
+   printf("no\n");
+ }
+
+ free(output);
+
+ uint8_t K[16] = {
+    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+    0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff
+  };
+
+  uint64_t P[2] = {
+    0x0123456789abcdefUL,
+    0xfedcba9876543210UL
+  };
+
+  uint64_t C[2] = {
+    0x8b1da5f56ab3d07cUL,
+    0x04b68240b13be95dUL
+  };
+
+ /*output = misty1Encrypt("misty_plaintext", K, "ciphertext.txt" ,1);
+
+ for(int i=0; i < 2; i++){
+ 	printf("%016llx\n", output[i]);
+ }
+ 
+ if (output[0] == C[0] && output[1] == C[1]) {
+   printf("ok\n");
+ } else {
+   printf("no\n");
+ }
+ 
+ 
 /*
  uint64_t* output;
  uint64_t Key1[2] = {0x0123456789abcdef, 0xfedcba9876543210};
