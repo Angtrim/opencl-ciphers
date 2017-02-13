@@ -2,6 +2,9 @@
 
 #define MAX_SOURCE_SIZE (0x1000000)
 
+#define MEMORY "MEMORY"
+#define SPEED "SPEED"
+
 /* Function to load cl source */
 static void loadClProgramSource(){
 	/* Load the source code containing the kernel*/
@@ -19,50 +22,63 @@ static void loadClProgramSource(){
 static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName, char* source_str, long source_size, long bufferLenght){
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
-	ret = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, &device_id, &ret_num_devices);
+	// allocate memory, get list of platforms
+  	cl_platform_id *platforms = (cl_platform_id *) malloc(ret_num_platforms*sizeof(platform_id));
+
+   	clGetPlatformIDs(ret_num_platforms, platforms, NULL);
+
+	// iterate over platforms
+	for (cl_uint i = 0; i < ret_num_platforms; ++i)
+	{
+		ret = clGetDeviceIDs(platforms[i], device_type, 1, &device_id, &ret_num_devices);
+		if(ret == CL_SUCCESS){
+			if(device_type == CL_DEVICE_TYPE_CPU){
+				printf("\nCPU DEVICE FOUND\n");			
+			}
+			else {
+				printf("\nGPU DEVICE FOUND\n");
+			}	
+		}   
+	}
+
+	free(platforms);
 
 	/* Create OpenCL context */
 	context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
 	if(ret != CL_SUCCESS){
-		printf("failed to create context\n");
+		printf("Failed to create context\n");
 	}
 
 	/* Create Command Queue */
-	command_queue = clCreateCommandQueue(context, device_id, 0, &ret);
+	command_queue = clCreateCommandQueue(context, device_id, CL_QUEUE_PROFILING_ENABLE, &ret);
 	if(ret != CL_SUCCESS){
-		printf("failed to create commandqueue\n");
+		printf("Failed to create commandqueue\n");
 	}
 
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
 	if(ret != CL_SUCCESS){
-        	printf("failed to create in\n");
+        	printf("Failed to create in\n");
         }
 	_SK = clCreateBuffer(context, CL_MEM_READ_WRITE, 32 * sizeof(uint64_t), NULL, &ret); 
         if(ret != CL_SUCCESS){
-        	printf("failed to create _SK\n");
+        	printf("Failed to create _SK\n");
         }
         out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
 	if(ret != CL_SUCCESS){
-        	printf("failed to create out\n");
+        	printf("Failed to create out\n");
         }
 
 
 	/* Copy input data to Memory Buffer */
 	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(uint64_t), inputText, 0, NULL, NULL);
-	if(ret != CL_SUCCESS){
-        	printf("failed to write in\n");
-        }
 	ret = clEnqueueWriteBuffer(command_queue, _SK, CL_TRUE, 0, 32 * sizeof(uint64_t), SK, 0, NULL, NULL);
-        if(ret != CL_SUCCESS){
-        	printf("failed to write SK\n");
-        }
-
+   
 	/* Create Kernel Program from the source */
 	program = clCreateProgramWithSource(context, 1, (const char **)&source_str,
 	(const size_t *)&source_size, &ret);
 	if(ret != CL_SUCCESS){
-		printf("failed to create program with source\n");
+		printf("Failed to create program with source\n");
 	}
 	
 	/* Build Kernel Program */
@@ -87,7 +103,7 @@ static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName, cha
 	/* Create OpenCL Kernel */
 	kernel = clCreateKernel(program, kernelName, &ret);
 	if(ret != CL_SUCCESS){
-		printf("failed to create kernel error: %d\n", ret);
+		printf("Failed to create kernel error: %d\n", ret);
 	}
 
 	/* Set OpenCL Kernel Parameters */
@@ -97,6 +113,7 @@ static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName, cha
 }
 
 static void finalizeExecution(char* source_str){
+	printf("Releasing resources..\n");
 	/* Finalization */
 	ret = clFlush(command_queue);
 	ret = clFinish(command_queue);
@@ -110,7 +127,16 @@ static void finalizeExecution(char* source_str){
 	//free(source_str);
 }
 
-uint64_t* present_memory_encrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size){
+/* Selecting the device */
+static void setDeviceType(char* deviceType){
+
+	if(strcmp(deviceType,"CPU") == 0)
+		device_type = CL_DEVICE_TYPE_CPU;
+	else if(strcmp(deviceType, "GPU") == 0)
+		device_type = CL_DEVICE_TYPE_GPU;
+}
+
+uint64_t* present_encryption(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* encryptionType, int isCtr){
 	
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
 
@@ -121,8 +147,28 @@ uint64_t* present_memory_encrypt(char* fileName, uint64_t* Key, char* outFileNam
 	
 	uint64_t subkey[32];
 
-        //key expansion is performed on the cpu
-	present_memory_expandKey(Key, subkey);
+	char* modality;
+
+	//type of encryption
+	if(strcmp(encryptionType, MEMORY) == 0){
+		//key expansion is performed on the cpu
+		present_memory_expandKey(Key, subkey);
+		
+		if(isCtr)
+		modality = "present_memoryCtrCipher";
+		else
+		modality = "present_memoryCipher";
+		
+	} else if(strcmp(encryptionType, SPEED) == 0){
+		//key expansion is performed on the cpu
+		present_speed_expandKey(Key, subkey);
+		
+		if(isCtr)
+		modality = "present_speedCtrCipher";
+		else
+		modality = "present_speedCipher";
+			
+	}
 
 	// load program source to build the kernel program
 	if(source_str == NULL){
@@ -131,11 +177,22 @@ uint64_t* present_memory_encrypt(char* fileName, uint64_t* Key, char* outFileNam
 
 	long source_size = strlen(source_str);
         
-        setUpOpenCl(inputText, subkey, "present_memoryCipher", source_str, source_size, lenght);
+        setUpOpenCl(inputText, subkey, modality, source_str, source_size, lenght);
 
         size_t global_item_size = lenght;
 	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
+	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
+
+	clWaitForEvents(1, &event);
+	clFinish(command_queue);
+	
+	/* compute execution time */
+	double total_time;
+	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
+        clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
+        total_time = time_end-time_start;
+
+        printf("OpenCl Execution time is: %0.3f ms\n",total_time/1000000.0);
 
 	/* Copy results from the memory buffer */
 	uint64_t* output = (uint64_t*)malloc((lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
@@ -148,116 +205,30 @@ uint64_t* present_memory_encrypt(char* fileName, uint64_t* Key, char* outFileNam
 	return output;
 }
 
-uint64_t* present_speed_encrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size){
-
-	struct FileInfo64 fileInfo = getFileUint64(fileName);
-
-        //plaintext divided in blocks of uint64_t
-        uint64_t* inputText = fileInfo.filePointer;
-        //number of blocks 
-        long lenght = fileInfo.lenght;
+uint64_t* present_memory_encrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* deviceType){
 	
-	uint64_t subkey[32];
-
-        //key expansion is performed on the cpu
-	present_memory_expandKey(Key, subkey);
-
-	// load program source to build the kernel program
-	if(source_str == NULL){
-		loadClProgramSource();
-	}
-
-	long source_size = strlen(source_str);
-        
-        setUpOpenCl(inputText, subkey, "present_speedCipher", source_str, source_size, lenght);
-
-        size_t global_item_size = lenght;
-	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
-
-	/* Copy results from the memory buffer */
-	uint64_t* output = (uint64_t*)malloc((lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
+	setDeviceType(deviceType);
 	
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	lenght * sizeof(uint64_t),output, 0, NULL, NULL);
-	
-	finalizeExecution(source_str);
-	
-	return output;
+	return present_encryption(fileName, Key, outFileName, local_item_size, MEMORY, 0);
 }
 
-uint64_t* present_memory_CtrEncrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size){
+uint64_t* present_speed_encrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* deviceType){
 
-	struct FileInfo64 fileInfo = getFileUint64(fileName);
+	setDeviceType(deviceType);
 
-        //plaintext divided in blocks of uint64_t
-        uint64_t* inputText = fileInfo.filePointer;
-        //number of blocks 
-        long lenght = fileInfo.lenght;
-	
-	uint64_t subkey[32];
-
-        //key expansion is performed on the cpu
-	present_memory_expandKey(Key, subkey);
-
-	// load program source to build the kernel program
-	if(source_str == NULL){
-		loadClProgramSource();
-	}
-
-	long source_size = strlen(source_str);
-        
-        setUpOpenCl(inputText, subkey, "present_memoryCtrCipher", source_str, source_size, lenght);
-
-        size_t global_item_size = lenght;
-	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
-
-	/* Copy results from the memory buffer */
-	uint64_t* output = (uint64_t*)malloc((lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
-	
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	lenght * sizeof(uint64_t),output, 0, NULL, NULL);
-	
-	finalizeExecution(source_str);
-	
-	return output;
+	return present_encryption(fileName, Key, outFileName, local_item_size, SPEED, 0);
 }
 
-uint64_t* present_speed_CtrEncrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size){
+uint64_t* present_memory_CtrEncrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* deviceType){
 
-	struct FileInfo64 fileInfo = getFileUint64(fileName);
-
-        //plaintext divided in blocks of uint64_t
-        uint64_t* inputText = fileInfo.filePointer;
-        //number of blocks 
-        long lenght = fileInfo.lenght;
+	setDeviceType(deviceType);
 	
-	uint64_t subkey[32];
+	return present_encryption(fileName, Key, outFileName, local_item_size, MEMORY, 1);
+}
 
-        //key expansion is performed on the cpu
-	present_memory_expandKey(Key, subkey);
+uint64_t* present_speed_CtrEncrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* deviceType){
 
-	// load program source to build the kernel program
-	if(source_str == NULL){
-		loadClProgramSource();
-	}
+	setDeviceType(deviceType);
 
-	long source_size = strlen(source_str);
-        
-        setUpOpenCl(inputText, subkey, "present_speedCtrCipher", source_str, source_size, lenght);
-
-        size_t global_item_size = lenght;
-	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
-
-	/* Copy results from the memory buffer */
-	uint64_t* output = (uint64_t*)malloc((lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
-	
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	lenght * sizeof(uint64_t),output, 0, NULL, NULL);
-	
-	finalizeExecution(source_str);
-	
-	return output;
+	return present_encryption(fileName, Key, outFileName, local_item_size, SPEED, 1);
 }

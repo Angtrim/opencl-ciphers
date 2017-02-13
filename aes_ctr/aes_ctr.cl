@@ -102,25 +102,19 @@ __kernel void addRoundKey(__local uchar* state,__local uint* w, int i){
 
 __kernel void encrypt(__local uchar state[BLOCK_SIZE], __local uint *w, __local uchar out[BLOCK_SIZE]){
   
-  _Pragma("cipher round") {
   addRoundKey(state, w, 0);
-  }
 
   #pragma unroll
   for (int round = 1; round < Nr; ++round) {
-    _Pragma("cipher round") {
     subBytes(state);
     shiftRows(state); 
     mixColumns(state); 
     addRoundKey(state, w, round*Nb);
-    }
   }
 
-  _Pragma("cipher round") {
   subBytes(state);
   shiftRows(state);
   addRoundKey(state, w, Nr*Nb);
-  }
 
   #pragma unroll
   for (int i = 0; i < 4*Nb; ++i) {

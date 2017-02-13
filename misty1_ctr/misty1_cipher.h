@@ -15,9 +15,6 @@
 #include <CL/cl.h>
 #endif
 
-
-#define BLOCK_SIZE (128 / 8)
-
 /** -- opencl parameters initialization to run the kernel -- **/
 static cl_device_id device_id = NULL;
 static cl_device_type device_type;
@@ -42,7 +39,7 @@ static FILE *fp;
 static char clFileName[] = "misty1_ctr/misty1_ctr.cl";
 
 static char* source_str;
-byte* misty1Encrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType);
-byte* misty1CtrEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType);
+uint64_t* misty1Encrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType);
+uint64_t* misty1CtrEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType);
 
 #endif

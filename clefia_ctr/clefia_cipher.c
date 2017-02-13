@@ -1,6 +1,6 @@
-#include "misty1_cipher.h"
+#include "clefia_cipher.h"
 
-#define MAX_SOURCE_SIZE (0x1000000)
+#define MAX_SOURCE_SIZE (0x100000)
 
 /*
    This function adds two string pointers together
@@ -19,9 +19,8 @@ static void loadClProgramSource(){
 	fprintf(stderr, "Failed to load kernel.\n");
 	exit(1);
 	}
-	source_str = (char*)malloc(MAX_SOURCE_SIZE+1);
+	source_str = (char*)malloc(MAX_SOURCE_SIZE);
 	fread(source_str, 1, MAX_SOURCE_SIZE, fp);
-	strcat(source_str, "\0");
 	fclose(fp);
 }
 
@@ -35,9 +34,12 @@ static void writeOutputToFile(char* outFileName,char* output, long lenght){
 	fclose(fp);
 }
 
+static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* key, int r, char* source_str, long source_size, long bufferLenght){
+	
+	/* Key expansion */
+	des_context K;
+	des_expandkey(&K, key);
 
-
-static void setUpOpenCl(uint64_t* inputText,  char* kernelName,uint16_t* EK, char* source_str, long source_size, long bufferLenght){
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
 	// allocate memory, get list of platforms
@@ -66,22 +68,24 @@ static void setUpOpenCl(uint64_t* inputText,  char* kernelName,uint16_t* EK, cha
 	if(ret != CL_SUCCESS){
 		printf("Failed to create context\n");
 	}
-	
 
 	/* Create Command Queue */
 	command_queue = clCreateCommandQueue(context, device_id, CL_QUEUE_PROFILING_ENABLE, &ret);
 	if(ret != CL_SUCCESS){
-		printf("Failed to create commandqueue\n");
+		printf("Failed to create command queue\n");
 	}
 
 	/* Create Memory Buffers */
-	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
-	exKey = clCreateBuffer(context, CL_MEM_READ_WRITE, EX_KEY_SIZE * sizeof(uint16_t), NULL, &ret); 
-	out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
+	rk = clCreateBuffer(context, CL_MEM_READ_WRITE, (8 * 26 + 16) * sizeof(uint8_t), NULL, &ret); 
+	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint8_t), NULL, &ret);
+	out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint8_t), NULL, &ret);
+	r = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(int), NULL, &ret);
+
 
 	/* Copy input data to Memory Buffer */
-	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(uint64_t), inputText, 0, NULL, NULL);
-	ret = clEnqueueWriteBuffer(command_queue, exKey, CL_TRUE, 0, EX_KEY_SIZE * sizeof(uint16_t), EK, 0, NULL, NULL);
+	ret = clEnqueueWriteBuffer(command_queue, rk, CL_TRUE, 0, (8 * 26 + 16) * sizeof(uint8_t), rk, 0, NULL, NULL);
+	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(uint8_t), inputText, 0, NULL, NULL);
+	ret = clEnqueueWriteBuffer(command_queue, r, CL_TRUE, 0, sizeof(int), R, 0, NULL, NULL);
 
 	/* Create Kernel Program from the source */
 	program = clCreateProgramWithSource(context, 1, (const char **)&source_str,
@@ -90,6 +94,7 @@ static void setUpOpenCl(uint64_t* inputText,  char* kernelName,uint16_t* EK, cha
 		printf("Failed to create program with source\n");
 	}
 	
+	/* Build Kernel Program */
 	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
 		printf("\nBuild Error = %i", ret);
@@ -116,8 +121,9 @@ static void setUpOpenCl(uint64_t* inputText,  char* kernelName,uint16_t* EK, cha
 
 	/* Set OpenCL Kernel Parameters */
 	ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&in);
-	ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&exKey);
+	ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&ks);
 	ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&out);
+	ret = clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&r);
 }
 
 static void finalizeExecution(char* source_str){
@@ -128,7 +134,7 @@ static void finalizeExecution(char* source_str){
 	ret = clReleaseKernel(kernel);
 	ret = clReleaseProgram(program);
 	ret = clReleaseMemObject(in);
-	ret = clReleaseMemObject(exKey);
+	ret = clReleaseMemObject(ks);
 	ret = clReleaseMemObject(out);
 	ret = clReleaseCommandQueue(command_queue);
 	ret = clReleaseContext(context);
@@ -144,12 +150,12 @@ static void setDeviceType(char* deviceType){
 		device_type = CL_DEVICE_TYPE_GPU;
 }
 
-uint64_t* mEncript(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size,int isCtr) {
+uint8_t* clefia_encryption(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size,int isCtr){
 
-	
-	struct FileInfo64 fileInfo = getFileUint64(fileName);
+	struct FileInfo fileInfo = getFileBytes(fileName);
     
- 	uint64_t* inputText = fileInfo.filePointer;
+ 	uint8_t* inputText = fileInfo.filePointer;
+
 	//number of blocks 
         long lenght = fileInfo.lenght;
     
@@ -160,27 +166,38 @@ uint64_t* mEncript(char* fileName, uint8_t* key, char* outFileName,size_t local_
     
 	long source_size = strlen(source_str);
 
+	// Key expansion is performed on CPU
+	uint8_t rk[8 * 26 + 16];
+	int R = 0;
+	switch(mode){
+	case 128:
+		Clefia128KeySet(rk, key);
+		R = 18;
+		break;
+	case 192:
+		Clefia192KeySet(rk, key);
+		R = 22;
+		break;
+	case 256:
+		Clefia256KeySet(rk, key);
+		R = 26;
+		break;	
+	}
+	
 	char* modality;
 
 	if(isCtr){
-		modality = "misty1CtrCipher";
+		modality = "clefiaCtrCipher";
 	}else{
-		modality = "misty1Cipher";
+		modality = "clefiaCipher";
 	}
 	
-	// Key expansion is performed on CPU
-	uint16_t EK[32];
-	misty1_expandkey(EK,key);
+	setUpOpenCl(inputText, modality, rk, R, source_str, source_size, lenght);
 	
-	setUpOpenCl(inputText, modality, EK, source_str, source_size, lenght);
-	
-	size_t global_item_size = lenght;
+	size_t global_item_size = lenght/16;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
 
-	clWaitForEvents(1, &event);
-	clFinish(command_queue);
-	
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
@@ -190,28 +207,60 @@ uint64_t* mEncript(char* fileName, uint8_t* key, char* outFileName,size_t local_
         printf("OpenCl Execution time is: %0.3f ms\n",total_time/1000000.0);
 
 	/* Copy results from the memory buffer */
-	uint64_t* output = (byte*)malloc((fileInfo.lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
+	uint8_t* output = (byte*)malloc((fileInfo.lenght+1)*sizeof(byte)); // Enough memory for file + \0
 	
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	fileInfo.lenght * sizeof(uint64_t),output, 0, NULL, NULL);
+	fileInfo.lenght * sizeof(uint8_t),output, 0, NULL, NULL);
 	
 	finalizeExecution(source_str);
 	
 	return output;
-}	
+}
 
-
-uint64_t* misty1Encrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType) {
+uint8_t* clefia_128_Encrypt(char* fileName, uint8_t* key, char* outFileName, size_t local_item_size, char* deviceType){
 
 	setDeviceType(deviceType);
-	return mEncript(fileName,key,outFileName,local_item_size,0);
-}	
 
-uint64_t* misty1CtrEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType) {
+	int mode = 128;	
+	return clefia_encryption(fileName, key, outFileName, local_item_size, mode, 0)
+}
+
+uint8_t* clefia_192_Encrypt(char* fileName, uint8_t* key, char* outFileName, size_t local_item_size, char* deviceType){
+
+	setDeviceType(deviceType);
+
+	int mode = 192;	
+	return clefia_encryption(fileName, key, outFileName, local_item_size, mode, 0)
+}
+
+uint8_t* clefia_256_Encrypt(char* fileName, uint8_t* key, char* outFileName, size_t local_item_size, char* deviceType){
+
+	setDeviceType(deviceType);
+
+	int mode = 256;	
+	return clefia_encryption(fileName, key, outFileName, local_item_size, mode, 0)
+}
+
+uint8_t* clefia_128_CtrEncrypt(char* fileName, uint8_t* key, char* outFileName, size_t local_item_size, char* deviceType){
+
+	setDeviceType(deviceType);
 	
-	setDeviceType(deviceType);	
-	return mEncript(fileName,key,outFileName,local_item_size,1);
-}	
+	int mode = 128;
+	return clefia_encryption(fileName, key, outFileName, local_item_size, mode, 1)
+}
 
+uint8_t* clefia_192_CtrEncrypt(char* fileName, uint8_t* key, char* outFileName, size_t local_item_size, char* deviceType){
 
+	setDeviceType(deviceType);
+	
+	int mode = 192;
+	return clefia_encryption(fileName, key, outFileName, local_item_size, mode, 1)
+}
 
+uint8_t* clefia_256_CtrEncrypt(char* fileName, uint8_t* key, char* outFileName, size_t local_item_size, char* deviceType){
+
+	setDeviceType(deviceType);
+	
+	int mode = 256;
+	return clefia_encryption(fileName, key, outFileName, local_item_size, mode, 1)
+}

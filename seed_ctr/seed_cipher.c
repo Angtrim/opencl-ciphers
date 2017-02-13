@@ -52,7 +52,7 @@ static void setUpOpenCl(uint64_t* inputText, uint32_t* Ki, char* kernelName, cha
 	/* Create Command Queue */
 	command_queue = clCreateCommandQueue(context, device_id, CL_QUEUE_PROFILING_ENABLE, &ret);
 	if(ret != CL_SUCCESS){
-		printf("Failed to create commandqueue\n");
+		printf("Failed to create command queue\n");
 	}
 
 	/* Create Memory Buffers */
@@ -104,7 +104,7 @@ static void setUpOpenCl(uint64_t* inputText, uint32_t* Ki, char* kernelName, cha
 }
 
 static void finalizeExecution(char* source_str){
-	printf("Releasing the resources..\n");
+	printf("Releasing resources..\n");
 	/* Finalization */
 	ret = clFlush(command_queue);
 	ret = clFinish(command_queue);

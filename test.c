@@ -75,7 +75,7 @@ int main(){
  uint64_t ptx = 0; 
  uint64_t correct = 0x5579c1387b228445;
 
- output = present_memory_encrypt("present_plaintext", Key3, "ciphertext.txt", 1);
+ output = present_memory_encrypt("present_plaintext", Key3, "ciphertext.txt", 1, GPU_DEVICE);
  for(int i=0; i < 1; i++){
  	printf("%016llx\n", output[i]);
  }
@@ -88,7 +88,7 @@ int main(){
  
  free(output);
 
- output = present_memory_CtrEncrypt("present_plaintext", Key3, "ciphertext.txt", 1);
+ output = present_memory_CtrEncrypt("present_plaintext", Key3, "ciphertext.txt", 1, GPU_DEVICE);
  for(int i=0; i < 1; i++){
  	printf("%016llx\n", output[i]);
  }
@@ -116,7 +116,7 @@ int main(){
     0x04b68240b13be95dUL
   };
 
- /*output = misty1Encrypt("misty_plaintext", K, "ciphertext.txt" ,1);
+ output = misty1Encrypt("misty_plaintext", K, "ciphertext.txt" ,1, GPU_DEVICE);
 
  for(int i=0; i < 2; i++){
  	printf("%016llx\n", output[i]);

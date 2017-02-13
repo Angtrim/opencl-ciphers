@@ -30,8 +30,11 @@
 
 /** -- opencl parameters initialization to run the kernel -- **/
 static cl_device_id device_id = NULL;
+static cl_device_type device_type;
 static cl_context context = NULL;
 static cl_command_queue command_queue = NULL;
+static cl_event event = NULL;
+static cl_ulong time_start, time_end;
 
 static cl_mem out = NULL;
 static cl_mem in = NULL;
@@ -50,11 +53,11 @@ static char clFileName[] = "aes_ctr/aes_ctr.cl";
 
 static char* source_str;
 
-byte* aesCtr128Encrypt(char* fileName, word* key, char* output,size_t local_item_size);
-byte* aesCtr192Encrypt(char* fileName, word* key, char* output,size_t local_item_size);
-byte* aesCtr256Encrypt(char* fileName, word* key, char* output,size_t local_item_size);
-byte* aes128Encrypt(char* fileName, word* key, char* output,size_t local_item_size);
-byte* aes192Encrypt(char* fileName, word* key, char* output,size_t local_item_size);
-byte* aes256Encrypt(char* fileName, word* key, char* output,size_t local_item_size);
+byte* aesCtr128Encrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
+byte* aesCtr192Encrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
+byte* aesCtr256Encrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
+byte* aes128Encrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
+byte* aes192Encrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
+byte* aes256Encrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
 
 #endif

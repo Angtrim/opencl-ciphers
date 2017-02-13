@@ -20,8 +20,11 @@
 
 /** -- opencl parameters initialization to run the kernel -- **/
 static cl_device_id device_id = NULL;
+static cl_device_type device_type;
 static cl_context context = NULL;
 static cl_command_queue command_queue = NULL;
+static cl_event event = NULL;
+static cl_ulong time_start, time_end;
 
 static cl_mem out = NULL;
 static cl_mem in = NULL;
@@ -40,9 +43,9 @@ static char clFileName[] = "des_ctr/des_ctr.cl";
 
 static char* source_str;
 
-byte* desSingleCtrEncrypt(char* fileName, uint8_t* key, char* output,size_t local_item_size);
-byte* des3CtrEncrypt(char* fileName, uint8_t* key, char* output,size_t local_item_size);
-byte* desSingleEncrypt(char* fileName, uint8_t* key, char* output,size_t local_item_size);
-byte* des3Encrypt(char* fileName, uint8_t* key, char* output,size_t local_item_size);
+byte* desSingleCtrEncrypt(char* fileName, uint8_t* key, char* output,size_t local_item_size, char* deviceType);
+byte* des3CtrEncrypt(char* fileName, uint8_t* key, char* output,size_t local_item_size, char* deviceType);
+byte* desSingleEncrypt(char* fileName, uint8_t* key, char* output,size_t local_item_size, char* deviceType);
+byte* des3Encrypt(char* fileName, uint8_t* key, char* output,size_t local_item_size, char* deviceType);
 
 #endif
