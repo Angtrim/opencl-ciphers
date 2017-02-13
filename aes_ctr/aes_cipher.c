@@ -238,6 +238,8 @@ byte* aesEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_
 	fileInfo.lenght * sizeof(byte),output, 0, NULL, NULL);
 	
 	finalizeExecution(source_str);
+
+	free(inputText);
 	
 	return output;
 }	
@@ -284,6 +286,30 @@ byte* aes192CtrEncrypt(char* fileName, word* key, char* outFileName,size_t local
 }	
 
 byte* aes256CtrEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, char* deviceType) {
+
+	setDeviceType(deviceType);
+
+	int mode = 256;
+	return aesEncrypt(fileName,key,outFileName,local_item_size,mode,1);
+}
+
+byte* aes128CtrDecrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, char* deviceType) {
+
+	setDeviceType(deviceType);
+
+	int mode = 128;
+	return aesEncrypt(fileName,key,outFileName,local_item_size,mode,1);
+}	
+
+byte* aes192CtrDecrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, char* deviceType) {
+
+	setDeviceType(deviceType);
+
+	int mode = 192;
+	return aesEncrypt(fileName,key,outFileName,local_item_size,mode,1);
+}	
+
+byte* aes256CtrDecrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 

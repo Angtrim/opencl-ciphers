@@ -22,9 +22,8 @@ static struct FileInfo64 {
 
 struct FileInfo64 getFileUint64(char* filePath);
 
-
 struct FileInfo getFileBytes(char* filePath);
 
-
+long getByteLenght(char* filePath);
 
 #endif

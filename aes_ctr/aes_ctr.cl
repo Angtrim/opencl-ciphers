@@ -158,8 +158,6 @@ __kernel void aesCipherCtr(__global uchar* in, __global uint *w, __global uchar*
 
   __local int gid;
   gid = get_global_id(0);
-   
-  printf("Current gid: %d\n", gid);
 
   /* Create input for aesCipher */
   __local uchar counter[16];

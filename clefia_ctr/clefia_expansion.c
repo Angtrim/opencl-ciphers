@@ -1,5 +1,5 @@
 
-#include "misty1_expansion.h"
+#include "clefia_expansion.h"
 
 /* S0 (8-bit S-box based on four 4-bit S-boxes) */
 const unsigned char clefia_s0[256] = {
