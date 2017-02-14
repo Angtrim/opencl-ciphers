@@ -20,7 +20,7 @@ apple: ctr_plaintext* $(SOURCES)
 	
 	$(COMPILE_APPLE)
 
-ubuntu: ctr_plaintext* $(SOURCES)
+ubuntu: $(SOURCES)
 	
 	$(COMPILE_LINUX)	
 

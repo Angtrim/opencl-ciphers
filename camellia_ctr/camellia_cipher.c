@@ -110,7 +110,7 @@ static void setUpOpenCl(uint64_t* inputText, uint64_t* k, uint64_t* ke, uint64_t
         ret = clSetKernelArg(kernel, 4, sizeof(cl_mem), (void *)&out);
 }
 
-static void finalizeExecution(char* source_str){
+static void finalizeExecution(char* source_str, uint64_t* inputText){
 	/* Finalization */
 	ret = clFlush(command_queue);
 	ret = clFinish(command_queue);
@@ -123,6 +123,8 @@ static void finalizeExecution(char* source_str){
 	ret = clReleaseMemObject(out);
 	ret = clReleaseCommandQueue(command_queue);
 	ret = clReleaseContext(context);
+	free(inputText);
+	inputText = NULL;
 	//free(source_str);
 }
 
@@ -135,7 +137,7 @@ static void setDeviceType(char* deviceType){
 		device_type = CL_DEVICE_TYPE_GPU;
 }
 
-uint64_t* camellia_encryption(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, int mode, int isCtr){
+camellia_encryption(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, int mode, int isCtr){
 	
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
         
@@ -228,60 +230,82 @@ uint64_t* camellia_encryption(char* fileName, uint64_t* K, char* outFileName, si
         printf("OpenCl Execution time is: %0.3f ms\n",total_time/1000000.0);
 
 	/* Copy results from the memory buffer */
-	uint64_t* output = (uint64_t*)malloc((lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
-	
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
 	lenght * sizeof(uint64_t),output, 0, NULL, NULL);
 
-	finalizeExecution(source_str);
-	
-	return output;
+	finalizeExecution(source_str, inputText);
+
+	return event;
 }
 
-uint64_t* camellia128Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, char* deviceType){
+cl_event camellia128Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType){
 
 	setDeviceType(deviceType);
 
         int mode = 128;
-	return camellia_encryption(fileName, K, outFileName, local_item_size, mode, 0);
+	return camellia_encryption(fileName, K, output, local_item_size, mode, 0);
 }
 
-uint64_t* camellia192Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, char* deviceType){
+cl_event camellia192Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType){
 
 	setDeviceType(deviceType);
         
         int mode = 192;
-	return camellia_encryption(fileName, K, outFileName, local_item_size, mode, 0);
+	return camellia_encryption(fileName, K, output, local_item_size, mode, 0);
 }
 
-uint64_t* camellia256Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, char* deviceType){
+cl_event camellia256Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType){
 
 	setDeviceType(deviceType);
 
         int mode = 256;
-	return camellia_encryption(fileName, K, outFileName, local_item_size, mode, 0);
+	return camellia_encryption(fileName, K, output, local_item_size, mode, 0);
 }
 
-uint64_t* camelliaCtr128Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, char* deviceType){
+cl_event camelliaCtr128Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType){
 
 	setDeviceType(deviceType);
 
 	int mode = 128;
-	return camellia_encryption(fileName, K, outFileName, local_item_size, mode, 1);
+	return camellia_encryption(fileName, K, output, local_item_size, mode, 1);
 }
 
-uint64_t* camelliaCtr192Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, char* deviceType){
+cl_event camelliaCtr192Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType){
 
 	setDeviceType(deviceType);
 
         int mode = 192;
-	return camellia_encryption(fileName, K, outFileName, local_item_size, mode, 1);
+	return camellia_encryption(fileName, K, output, local_item_size, mode, 1);
 }
 
-uint64_t* camelliaCtr256Encrypt(char* fileName, uint64_t* K, char* outFileName, size_t local_item_size, char* deviceType){
+cl_event camelliaCtr256Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType){
 
 	setDeviceType(deviceType);
 
  	int mode = 256;
-	return camellia_encryption(fileName, K, outFileName, local_item_size, mode, 1);       
+	return camellia_encryption(fileName, K, output, local_item_size, mode, 1);       
+}
+
+cl_event camelliaCtr128Decrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType){
+
+	setDeviceType(deviceType);
+
+	int mode = 128;
+	return camellia_encryption(fileName, K, output, local_item_size, mode, 1);
+}
+
+cl_event camelliaCtr192Decrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType){
+
+	setDeviceType(deviceType);
+
+        int mode = 192;
+	return camellia_encryption(fileName, K, output, local_item_size, mode, 1);
+}
+
+cl_event camelliaCtr256Decrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType){
+
+	setDeviceType(deviceType);
+
+ 	int mode = 256;
+	return camellia_encryption(fileName, K, output, local_item_size, mode, 1);       
 }

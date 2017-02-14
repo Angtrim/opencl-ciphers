@@ -158,7 +158,7 @@ static void setDeviceType(char* deviceType){
 		device_type = CL_DEVICE_TYPE_GPU;
 }
 
-aesEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, int mode, int isCtr) {
+cl_event aesEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, int mode, int isCtr) {
 
 	int Nk;
 	int Nr;
@@ -228,77 +228,79 @@ aesEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, in
 	fileInfo.lenght * sizeof(byte),output, 0, NULL, NULL);
 	
 	finalizeExecution(source_str, inputText);
+
+	return event;
 }	
 
 
-aes128Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+cl_event aes128Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);	
 	
 	int mode = 128;
-	aesEncrypt(fileName,key,output,local_item_size,mode,0);
+	return aesEncrypt(fileName,key,output,local_item_size,mode,0);
 }	
 
-aes192Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+cl_event aes192Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 192;
-	aesEncrypt(fileName,key,output,local_item_size,mode,0);
+	return aesEncrypt(fileName,key,output,local_item_size,mode,0);
 }	
 
-aes256Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+cl_event aes256Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 256;
-	aesEncrypt(fileName,key,output,local_item_size,mode,0);
+	return aesEncrypt(fileName,key,output,local_item_size,mode,0);
 }
 
-aes128CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+cl_event aes128CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 128;
-	aesEncrypt(fileName,key,output,local_item_size,mode,1);
+	return aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }	
 
-aes192CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+cl_event aes192CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 192;
-	aesEncrypt(fileName,key,output,local_item_size,mode,1);
+	return aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }	
 
-aes256CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+cl_event aes256CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 256;
-	aesEncrypt(fileName,key,output,local_item_size,mode,1);
+	return aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }
 
-aes128CtrDecrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+cl_event aes128CtrDecrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 128;
-	aesEncrypt(fileName,key,output,local_item_size,mode,1);
+	return aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }	
 
-aes192CtrDecrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+cl_event aes192CtrDecrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 192;
-	aesEncrypt(fileName,key,output,local_item_size,mode,1);
+	return aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }	
 
-aes256CtrDecrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+cl_event aes256CtrDecrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 256;
-	aesEncrypt(fileName,key,output,local_item_size,mode,1);
+	return aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }
