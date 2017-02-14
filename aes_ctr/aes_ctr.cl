@@ -124,16 +124,33 @@ __kernel void encrypt(__local uchar state[BLOCK_SIZE], __local uint *w, __local 
 
 __kernel void aesCipher(__global uchar* in, __global uint *w, __global uchar* out){
 
-  int gid = get_global_id(0); 
+  __local int gid;
+  gid = get_global_id(0); 
 
-  __local uchar state[4*Nb]; 
+  __local int local_gid;
+  local_gid = get_local_id(0);
+
+  __local int localSize;
+  localSize = get_local_size(0);
+
+  /*if(gid == 0){
+	for(int i = 0; i < 16000; i++){
+	printf("%x", in[i]);
+  }
+  }*/
+  
+
+  //printf("gid: %d", gid);
+
+  __local uchar state[LOCAL_SIZE][4*Nb]; 
   __local uint _w[Nb*(Nr+1)];
   
   
   #pragma unroll
   for (int i = 0; i < 4*Nb; ++i) {
     int offset = gid * BLOCK_SIZE + i;
-    state[i] = in[offset];
+    state[local_gid][i] = in[offset];
+    
   }
 
   #pragma unroll
@@ -143,11 +160,11 @@ __kernel void aesCipher(__global uchar* in, __global uint *w, __global uchar* ou
 
   /* call encrypt and get output */
   __local uchar outCipher[BLOCK_SIZE];
-  encrypt(state, _w, outCipher);
+  encrypt(state[local_gid], _w, outCipher);
   
   #pragma unroll
   for(int i = 0; i < BLOCK_SIZE; i++) {
-  	 int offset = gid * BLOCK_SIZE + i;
+    int offset = gid * BLOCK_SIZE + i;
     out[offset] = outCipher[i];
   } 
 }
@@ -158,6 +175,11 @@ __kernel void aesCipherCtr(__global uchar* in, __global uint *w, __global uchar*
 
   __local int gid;
   gid = get_global_id(0);
+
+  
+  	printf("gid: %d", gid);
+  
+   
 
   /* Create input for aesCipher */
   __local uchar counter[16];

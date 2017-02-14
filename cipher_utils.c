@@ -14,8 +14,11 @@ struct FileInfo getFileBytes(char* filePath){
 	filelen = ftell(fileptr);             // Get the current byte offset in the file
 	rewind(fileptr);                      // Jump back to the beginning of the file
 
-	buffer = (byte *)malloc((filelen+1)*sizeof(byte)); // Enough memory for file + \0
+	buffer = (byte *)malloc((filelen+1)*sizeof(byte));
+	 // Enough memory for file + \0
+	printf("[][][][][]file lenght: %d", filelen);	
 	fread(buffer, filelen, 1, fileptr); // Read in the entire file
+	//strcat(buffer, "\0");
 	fclose(fileptr); // Close the file
 	struct FileInfo fileInfo;
 	fileInfo.filePointer = buffer;

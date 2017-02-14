@@ -20,7 +20,8 @@ static void loadClProgramSource(){
 	exit(1);
 	}
 	source_str = (char*)malloc(MAX_SOURCE_SIZE);
-	fread(source_str, 1, MAX_SOURCE_SIZE, fp);
+	ret = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
+	strcat(source_str, "\0");
 	fclose(fp);
 }
 
@@ -34,23 +35,26 @@ static void writeOutputToFile(char* outFileName,char* output, long lenght){
 	fclose(fp);
 }
 
-static char* setUpBuildOptions(int mode){
-	char* res = "";
+static char* setUpBuildOptions(int mode, size_t local_item_size){
+        char res[50];
 	switch(mode){
 	case 128:
-		return res = "-D Nb=4 -D Nr=10";
+		sprintf(res, "-D LOCAL_SIZE=%d -D Nb=4 -D Nr=10\0", local_item_size);
 		break;
 	case 192:
-		return res = "-D Nb=4 -D Nr=12";
+		sprintf(res, "-D LOCAL_SIZE=%d -D Nb=4 -D Nr=12\0", local_item_size);
 		break;
 	case 256:
-		return res = "-D Nb=4 -D Nr=14";
+		sprintf(res, "-D LOCAL_SIZE=%d -D Nb=4 -D Nr=14\0", local_item_size);
 		break;
 	}
+	printf("\n%s", res);
+	printf("\n%s", res);
 	return res;
 }
 
-static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source_str, long source_size, long exKeyDim, long bufferLenght, int mode){
+static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source_str, long source_size, long exKeyDim, long bufferLenght, int mode, size_t local_item_size){
+	
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
 	// allocate memory, get list of platforms
@@ -74,6 +78,18 @@ static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source
 
 	free(platforms);
 
+	cl_int err;
+	cl_ulong max_work_items_size;
+	err = clGetDeviceInfo(
+	device_id,
+	CL_DEVICE_MAX_WORK_GROUP_SIZE,
+	sizeof(cl_ulong),
+	&max_work_items_size,
+	0 );
+
+	printf ("max workgroups %u", bufferLenght/max_work_items_size);
+
+
 	/* Create OpenCL context */
 	context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
 	if(ret != CL_SUCCESS){
@@ -86,14 +102,25 @@ static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source
 		printf("Failed to create commandqueue\n");
 	}
 
+	printf("bufferLenght: %u\n", bufferLenght);
+
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(byte), NULL, &ret);
+	if(ret != CL_SUCCESS){
+		printf("Failed to create buffer with error code: %i\n", ret);
+	}
 	exKey = clCreateBuffer(context, CL_MEM_READ_WRITE, exKeyDim * sizeof(word), NULL, &ret); 
 	out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(byte), NULL, &ret);
+	if(ret != CL_SUCCESS){
+		printf("\nthe problem is here %i", ret);	
+	}
 
 
 	/* Copy input data to Memory Buffer */
 	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(byte), inputText, 0, NULL, NULL);
+	if(ret != CL_SUCCESS){
+		printf("\nthe problem is here %i", ret);	
+	}
 	ret = clEnqueueWriteBuffer(command_queue, exKey, CL_TRUE, 0, exKeyDim * sizeof(word), w, 0, NULL, NULL);
 
 	/* Create Kernel Program from the source */
@@ -104,7 +131,7 @@ static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source
 	}
 	
 	/* Build Kernel Program */
-	char* buildOptions = setUpBuildOptions(mode);
+	char* buildOptions = setUpBuildOptions(mode, local_item_size);
 	ret = clBuildProgram(program, 1, &device_id, buildOptions, NULL, NULL);
 	if(ret != CL_SUCCESS){
 		printf("\nBuild Error = %i", ret);
@@ -168,7 +195,7 @@ static void setDeviceType(char* deviceType){
 		device_type = CL_DEVICE_TYPE_GPU;
 }
 
-byte* aesEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, int mode, int isCtr) {
+aesEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, int mode, int isCtr) {
 
 	int Nk;
 	int Nr;
@@ -195,6 +222,8 @@ byte* aesEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_
     
  	byte* inputText = fileInfo.filePointer;
 
+	printf("\n###LENGHT: %d\n", fileInfo.lenght);
+
 	long exKeyDim = Nb*(Nr+1);
 	//key expansion is performed on cpu
 	word w[exKeyDim];
@@ -214,11 +243,14 @@ byte* aesEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_
 		modality = "aesCipher";
 	}
 	
-	setUpOpenCl(inputText, w, modality,source_str,source_size,exKeyDim,fileInfo.lenght,mode);
+	setUpOpenCl(inputText, w, modality,source_str,source_size,exKeyDim,fileInfo.lenght,mode, local_item_size);
 	
 	size_t global_item_size = fileInfo.lenght/BLOCK_SIZE;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
+	if(ret != CL_SUCCESS){
+		printf("\nsomething wrong! with code %i\n", ret);
+	}
 
 	clWaitForEvents(1, &event);
 	clFinish(command_queue);
@@ -232,87 +264,105 @@ byte* aesEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_
         printf("OpenCl Execution time is: %0.3f ms\n",total_time/1000000.0);
 
 	/* Copy results from the memory buffer */
-	byte* output = (byte*)malloc((fileInfo.lenght+1)*sizeof(byte)); // Enough memory for file + \0
+	//byte* output = (byte*)malloc((fileInfo.lenght+1)*sizeof(byte)); // Enough memory for file + \0
 	
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
 	fileInfo.lenght * sizeof(byte),output, 0, NULL, NULL);
+	if(ret != CL_SUCCESS){
+		printf("\nsomething wrong 2!\n");
+	}
+
+	/*for(int k = 0; k < 67108864; k++){
+			printf("%x", output[k]);		
+		}*/
+	printf("\nsize %d\n", sizeof(output));
+
+	printf("\nFile lenght: %d", fileInfo.lenght);
 	
 	finalizeExecution(source_str);
 
 	free(inputText);
 	
-	return output;
+	inputText = NULL;
+
+	printf("\n");
+	for(int i = 0; i < 16; i++){
+		
+		printf("%x", output[i]);	
+	}
+	
+	//return output;
 }	
 
 
-byte* aes128Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, char* deviceType) {
+aes128Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);	
 	
 	int mode = 128;
-	return aesEncrypt(fileName,key,outFileName,local_item_size,mode,0);
+	aesEncrypt(fileName,key,output,local_item_size,mode,0);
 }	
 
-byte* aes192Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, char* deviceType) {
+aes192Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 192;
-	return aesEncrypt(fileName,key,outFileName,local_item_size,mode,0);
+	aesEncrypt(fileName,key,output,local_item_size,mode,0);
 }	
 
-byte* aes256Encrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, char* deviceType) {
+aes256Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 256;
-	return aesEncrypt(fileName,key,outFileName,local_item_size,mode,0);
+	aesEncrypt(fileName,key,output,local_item_size,mode,0);
 }
 
-byte* aes128CtrEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, char* deviceType) {
+aes128CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 128;
-	return aesEncrypt(fileName,key,outFileName,local_item_size,mode,1);
+	aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }	
 
-byte* aes192CtrEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, char* deviceType) {
+byte* aes192CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 192;
-	return aesEncrypt(fileName,key,outFileName,local_item_size,mode,1);
+	return aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }	
 
-byte* aes256CtrEncrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, char* deviceType) {
+aes256CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 256;
-	return aesEncrypt(fileName,key,outFileName,local_item_size,mode,1);
+	aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }
 
-byte* aes128CtrDecrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, char* deviceType) {
+aes128CtrDecrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 128;
-	return aesEncrypt(fileName,key,outFileName,local_item_size,mode,1);
+	aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }	
 
-byte* aes192CtrDecrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, char* deviceType) {
+aes192CtrDecrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 192;
-	return aesEncrypt(fileName,key,outFileName,local_item_size,mode,1);
+	aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }	
 
-byte* aes256CtrDecrypt(char* fileName, word* key, char* outFileName,size_t local_item_size, char* deviceType) {
+aes256CtrDecrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 256;
-	return aesEncrypt(fileName,key,outFileName,local_item_size,mode,1);
+	aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }

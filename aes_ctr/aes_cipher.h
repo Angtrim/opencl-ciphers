@@ -53,14 +53,14 @@ static char clFileName[] = "aes_ctr/aes_ctr.cl";
 
 static char* source_str;
 
-byte* aesCtr128Encrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
-byte* aesCtr192Encrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
-byte* aesCtr256Encrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
-byte* aesCtr128Decrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
-byte* aesCtr192Decrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
-byte* aesCtr256Decrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
-byte* aes128Encrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
-byte* aes192Encrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
-byte* aes256Encrypt(char* fileName, word* key, char* output,size_t local_item_size, char* deviceType);
+aesCtr128Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+aesCtr192Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+aesCtr256Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+aesCtr128Decrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+aesCtr192Decrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+aesCtr256Decrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+aes128Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+aes192Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+aes256Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
 
 #endif
