@@ -16,7 +16,7 @@ static void loadClProgramSource(){
 	/* Load the source code containing the kernel*/
 	fp = fopen(clFileName, "r");
 	if (!fp) {
-	fprintf(stderr, "Failed to load kernel.\n");
+	fprintf(stderr, "Failed to load program source\n");
 	exit(1);
 	}
 	source_str = (char*)malloc(MAX_SOURCE_SIZE);
@@ -25,35 +25,23 @@ static void loadClProgramSource(){
 	fclose(fp);
 }
 
-static void writeOutputToFile(char* outFileName,char* output, long lenght){
-	fp = fopen(outFileName, "wb");
-	if (!fp) {
-	fprintf(stderr, "Failed to load kernel.\n");
-	exit(1);
-	}
-	fwrite(output, sizeof(char), lenght, fp);
-	fclose(fp);
-}
-
-static char* setUpBuildOptions(int mode, size_t local_item_size){
-        char res[50];
+static char* setUpBuildOptions(int mode){
+	char* res = "";
 	switch(mode){
 	case 128:
-		sprintf(res, "-D LOCAL_SIZE=%d -D Nb=4 -D Nr=10\0", local_item_size);
+		return res = "-D Nb=4 -D Nr=10";
 		break;
 	case 192:
-		sprintf(res, "-D LOCAL_SIZE=%d -D Nb=4 -D Nr=12\0", local_item_size);
+		return res = "-D Nb=4 -D Nr=12";
 		break;
 	case 256:
-		sprintf(res, "-D LOCAL_SIZE=%d -D Nb=4 -D Nr=14\0", local_item_size);
+		return res = "-D Nb=4 -D Nr=14";
 		break;
 	}
-	printf("\n%s", res);
-	printf("\n%s", res);
 	return res;
 }
 
-static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source_str, long source_size, long exKeyDim, long bufferLenght, int mode, size_t local_item_size){
+static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source_str, long source_size, long exKeyDim, long bufferLenght, int mode){
 	
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
@@ -78,18 +66,6 @@ static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source
 
 	free(platforms);
 
-	cl_int err;
-	cl_ulong max_work_items_size;
-	err = clGetDeviceInfo(
-	device_id,
-	CL_DEVICE_MAX_WORK_GROUP_SIZE,
-	sizeof(cl_ulong),
-	&max_work_items_size,
-	0 );
-
-	printf ("max workgroups %u", bufferLenght/max_work_items_size);
-
-
 	/* Create OpenCL context */
 	context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
 	if(ret != CL_SUCCESS){
@@ -102,19 +78,13 @@ static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source
 		printf("Failed to create commandqueue\n");
 	}
 
-	printf("bufferLenght: %u\n", bufferLenght);
-
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(byte), NULL, &ret);
 	if(ret != CL_SUCCESS){
-		printf("Failed to create buffer with error code: %i\n", ret);
+		printf("cannot write in buffer error code: %d", ret);	
 	}
 	exKey = clCreateBuffer(context, CL_MEM_READ_WRITE, exKeyDim * sizeof(word), NULL, &ret); 
 	out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(byte), NULL, &ret);
-	if(ret != CL_SUCCESS){
-		printf("\nthe problem is here %i", ret);	
-	}
-
 
 	/* Copy input data to Memory Buffer */
 	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(byte), inputText, 0, NULL, NULL);
@@ -131,7 +101,7 @@ static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source
 	}
 	
 	/* Build Kernel Program */
-	char* buildOptions = setUpBuildOptions(mode, local_item_size);
+	char* buildOptions = setUpBuildOptions(mode);
 	ret = clBuildProgram(program, 1, &device_id, buildOptions, NULL, NULL);
 	if(ret != CL_SUCCESS){
 		printf("\nBuild Error = %i", ret);
@@ -158,20 +128,11 @@ static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source
 
 	/* Set OpenCL Kernel Parameters */
 	ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&in);
-	if(ret != CL_SUCCESS){
-		printf("failed to set in");	
-	}
 	ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&exKey);
-	if(ret != CL_SUCCESS){
-		printf("failed to set exKey");	
-	}
 	ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&out);
-	if(ret != CL_SUCCESS){
-		printf("failed to set out");	
-	}
 }
 
-static void finalizeExecution(char* source_str){
+static void finalizeExecution(char* source_str, uint8_t* inputText){
 	printf("Releasing resources..\n");
 	/* Finalization */
 	ret = clFlush(command_queue);
@@ -183,6 +144,8 @@ static void finalizeExecution(char* source_str){
 	ret = clReleaseMemObject(out);
 	ret = clReleaseCommandQueue(command_queue);
 	ret = clReleaseContext(context);
+	free(inputText);
+	inputText = NULL;
 	//free(source_str);
 }
 
@@ -222,8 +185,6 @@ aesEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, in
     
  	byte* inputText = fileInfo.filePointer;
 
-	printf("\n###LENGHT: %d\n", fileInfo.lenght);
-
 	long exKeyDim = Nb*(Nr+1);
 	//key expansion is performed on cpu
 	word w[exKeyDim];
@@ -243,13 +204,13 @@ aesEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, in
 		modality = "aesCipher";
 	}
 	
-	setUpOpenCl(inputText, w, modality,source_str,source_size,exKeyDim,fileInfo.lenght,mode, local_item_size);
+	setUpOpenCl(inputText, w, modality,source_str,source_size,exKeyDim,fileInfo.lenght,mode);
 	
 	size_t global_item_size = fileInfo.lenght/BLOCK_SIZE;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
 	if(ret != CL_SUCCESS){
-		printf("\nsomething wrong! with code %i\n", ret);
+		printf("\nFailed to enqueue kernels %i\n", ret);
 	}
 
 	clWaitForEvents(1, &event);
@@ -262,36 +223,11 @@ aesEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, in
         total_time = time_end-time_start;
 
         printf("OpenCl Execution time is: %0.3f ms\n",total_time/1000000.0);
-
-	/* Copy results from the memory buffer */
-	//byte* output = (byte*)malloc((fileInfo.lenght+1)*sizeof(byte)); // Enough memory for file + \0
 	
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
 	fileInfo.lenght * sizeof(byte),output, 0, NULL, NULL);
-	if(ret != CL_SUCCESS){
-		printf("\nsomething wrong 2!\n");
-	}
-
-	/*for(int k = 0; k < 67108864; k++){
-			printf("%x", output[k]);		
-		}*/
-	printf("\nsize %d\n", sizeof(output));
-
-	printf("\nFile lenght: %d", fileInfo.lenght);
 	
-	finalizeExecution(source_str);
-
-	free(inputText);
-	
-	inputText = NULL;
-
-	printf("\n");
-	for(int i = 0; i < 16; i++){
-		
-		printf("%x", output[i]);	
-	}
-	
-	//return output;
+	finalizeExecution(source_str, inputText);
 }	
 
 
@@ -327,12 +263,12 @@ aes128CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_si
 	aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }	
 
-byte* aes192CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+aes192CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
 
 	int mode = 192;
-	return aesEncrypt(fileName,key,output,local_item_size,mode,1);
+	aesEncrypt(fileName,key,output,local_item_size,mode,1);
 }	
 
 aes256CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType) {

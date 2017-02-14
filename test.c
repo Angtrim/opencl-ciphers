@@ -68,7 +68,7 @@ int main(){
  printf("\n-- AES 128 --\n");
  printf("-------------\n");
  printf("\n___CPU TEST___\n");
- aes128Encrypt("aes_plaintext", aes128Key, aesCiphertext, 2, GPU_DEVICE);
+ aes128Encrypt("aes_plaintext", aes128Key, aesCiphertext, 2, CPU_DEVICE);
  if (memcmp(aesCiphertext, aes128Ciphertext, 16000) == 0) {
  	printf("\n--->[Test for AES 128 is CORRECT]\n");
  } else {
@@ -76,7 +76,7 @@ int main(){
  }
 
  printf("\n___GPU TEST___\n");
- aes128Encrypt("aes_plaintext", aes128Key, aesCiphertext, 1, GPU_DEVICE);
+ aes128Encrypt("aes_plaintext", aes128Key, aesCiphertext, 2, GPU_DEVICE);
  if (memcmp(aesCiphertext, aes128Ciphertext, 16000) == 0) {
  	printf("\n--->[Test for AES 128 is CORRECT]\n");
  } else {
@@ -87,7 +87,7 @@ int main(){
  printf("\n-- AES 192 --\n");
  printf("-------------\n");
  printf("\n___CPU TEST___\n");
- aes192Encrypt("aes_plaintext", aes192Key, aesCiphertext, 1, CPU_DEVICE);
+ aes192Encrypt("aes_plaintext", aes192Key, aesCiphertext, 2, CPU_DEVICE);
  if (memcmp(aesCiphertext, aes192Ciphertext, 16000) == 0) {
  	printf("\n--->[Test for AES 192 is CORRECT]\n");
  } else {
@@ -95,7 +95,7 @@ int main(){
  }
 
  printf("\n___GPU TEST___\n");
- aes192Encrypt("aes_plaintext", aes192Key, aesCiphertext, 1, GPU_DEVICE);
+ aes192Encrypt("aes_plaintext", aes192Key, aesCiphertext, 2, GPU_DEVICE);
  if (memcmp(aesCiphertext, aes192Ciphertext, 16000) == 0) {
  	printf("\n--->[Test for AES 192 is CORRECT]\n");
  } else {
@@ -106,7 +106,7 @@ int main(){
  printf("\n-- AES 256 --\n");
  printf("-------------\n");
  printf("\n___CPU TEST___\n");
- aes256Encrypt("aes_plaintext", aes256Key, aesCiphertext, 1, CPU_DEVICE);
+ aes256Encrypt("aes_plaintext", aes256Key, aesCiphertext, 2, CPU_DEVICE);
  if (memcmp(aesCiphertext, aes256Ciphertext, 16000) == 0) {
  	printf("\n--->[Test for AES 256 is CORRECT]\n");
  } else {
@@ -114,7 +114,7 @@ int main(){
  }
 
  printf("\n___GPU TEST___\n");
- aes256Encrypt("aes_plaintext", aes256Key, aesCiphertext, 1, GPU_DEVICE);
+ aes256Encrypt("aes_plaintext", aes256Key, aesCiphertext, 2, GPU_DEVICE);
  if (memcmp(aesCiphertext, aes256Ciphertext, 16000) == 0) {
  	printf("\n--->[Test for AES 256 is CORRECT]\n");
  } else {
@@ -139,11 +139,7 @@ int main(){
  }
  
  /* Testing for different dimensions of plaintext */
- for(int i = 3; i < 4; i++){
-
-	for(int k = 0; k < 6; k++){
-		printf("\nPlain dimension: %d", plainDimensions[k]);	
-	}
+ for(int i = 5; i < 6; i++){
 
 	aesCiphertext = (uint8_t*)malloc((plainDimensions[i])*sizeof(uint8_t));
 	aesPlaintext = (uint8_t*)malloc((plainDimensions[i])*sizeof(uint8_t));
@@ -151,14 +147,11 @@ int main(){
 	struct FileInfo fileInfo = getFileBytes(fileNames[i]);
 
 	/* Tesing for different sizes of work-items per work-group */
-	for(size_t j = 16; j < 32; j=j*2){
+	for(size_t j = 8; j < 1024; j=j*2){
 
-		printf("\nlocal_size: %d\n", j);
-	
 		printf("\nTesting on: %s\n", fileNames[i]);
 
-		long numWorkgroups = (plainDimensions[i]/16)/j;
-		printf("\nNumber of workgroups: %d\n", 	numWorkgroups);
+		printf("\nLocal work size: %u (work-items per work-group)\n", j);
 
 		printf("\n||CTR ENCRYPTION||\n");
 	 	
@@ -174,43 +167,36 @@ int main(){
 		printf("\n___CPU TEST___\n");
 	
 		printf("\nEncrypting..\n");
-		aes128CtrEncrypt(fileNames[i], aes128Key, aesCiphertext, j, GPU_DEVICE);
+		aes128CtrEncrypt(fileNames[i], aes128Key, aesCiphertext, j, CPU_DEVICE);
 
-		if(aesCiphertext == NULL){
-			printf("\ncipher is null!");		
-		}
 		printf("Writing ciphertext on file..\n");	
 		writeOutputToFile("aes_ciphertext", aesCiphertext, plainDimensions[i]);
 
-		/*printf("\nDecrypting back ciphertext..\n");
-		aesPlaintext = aes128CtrDecrypt("aes_ciphertext", aes128Key, "aes_ciphertext", j, CPU_DEVICE);
+		printf("\nDecrypting back ciphertext..\n");
+		aes128CtrDecrypt("aes_ciphertext", aes128Key, aesPlaintext, j, CPU_DEVICE);
 	
 		if (memcmp(aesPlaintext, fileInfo.filePointer, fileInfo.lenght) == 0) {
 		printf("\n--->[Test for AES CTR 128 is CORRECT]\n");
 		} else {
 		printf("\n--->[Test for AES CTR 128 is WRONG!]\n");
 		}
-		free(aesCiphertext);
- 		free(aesPlaintext);
 	
 		printf("\n___GPU TEST___\n");
 	
 		printf("\nEncrypting..\n");
-		aesCiphertext = aes128CtrEncrypt(fileNames[i], aes128Key, "aes_ciphertext", j, GPU_DEVICE);
+		aes128CtrEncrypt(fileNames[i], aes128Key, aesCiphertext, j, GPU_DEVICE);
 		
 		printf("Writing ciphertext on file..\n");	
 		writeOutputToFile("aes_ciphertext", aesCiphertext, plainDimensions[i]);
 
 		printf("\nDecrypting back ciphertext..\n");
-		aesPlaintext = aes128CtrDecrypt("aes_ciphertext", aes128Key, "aes_ciphertext", j, GPU_DEVICE);
+		aes128CtrDecrypt("aes_ciphertext", aes128Key, aesPlaintext, j, GPU_DEVICE);
 	
 		if (memcmp(aesPlaintext, fileInfo.filePointer, fileInfo.lenght) == 0) {
 		printf("\n--->[Test for AES CTR 128 is CORRECT]\n");
 		} else {
 		printf("\n--->[Test for AES CTR 128 is WRONG!]\n");
 		}
-		free(aesCiphertext);
-		free(aesPlaintext);
 	
 		printf("\n-------------");
 		printf("\n-- AES CTR 192 --\n");
@@ -218,40 +204,36 @@ int main(){
 		printf("\n___CPU TEST___\n");
 	
 		printf("\nEncrypting..\n");
-		aesCiphertext = aes192CtrEncrypt(fileNames[i], aes192Key, "aes_ciphertext", j, CPU_DEVICE);
+		aes192CtrEncrypt(fileNames[i], aes192Key, aesCiphertext, j, CPU_DEVICE);
 		
 		printf("Writing ciphertext on file..\n");	
 		writeOutputToFile("aes_ciphertext", aesCiphertext, plainDimensions[i]);
 
 		printf("\nDecrypting back ciphertext..\n");
-		aesPlaintext = aes192CtrDecrypt("aes_ciphertext", aes192Key, "aes_ciphertext", j, CPU_DEVICE);
+		aes192CtrDecrypt("aes_ciphertext", aes192Key, aesPlaintext, j, CPU_DEVICE);
 	
 		if (memcmp(aesPlaintext, fileInfo.filePointer, fileInfo.lenght) == 0) {
 		printf("\n--->[Test for AES CTR 192 is CORRECT]\n");
 		} else {
 		printf("\n--->[Test for AES CTR 192 is WRONG!]\n");
 		}
-		free(aesCiphertext);
- 		free(aesPlaintext);
 	
 		printf("\n___GPU TEST___\n");
 	
 		printf("\nEncrypting..\n");
-		aesCiphertext = aes192CtrEncrypt(fileNames[i], aes192Key, "aes_ciphertext", j, GPU_DEVICE);
+		aes192CtrEncrypt(fileNames[i], aes192Key, aesCiphertext, j, GPU_DEVICE);
 		
 		printf("Writing ciphertext on file..\n");	
 		writeOutputToFile("aes_ciphertext", aesCiphertext, plainDimensions[i]);
 
 		printf("\nDecrypting back ciphertext..\n");
-		aesPlaintext = aes192CtrDecrypt("aes_ciphertext", aes192Key, "aes_ciphertext", j, GPU_DEVICE);
+		aes192CtrDecrypt("aes_ciphertext", aes192Key, aesPlaintext, j, GPU_DEVICE);
 	
 		if (memcmp(aesPlaintext, fileInfo.filePointer, fileInfo.lenght) == 0) {
 		printf("\n--->[Test for AES CTR 192 is CORRECT]\n");
 		} else {
 		printf("\n--->[Test for AES CTR 192 is WRONG!]\n");
 		}
-		free(aesCiphertext);
-		free(aesPlaintext);
 
 		printf("\n-------------");
 		printf("\n-- AES CTR 256 --\n");
@@ -259,44 +241,44 @@ int main(){
 		printf("\n___CPU TEST___\n");
 	
 		printf("\nEncrypting..\n");
-		aesCiphertext = aes256CtrEncrypt(fileNames[i], aes256Key, "aes_ciphertext", j, CPU_DEVICE);
+		aes256CtrEncrypt(fileNames[i], aes256Key, aesCiphertext, j, CPU_DEVICE);
 		
 		printf("Writing ciphertext on file..\n");	
 		writeOutputToFile("aes_ciphertext", aesCiphertext, plainDimensions[i]);
 
 		printf("\nDecrypting back ciphertext..\n");
-		aesPlaintext = aes256CtrDecrypt("aes_ciphertext", aes256Key, "aes_ciphertext", j, CPU_DEVICE);
+		aes256CtrDecrypt("aes_ciphertext", aes256Key, aesPlaintext, j, CPU_DEVICE);
 	
 		if (memcmp(aesPlaintext, fileInfo.filePointer, fileInfo.lenght) == 0) {
 		printf("\n--->[Test for AES CTR 256 is CORRECT]\n");
 		} else {
 		printf("\n--->[Test for AES CTR 256 is WRONG!]\n");
 		}
-		free(aesCiphertext);
- 		free(aesPlaintext);
 	
 		printf("\n___GPU TEST___\n");
 	
 		printf("\nEncrypting..\n");
-		aesCiphertext = aes256CtrEncrypt(fileNames[i], aes256Key, "aes_ciphertext", j, GPU_DEVICE);
+		aes256CtrEncrypt(fileNames[i], aes256Key, aesCiphertext, j, GPU_DEVICE);
 		
 		printf("Writing ciphertext on file..\n");	
 		writeOutputToFile("aes_ciphertext", aesCiphertext, plainDimensions[i]);
 
 		printf("\nDecrypting back ciphertext..\n");
-		aesPlaintext = aes256CtrDecrypt("aes_ciphertext", aes256Key, "aes_ciphertext", j, GPU_DEVICE);
+		aes256CtrDecrypt("aes_ciphertext", aes256Key, aesPlaintext, j, GPU_DEVICE);
 	
 		if (memcmp(aesPlaintext, fileInfo.filePointer, fileInfo.lenght) == 0) {
 		printf("\n--->[Test for AES CTR 256 is CORRECT]\n");
 		} else {
 		printf("\n--->[Test for AES CTR 256 is WRONG!]\n");
 		}
-		free(aesCiphertext);
-		free(aesPlaintext);
-	 */}
+	 }
 	
+	free(aesCiphertext);
+	free(aesPlaintext);
 	free(fileInfo.filePointer);
  }
+
+ 
  
 
  /* END AES CTR TEST */
