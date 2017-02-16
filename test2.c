@@ -76,7 +76,7 @@ void main(){
  	}
 	free(clefiaPlaintext);
 	clefiaPlaintext = NULL;*/
-
+/*
 uint8_t* desPlaintext = (uint8_t*)malloc(8*sizeof(uint8_t));
 
 	uint8_t DES3_keys[24] = {0x2B, 0xD6, 0x45, 0x9F, 0x82, 0xC5, 0xB3, 0x00, 0x95, 0x2C, 0x49, 0x10, 0x48, 0x81, 0xFF, 0x48, 0x2B, 0xD6, 0x45, 0x9F, 0x82, 0xC5, 0xB3, 0x00};
@@ -101,6 +101,32 @@ des3CtrEncrypt("des_plaintext", DES3_keys, desPlaintext, 1, CPU_DEVICE);
 	free(desPlaintext);
 	desPlaintext = NULL;
 
+*/
 
+uint64_t* desPlaintext = (uint64_t*)malloc(1*sizeof(uint64_t));
+
+uint8_t Keys[16] = //{ 
+    {0xff, 0xee, 0xdd, 0xcc, 0xbb, 0xaa, 0x99, 0x88,
+     0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00};
+    //{0xff, 0xee, 0xdd, 0xcc, 0xbb, 0xaa, 0x99, 0x88,
+     //0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00}
+  //};
+
+  uint64_t Plaintexts[2] = {
+    0x0000000000000000ul, 0x0011223344556677ul
+  };
+
+  uint64_t Ciphertexts[2] = {
+    0x00f418aed94f03f2ul, 0x23ce9f72e543e6d8ul
+  };
+
+  // Key is supplied with byte 0 last
+  hightEncrypt("hight_plaintext", Keys, desPlaintext, 1, CPU_DEVICE);
+  for(int i = 0; i < 2; i++){
+  	printf("%16llx\n", desPlaintext[i]);
+  }
+  if(desPlaintext[0] == Ciphertexts[0]){
+  	printf("ok\n");
+  } else printf("no\n");
 
 }
