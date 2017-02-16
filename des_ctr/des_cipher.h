@@ -15,8 +15,7 @@
 #else
 #include <CL/cl.h>
 #endif
-#define BLOCK_SIZE (128 / 8)
-
+#define BLOCK_DIMEN 8
 
 /** -- opencl parameters initialization to run the kernel -- **/
 static cl_device_id device_id = NULL;
@@ -28,7 +27,7 @@ static cl_ulong time_start, time_end;
 
 static cl_mem out = NULL;
 static cl_mem in = NULL;
-static cl_mem ks = NULL;
+static cl_mem _esk = NULL;
 
 static cl_program program = NULL;
 static cl_kernel kernel = NULL;
@@ -43,9 +42,14 @@ static char clFileName[] = "des_ctr/des_ctr.cl";
 
 static char* source_str;
 
-byte* desSingleCtrEncrypt(char* fileName, uint8_t* key, char* output,size_t local_item_size, char* deviceType);
-byte* des3CtrEncrypt(char* fileName, uint8_t* key, char* output,size_t local_item_size, char* deviceType);
-byte* desSingleEncrypt(char* fileName, uint8_t* key, char* output,size_t local_item_size, char* deviceType);
-byte* des3Encrypt(char* fileName, uint8_t* key, char* output,size_t local_item_size, char* deviceType);
+cl_event desCtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event des2CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event des3CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event desEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event des2Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event des3Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event desDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event des2Decrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event des3Decrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
 
 #endif

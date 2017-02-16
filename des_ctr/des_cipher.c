@@ -2,6 +2,7 @@
 
 #define MAX_SOURCE_SIZE (0x100000)
 
+
 /*
    This function adds two string pointers together
 */
@@ -24,22 +25,8 @@ static void loadClProgramSource(){
 	fclose(fp);
 }
 
-static void writeOutputToFile(char* outFileName,char* output, long lenght){
-	fp = fopen(outFileName, "wb");
-	if (!fp) {
-	fprintf(stderr, "Failed to load kernel.\n");
-	exit(1);
-	}
-	fwrite(output, sizeof(char), lenght, fp);
-	fclose(fp);
-}
-
-static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* key, char* source_str, long source_size, long bufferLenght){
+static void setUpOpenCl(byte* inputText, char* kernelName, des_context* K, char* source_str, long source_size, long bufferLenght){
 	
-	/* Key expansion */
-	des_context K;
-	des_expandkey(&K, key);
-
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
 	// allocate memory, get list of platforms
@@ -76,14 +63,14 @@ static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* key, char* s
 	}
 
 	/* Create Memory Buffers */
-	ks = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(word)*32, NULL, &ret); 
-	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(byte), NULL, &ret);
-	out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(byte), NULL, &ret);
+	_esk = clCreateBuffer(context, CL_MEM_READ_WRITE, 32*sizeof(uint32_t), NULL, &ret); 
+	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint8_t), NULL, &ret);
+	out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint8_t), NULL, &ret);
 
 
 	/* Copy input data to Memory Buffer */
-	ret = clEnqueueWriteBuffer(command_queue, ks, CL_TRUE, 0, sizeof(word)*32, K.esk, 0, NULL, NULL);
-	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(byte), inputText, 0, NULL, NULL);
+	ret = clEnqueueWriteBuffer(command_queue, _esk, CL_TRUE, 0, 32*sizeof(uint32_t), K->esk, 0, NULL, NULL);
+	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(uint8_t), inputText, 0, NULL, NULL);
 
 	/* Create Kernel Program from the source */
 	program = clCreateProgramWithSource(context, 1, (const char **)&source_str,
@@ -118,16 +105,12 @@ static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* key, char* s
 	}
 
 	/* Set OpenCL Kernel Parameters */
-	ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&in);
-	ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&ks);
+	ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&_esk);
+	ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&in);
 	ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&out);
 }
 
-static void setUpOpenCl3(byte* inputText, char* kernelName, uint8_t* key,char* source_str, long source_size, long bufferLenght){
-	
-	/* Key expansion */
-	des3_context K;
-	tdes3_expandkey(&K,key);
+static void setUpOpenCl_2_3(uint8_t* inputText, char* kernelName, des3_context* K,char* source_str, long source_size, long bufferLenght){
 
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
@@ -147,14 +130,14 @@ static void setUpOpenCl3(byte* inputText, char* kernelName, uint8_t* key,char* s
 	}
 
 	/* Create Memory Buffers */
-	ks = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(word)*96, NULL, &ret); 
-	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(byte), NULL, &ret);
-	out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(byte), NULL, &ret);
+	_esk = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(uint32_t)*96, NULL, &ret); 
+	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint8_t), NULL, &ret);
+	out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint8_t), NULL, &ret);
 
 
 	/* Copy input data to Memory Buffer */
-	ret = clEnqueueWriteBuffer(command_queue, ks, CL_TRUE, 0, sizeof(word)*32, K.esk, 0, NULL, NULL);
-	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(byte), inputText, 0, NULL, NULL);
+	ret = clEnqueueWriteBuffer(command_queue, _esk, CL_TRUE, 0, sizeof(uint32_t)*96, K->esk, 0, NULL, NULL);
+	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(uint8_t), inputText, 0, NULL, NULL);
 
 	/* Create Kernel Program from the source */
 	program = clCreateProgramWithSource(context, 1, (const char **)&source_str,
@@ -189,12 +172,12 @@ static void setUpOpenCl3(byte* inputText, char* kernelName, uint8_t* key,char* s
 	}
 
 	/* Set OpenCL Kernel Parameters */
-	ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&in);
-	ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&ks);
+	ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&_esk);
+	ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&in);
 	ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&out);
 }
 
-static void finalizeExecution(char* source_str){
+static void finalizeExecution(char* source_str, uint8_t* inputText){
 	printf("Releasing resources..\n");
 	/* Finalization */
 	ret = clFlush(command_queue);
@@ -202,10 +185,12 @@ static void finalizeExecution(char* source_str){
 	ret = clReleaseKernel(kernel);
 	ret = clReleaseProgram(program);
 	ret = clReleaseMemObject(in);
-	ret = clReleaseMemObject(ks);
+	ret = clReleaseMemObject(_esk);
 	ret = clReleaseMemObject(out);
 	ret = clReleaseCommandQueue(command_queue);
 	ret = clReleaseContext(context);
+	free(inputText);
+	inputText = NULL;
 	//free(source_str);
 }
 
@@ -218,44 +203,56 @@ static void setDeviceType(char* deviceType){
 		device_type = CL_DEVICE_TYPE_GPU;
 }
 
-byte* desEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, int mode, int isCtr) {
+cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, int mode, int isCtr) {
 
 	
 	struct FileInfo fileInfo = getFileBytes(fileName);
     
- 	byte* inputText = fileInfo.filePointer;
+ 	uint8_t* inputText = fileInfo.filePointer;
 
  	// load program source to build the kernel program
  	if(source_str == NULL){
 		loadClProgramSource();
 	}
+
+	printf("lenght: %d", fileInfo.lenght);
     
 	long source_size = strlen(source_str);
 	char* modality;
 	if(isCtr){
-		if(mode == 0){
+		if(mode == 1){
 			modality = "desCipherCtr";
-			setUpOpenCl(inputText, modality,key,source_str,source_size,fileInfo.lenght);
-
 		}else{
 			modality = "des3CipherCtr";
-			setUpOpenCl3(inputText, modality,key,source_str,source_size,fileInfo.lenght);
-
 		}
 	}else{
-
-		if(mode == 0){
+		if(mode == 1){
 			modality = "desCipher";
-			setUpOpenCl(inputText, modality,key,source_str,source_size,fileInfo.lenght);
 
 		}else{
 			modality = "des3Cipher";
-			setUpOpenCl3(inputText, modality,key,source_str,source_size,fileInfo.lenght);
 		}
+	}
 
+	des_context K;
+	des3_context _K;
+	// Key expansion is performed on CPU
+	switch(mode){
+	case 1:
+		des_expandkey(&K, key);
+		setUpOpenCl(inputText, modality, &K, source_str, source_size, fileInfo.lenght);
+		break;
+	case 2:
+		tdes2_expandkey(&_K, key);
+		setUpOpenCl_2_3(inputText, modality, &_K, source_str, source_size, fileInfo.lenght);
+		break;
+	case 3: 
+		tdes3_expandkey(&_K, key);
+		setUpOpenCl_2_3(inputText, modality, &_K, source_str, source_size, fileInfo.lenght);
+		break;	
 	}
 	
-	size_t global_item_size = fileInfo.lenght/BLOCK_SIZE;
+	size_t global_item_size = fileInfo.lenght/BLOCK_DIMEN;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
 
@@ -268,50 +265,82 @@ byte* desEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_it
         printf("OpenCl Execution time is: %0.3f ms\n",total_time/1000000.0);
 
 	/* Copy results from the memory buffer */
-	byte* output = (byte*)malloc((fileInfo.lenght+1)*sizeof(byte)); // Enough memory for file + \0
-	
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	fileInfo.lenght * sizeof(byte),output, 0, NULL, NULL);
+	fileInfo.lenght * sizeof(uint8_t),output, 0, NULL, NULL);
 	
-	finalizeExecution(source_str);
+	finalizeExecution(source_str, inputText);
 	
-	return output;
+	return event;
 }	
 
+cl_event desEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
-byte* desSingleCtrEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType) {
+	setDeviceType(deviceType);
+
+	int mode = 1;
+	return des_encryption(fileName,key,output,local_item_size,mode,0);
+}
+
+cl_event des2Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+
+	setDeviceType(deviceType);
+
+	int mode = 2;
+	return des_encryption(fileName,key,output,local_item_size,mode,0);
+}	
+
+cl_event des3Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+
+	setDeviceType(deviceType);
+
+	int mode = 3;
+	return des_encryption(fileName,key,output,local_item_size,mode,0);
+}
+
+cl_event desCtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);		
 
-	int mode = 0;
-	return desEncrypt(fileName,key,outFileName,local_item_size,mode,1);
+	int mode = 1;
+	return des_encryption(fileName,key,output,local_item_size,mode,1);
+}
+
+cl_event des2CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+
+	setDeviceType(deviceType);		
+
+	int mode = 2;
+	return des_encryption(fileName,key,output,local_item_size,mode,1);
 }	
 
-byte* des3CtrEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType) {
+cl_event des3CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);	
 	
 	int mode = 3;
-	return desEncrypt(fileName,key,outFileName,local_item_size,mode,1);
+	return des_encryption(fileName,key,output,local_item_size,mode,1);
+}
+
+cl_event desCtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+
+	setDeviceType(deviceType);		
+
+	int mode = 1;
+	return des_encryption(fileName,key,output,local_item_size,mode,1);
+}
+
+cl_event des2CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
+
+	setDeviceType(deviceType);		
+
+	int mode = 2;
+	return des_encryption(fileName,key,output,local_item_size,mode,1);
 }	
 
+cl_event des3CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
-byte* desSingleEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType) {
-
-	setDeviceType(deviceType);
-
-	int mode = 0;
-	return desEncrypt(fileName,key,outFileName,local_item_size,mode,0);
-}	
-
-byte* des3Encrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType) {
-
-	setDeviceType(deviceType);
-
+	setDeviceType(deviceType);	
+	
 	int mode = 3;
-	return desEncrypt(fileName,key,outFileName,local_item_size,mode,0);
-}	
-
-
-
-
+	return des_encryption(fileName,key,output,local_item_size,mode,1);
+}
