@@ -19,7 +19,6 @@ static cl_device_type device_type;
 static cl_context context = NULL;
 static cl_command_queue command_queue = NULL;
 static cl_event event = NULL;
-static cl_ulong time_start, time_end;
 
 static cl_mem out = NULL;
 static cl_mem in = NULL;
