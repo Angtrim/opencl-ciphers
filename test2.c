@@ -12,7 +12,7 @@
 #define CLEFIA_192
 
 
-void main(){
+void main1(){
 /*
 	#if KEYLEN == 128
   	uint64_t Plaintext[2] = {0x0123456789abcdef, 0xfedcba9876543210};

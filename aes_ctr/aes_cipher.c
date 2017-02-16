@@ -46,9 +46,9 @@ static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
 	// allocate memory, get list of platforms
-  	cl_platform_id *platforms = (cl_platform_id *) malloc(ret_num_platforms*sizeof(platform_id));
+ cl_platform_id *platforms = (cl_platform_id *) malloc(ret_num_platforms*sizeof(platform_id));
 
-   	clGetPlatformIDs(ret_num_platforms, platforms, NULL);
+ clGetPlatformIDs(ret_num_platforms, platforms, NULL);
 
 	// iterate over platforms
 	for (cl_uint i = 0; i < ret_num_platforms; ++i)
@@ -56,11 +56,11 @@ static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source
 		ret = clGetDeviceIDs(platforms[i], device_type, 1, &device_id, &ret_num_devices);
 		if(ret == CL_SUCCESS){
 			if(device_type == CL_DEVICE_TYPE_CPU){
-				printf("\nCPU DEVICE FOUND\n");			
+				printf("\nCPU DEVICE FOUND\n");	
 			}
 			else {
 				printf("\nGPU DEVICE FOUND\n");
-			}	
+			}
 		}   
 	}
 
