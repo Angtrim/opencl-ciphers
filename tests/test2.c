@@ -2,7 +2,7 @@
 #include <inttypes.h>
 #include <stdlib.h>
 
-#include "cipher_utils.h"
+#include "../cipher_utils.h"
 
 #define CPU_DEVICE "CPU"
 #define GPU_DEVICE "GPU"
@@ -14,7 +14,7 @@
 #define DES3
 
 
-void main1(){
+void testFra(){
 /*
 	#if KEYLEN == 128
   	uint64_t Plaintext[2] = {0x0123456789abcdef, 0xfedcba9876543210};

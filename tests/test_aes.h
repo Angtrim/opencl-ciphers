@@ -1,5 +1,5 @@
-#ifndef AES_CIPHER_H
-#define AES_CIPHER_H
+#ifndef TESTSMAIN_H
+#define TESTSMAIN_H
 
 int testAESAll();
 
