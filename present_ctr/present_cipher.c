@@ -99,7 +99,7 @@ static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName, cha
 		// Print the log
 		printf("%s\n", log);
 	}
-	
+
 	/* Create OpenCL Kernel */
 	kernel = clCreateKernel(program, kernelName, &ret);
 	if(ret != CL_SUCCESS){
@@ -184,6 +184,9 @@ cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, siz
         size_t global_item_size = lenght;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
+	if(ret != CL_SUCCESS){
+		printf("Failed to enqueue NDRangeKernel. Error code: %d", ret);	
+	}
 
 	clWaitForEvents(1, &event);
 	clFinish(command_queue);

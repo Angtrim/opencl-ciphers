@@ -157,7 +157,7 @@ uint8_t K[16] = {
   } else {
     printf("no\n");
   }*/
-
+/*
 uint64_t* presentPlaintext = (uint64_t*)malloc(1*sizeof(uint64_t));
   uint64_t Key3[2] = {0, 0};
   uint64_t ptx = 0; 
@@ -186,6 +186,34 @@ uint64_t* presentPlaintext = (uint64_t*)malloc(1*sizeof(uint64_t));
   } else {
     printf("no\n");
   }
+*/
+  uint64_t* seedPlaintext = (uint64_t*)malloc(2*sizeof(uint64_t));
+  uint32_t Key[4] = {0x00000000, 0x00000000, 0x00000000, 0x00000000};
+  uint64_t Ciphertext[2] = { 0x5EBAC6E0054E1668ul, 0x19AFF1CC6D346CDBul};
+
+  seed_old_Encrypt("seed_plaintext", Key, seedPlaintext, 1, GPU_DEVICE);
+  for(int i=0; i < 2; i++){
+  	printf("%016llx\n", seedPlaintext[i]);
+  }
+
+  if (seedPlaintext[0] == Ciphertext[0] && seedPlaintext[1] == Ciphertext[1]) {
+    printf("ok\n");
+  } else {
+    printf("no\n");
+  }
+
+  seed_Encrypt("seed_plaintext", Key, seedPlaintext, 1, CPU_DEVICE);
+  for(int i=0; i < 2; i++){
+  	printf("%016llx\n", seedPlaintext[i]);
+  }
+
+  if (seedPlaintext[0] == Ciphertext[0] && seedPlaintext[1] == Ciphertext[1]) {
+    printf("ok\n");
+  } else {
+    printf("no\n");
+  }
+
+  free(seedPlaintext);
 
 //  free(output);
 }

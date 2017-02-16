@@ -38,9 +38,11 @@ static char clFileName[] = "seed_ctr/seed_ctr.cl";
 
 static char* source_str;
 
-uint64_t* seed_old_Encrypt(char* fileName, uint32_t* Key, char* outFileName, size_t local_item_size, char* deviceType);
-uint64_t* seed_Encrypt(char* fileName, uint32_t* Key, char* outFileName, size_t local_item_size, char* deviceType);
-uint64_t* seed_old_CtrEncrypt(char* fileName, uint32_t* Key, char* outFileName, size_t local_item_size, char* deviceType);
-uint64_t* seed_CtrEncrypt(char* fileName, uint32_t* Key, char* outFileName, size_t local_item_size, char* deviceType);
+cl_event seed_old_Encrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
+cl_event seed_Encrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
+cl_event seed_old_CtrEncrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
+cl_event seed_CtrEncrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
+cl_event seed_old_CtrDecrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
+cl_event seed_CtrDecrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
 
 #endif
