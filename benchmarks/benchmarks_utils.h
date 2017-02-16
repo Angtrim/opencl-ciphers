@@ -8,6 +8,8 @@ static struct BenchInfo {
 		long fileSize;
 }; 
 
+void buildFileOfZeroes(char* outFileName,long lenght);
+
 
 
 #endif
