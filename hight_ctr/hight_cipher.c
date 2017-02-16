@@ -110,7 +110,7 @@ static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* WK, uint8_t*
 	ret = clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&out);
 }
 
-static void finalizeExecution(char* source_str){
+static void finalizeExecution(char* source_str, uint64_t* inputText){
 	printf("Releasing resources..\n");
 	/* Finalization */
 	ret = clFlush(command_queue);
@@ -123,6 +123,8 @@ static void finalizeExecution(char* source_str){
 	ret = clReleaseMemObject(out);
 	ret = clReleaseCommandQueue(command_queue);
 	ret = clReleaseContext(context);
+	free(inputText);
+	inputText = NULL;
 	//free(source_str);
 }
 
@@ -166,20 +168,18 @@ cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 	size_t global_item_size = fileInfo.lenght;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
+	if(ret != CL_SUCCESS){
+		printf("Failed to enqueue NDRangeKernel. Error code: %d", ret);	
+	}
 
-	/* compute execution time */
-	double total_time;
-	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
-        clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
-        total_time = time_end-time_start;
-
-        printf("OpenCl Execution time is: %0.3f ms\n",total_time/1000000.0);
+	clWaitForEvents(1, &event);
+	clFinish(command_queue);
 
 	/* Copy results from the memory buffer */
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
 	fileInfo.lenght * sizeof(uint64_t),output, 0, NULL, NULL);
 	
-	finalizeExecution(source_str);
+	finalizeExecution(source_str, inputText);
 	
 	return event;
 }	

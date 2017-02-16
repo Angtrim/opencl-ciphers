@@ -80,17 +80,11 @@ static void setUpOpenCl(byte* inputText, word* w, char* kernelName, char* source
 
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(byte), NULL, &ret);
-	if(ret != CL_SUCCESS){
-		printf("cannot write in buffer error code: %d", ret);	
-	}
 	exKey = clCreateBuffer(context, CL_MEM_READ_WRITE, exKeyDim * sizeof(word), NULL, &ret); 
 	out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(byte), NULL, &ret);
 
 	/* Copy input data to Memory Buffer */
 	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(byte), inputText, 0, NULL, NULL);
-	if(ret != CL_SUCCESS){
-		printf("\nthe problem is here %i", ret);	
-	}
 	ret = clEnqueueWriteBuffer(command_queue, exKey, CL_TRUE, 0, exKeyDim * sizeof(word), w, 0, NULL, NULL);
 
 	/* Create Kernel Program from the source */
@@ -210,7 +204,7 @@ cl_event aesEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
 	if(ret != CL_SUCCESS){
-		printf("\nFailed to enqueue kernels %i\n", ret);
+		printf("Failed to enqueue NDRangeKernel. Error code: %d", ret);	
 	}
 
 	clWaitForEvents(1, &event);

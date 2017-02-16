@@ -137,7 +137,7 @@ static void setDeviceType(char* deviceType){
 		device_type = CL_DEVICE_TYPE_GPU;
 }
 
-camellia_encryption(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, int mode, int isCtr){
+cl_event camellia_encryption(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, int mode, int isCtr){
 	
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
         
@@ -217,17 +217,12 @@ camellia_encryption(char* fileName, uint64_t* K, uint64_t* output, size_t local_
         size_t global_item_size = lenght/2;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
+	if(ret != CL_SUCCESS){
+		printf("Failed to enqueue NDRangeKernel. Error code: %d", ret);	
+	}
 
 	clWaitForEvents(1, &event);
 	clFinish(command_queue);
-	
-	/* compute execution time */
-	double total_time;
-	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
-        clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
-        total_time = time_end-time_start;
-
-        printf("OpenCl Execution time is: %0.3f ms\n",total_time/1000000.0);
 
 	/* Copy results from the memory buffer */
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,

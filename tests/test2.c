@@ -102,7 +102,7 @@ des3CtrEncrypt("des_plaintext", DES3_keys, desPlaintext, 1, CPU_DEVICE);
 	desPlaintext = NULL;
 
 */
-
+/*
 uint64_t* desPlaintext = (uint64_t*)malloc(1*sizeof(uint64_t));
 
 uint8_t Keys[16] = //{ 
@@ -128,5 +128,92 @@ uint8_t Keys[16] = //{
   if(desPlaintext[0] == Ciphertexts[0]){
   	printf("ok\n");
   } else printf("no\n");
+*/
+/*uint64_t* misty1Plaintext = (uint64_t*)malloc(2*sizeof(uint64_t));
 
+uint8_t K[16] = {
+     0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+     0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff
+   };
+
+  uint64_t P[2] = {
+     0x0123456789abcdefUL,
+    0xfedcba9876543210UL
+  };
+
+   uint64_t C[2] = {
+     0x8b1da5f56ab3d07cUL,
+     0x04b68240b13be95dUL
+   };
+
+  misty1Encrypt("misty1_plaintext", K, misty1Plaintext ,4, GPU_DEVICE);
+
+  for(int i=0; i < 2; i++){
+  	printf("%016llx\n", misty1Plaintext[i]);
+  }
+ 
+  if (misty1Plaintext[0] == C[0] && misty1Plaintext[1] == C[1]) {
+    printf("ok\n");
+  } else {
+    printf("no\n");
+  }*/
+/*
+uint64_t* presentPlaintext = (uint64_t*)malloc(1*sizeof(uint64_t));
+  uint64_t Key3[2] = {0, 0};
+  uint64_t ptx = 0; 
+  uint64_t correct = 0x5579c1387b228445;
+
+  present_memory_encrypt("present_plaintext", Key3, presentPlaintext, 1, GPU_DEVICE);
+  for(int i=0; i < 1; i++){
+  	printf("%016llx\n", presentPlaintext[i]);
+  }
+
+  if (presentPlaintext[0] == correct) {
+   printf("ok\n");
+  } else {
+    printf("no\n");
+  }
+ 
+  free(presentPlaintext);
+
+  present_memory_CtrEncrypt("present_plaintext", Key3, presentPlaintext, 1, GPU_DEVICE);
+  for(int i=0; i < 1; i++){
+  	printf("%016llx\n", presentPlaintext[i]);
+  }
+
+  if (presentPlaintext[0] == correct) {
+    printf("ok\n");
+  } else {
+    printf("no\n");
+  }
+*/
+  uint64_t* seedPlaintext = (uint64_t*)malloc(2*sizeof(uint64_t));
+  uint32_t Key[4] = {0x00000000, 0x00000000, 0x00000000, 0x00000000};
+  uint64_t Ciphertext[2] = { 0x5EBAC6E0054E1668ul, 0x19AFF1CC6D346CDBul};
+
+  seed_old_Encrypt("seed_plaintext", Key, seedPlaintext, 1, GPU_DEVICE);
+  for(int i=0; i < 2; i++){
+  	printf("%016llx\n", seedPlaintext[i]);
+  }
+
+  if (seedPlaintext[0] == Ciphertext[0] && seedPlaintext[1] == Ciphertext[1]) {
+    printf("ok\n");
+  } else {
+    printf("no\n");
+  }
+
+  seed_Encrypt("seed_plaintext", Key, seedPlaintext, 1, CPU_DEVICE);
+  for(int i=0; i < 2; i++){
+  	printf("%016llx\n", seedPlaintext[i]);
+  }
+
+  if (seedPlaintext[0] == Ciphertext[0] && seedPlaintext[1] == Ciphertext[1]) {
+    printf("ok\n");
+  } else {
+    printf("no\n");
+  }
+
+  free(seedPlaintext);
+
+//  free(output);
 }

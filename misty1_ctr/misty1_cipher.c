@@ -25,18 +25,6 @@ static void loadClProgramSource(){
 	fclose(fp);
 }
 
-static void writeOutputToFile(char* outFileName,char* output, long lenght){
-	fp = fopen(outFileName, "wb");
-	if (!fp) {
-	fprintf(stderr, "Failed to load kernel.\n");
-	exit(1);
-	}
-	fwrite(output, sizeof(char), lenght, fp);
-	fclose(fp);
-}
-
-
-
 static void setUpOpenCl(uint64_t* inputText,  char* kernelName,uint16_t* EK, char* source_str, long source_size, long bufferLenght){
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
@@ -120,7 +108,7 @@ static void setUpOpenCl(uint64_t* inputText,  char* kernelName,uint16_t* EK, cha
 	ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&out);
 }
 
-static void finalizeExecution(char* source_str){
+static void finalizeExecution(char* source_str, uint64_t* inputText){
 	printf("Releasing resources..\n");
 	/* Finalization */
 	ret = clFlush(command_queue);
@@ -132,6 +120,8 @@ static void finalizeExecution(char* source_str){
 	ret = clReleaseMemObject(out);
 	ret = clReleaseCommandQueue(command_queue);
 	ret = clReleaseContext(context);
+	free(inputText);
+	inputText = NULL;
 	//free(source_str);
 }
 
@@ -144,7 +134,7 @@ static void setDeviceType(char* deviceType){
 		device_type = CL_DEVICE_TYPE_GPU;
 }
 
-uint64_t* mEncript(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size,int isCtr) {
+cl_event mEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size,int isCtr) {
 
 	
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
@@ -177,40 +167,39 @@ uint64_t* mEncript(char* fileName, uint8_t* key, char* outFileName,size_t local_
 	size_t global_item_size = lenght;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
+	if(ret != CL_SUCCESS){
+		printf("Failed to enqueue NDRangeKernel. Error code: %d", ret);	
+	}
 
 	clWaitForEvents(1, &event);
 	clFinish(command_queue);
-	
-	/* compute execution time */
-	double total_time;
-	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
-        clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
-        total_time = time_end-time_start;
-
-        printf("OpenCl Execution time is: %0.3f ms\n",total_time/1000000.0);
 
 	/* Copy results from the memory buffer */
-	uint64_t* output = (byte*)malloc((fileInfo.lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
-	
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
 	fileInfo.lenght * sizeof(uint64_t),output, 0, NULL, NULL);
 	
-	finalizeExecution(source_str);
+	finalizeExecution(source_str, inputText);
 	
-	return output;
+	return event;
 }	
 
 
-uint64_t* misty1Encrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType) {
+cl_event misty1Encrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType);
-	return mEncript(fileName,key,outFileName,local_item_size,0);
+	return mEncript(fileName,key,output,local_item_size,0);
 }	
 
-uint64_t* misty1CtrEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType) {
+cl_event misty1CtrEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
 	
 	setDeviceType(deviceType);	
-	return mEncript(fileName,key,outFileName,local_item_size,1);
+	return mEncript(fileName,key,output,local_item_size,1);
+}
+
+cl_event misty1CtrDecrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
+	
+	setDeviceType(deviceType);	
+	return mEncript(fileName,key,output,local_item_size,1);
 }	
 
 

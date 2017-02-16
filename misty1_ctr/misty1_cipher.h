@@ -21,7 +21,6 @@ static cl_device_type device_type;
 static cl_context context = NULL;
 static cl_command_queue command_queue = NULL;
 static cl_event event = NULL;
-static cl_ulong time_start, time_end;
 
 static cl_mem out = NULL;
 static cl_mem in = NULL;
@@ -39,7 +38,8 @@ static FILE *fp;
 static char clFileName[] = "misty1_ctr/misty1_ctr.cl";
 
 static char* source_str;
-uint64_t* misty1Encrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType);
-uint64_t* misty1CtrEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType);
+cl_event misty1Encrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType);
+cl_event misty1CtrEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType);
+cl_event misty1CtrDecrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType);
 
 #endif

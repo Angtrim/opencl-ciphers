@@ -99,7 +99,7 @@ static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName, cha
 		// Print the log
 		printf("%s\n", log);
 	}
-	
+
 	/* Create OpenCL Kernel */
 	kernel = clCreateKernel(program, kernelName, &ret);
 	if(ret != CL_SUCCESS){
@@ -112,7 +112,7 @@ static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName, cha
 	ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&out);
 }
 
-static void finalizeExecution(char* source_str){
+static void finalizeExecution(char* source_str, uint64_t* inputText){
 	printf("Releasing resources..\n");
 	/* Finalization */
 	ret = clFlush(command_queue);
@@ -124,6 +124,8 @@ static void finalizeExecution(char* source_str){
 	ret = clReleaseMemObject(out);
 	ret = clReleaseCommandQueue(command_queue);
 	ret = clReleaseContext(context);
+	free(inputText);
+	inputText = NULL;
 	//free(source_str);
 }
 
@@ -136,7 +138,7 @@ static void setDeviceType(char* deviceType){
 		device_type = CL_DEVICE_TYPE_GPU;
 }
 
-uint64_t* present_encryption(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* encryptionType, int isCtr){
+cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* encryptionType, int isCtr){
 	
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
 
@@ -182,53 +184,60 @@ uint64_t* present_encryption(char* fileName, uint64_t* Key, char* outFileName, s
         size_t global_item_size = lenght;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
+	if(ret != CL_SUCCESS){
+		printf("Failed to enqueue NDRangeKernel. Error code: %d", ret);	
+	}
 
 	clWaitForEvents(1, &event);
 	clFinish(command_queue);
-	
-	/* compute execution time */
-	double total_time;
-	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
-        clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
-        total_time = time_end-time_start;
-
-        printf("OpenCl Execution time is: %0.3f ms\n",total_time/1000000.0);
 
 	/* Copy results from the memory buffer */
-	uint64_t* output = (uint64_t*)malloc((lenght+1)*sizeof(uint64_t)); // Enough memory for file + \0
-	
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
 	lenght * sizeof(uint64_t),output, 0, NULL, NULL);
 	
-	finalizeExecution(source_str);
+	finalizeExecution(source_str, inputText);
 	
-	return output;
+	return event;
 }
 
-uint64_t* present_memory_encrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* deviceType){
+cl_event present_memory_encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 	
 	setDeviceType(deviceType);
 	
-	return present_encryption(fileName, Key, outFileName, local_item_size, MEMORY, 0);
+	return present_encryption(fileName, Key, output, local_item_size, MEMORY, 0);
 }
 
-uint64_t* present_speed_encrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* deviceType){
+cl_event present_speed_encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
 	setDeviceType(deviceType);
 
-	return present_encryption(fileName, Key, outFileName, local_item_size, SPEED, 0);
+	return present_encryption(fileName, Key, output, local_item_size, SPEED, 0);
 }
 
-uint64_t* present_memory_CtrEncrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* deviceType){
+cl_event present_memory_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
 	setDeviceType(deviceType);
 	
-	return present_encryption(fileName, Key, outFileName, local_item_size, MEMORY, 1);
+	return present_encryption(fileName, Key, output, local_item_size, MEMORY, 1);
 }
 
-uint64_t* present_speed_CtrEncrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* deviceType){
+cl_event present_speed_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
 	setDeviceType(deviceType);
 
-	return present_encryption(fileName, Key, outFileName, local_item_size, SPEED, 1);
+	return present_encryption(fileName, Key, output, local_item_size, SPEED, 1);
+}
+
+cl_event present_memory_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
+
+	setDeviceType(deviceType);
+	
+	return present_encryption(fileName, Key, output, local_item_size, MEMORY, 1);
+}
+
+cl_event present_speed_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
+
+	setDeviceType(deviceType);
+
+	return present_encryption(fileName, Key, output, local_item_size, SPEED, 1);
 }
