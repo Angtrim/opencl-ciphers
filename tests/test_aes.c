@@ -48,7 +48,7 @@ int testAes128CPU(){
 	int success = 1;
 	uint8_t* aesCiphertext = (uint8_t*)malloc((16000+1)*sizeof(uint8_t));
  uint8_t* aesPlaintext;
- aes128Encrypt("tests/aes_plaintext", aes128Key, aesCiphertext, 1, CPU_DEVICE);
+ aes128Encrypt("tests/aes_plaintext", aes128Key, aesCiphertext, 2, CPU_DEVICE);
  if (memcmp(aesCiphertext, aes128Ciphertext, 16000) != 0) {
  	 success = 0;
  }
