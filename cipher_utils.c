@@ -66,6 +66,6 @@ long getByteLenght(char* filePath){
 	fseek(fileptr, 0, SEEK_END);          // Jump to the end of the file
 	filelen = ftell(fileptr);             // Get the current byte offset in the file
 	rewind(fileptr);                      // Jump back to the beginning of the file
-        fclose(fileptr);
+ fclose(fileptr);
 	return filelen;	
 }
