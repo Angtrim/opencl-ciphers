@@ -129,7 +129,7 @@ static void setDeviceType(char* deviceType){
 		device_type = CL_DEVICE_TYPE_GPU;
 }
 
-uint64_t* seed_encryption(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, int isCtr, char* encryptionType){
+cl_event seed_encryption(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, int isCtr, char* encryptionType){
 	
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
 
@@ -175,6 +175,9 @@ uint64_t* seed_encryption(char* fileName, uint32_t* Key, uint64_t* output, size_
         size_t global_item_size = lenght/2;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
+	if(ret != CL_SUCCESS){
+		printf("Failed to enqueue NDRangeKernel. Error code: %d", ret);	
+	}
 
 	clWaitForEvents(1, &event);
 	clFinish(command_queue);

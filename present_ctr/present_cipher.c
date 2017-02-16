@@ -197,7 +197,7 @@ cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, siz
 	
 	finalizeExecution(source_str, inputText);
 	
-	return output;
+	return event;
 }
 
 cl_event present_memory_encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){

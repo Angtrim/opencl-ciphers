@@ -168,6 +168,12 @@ cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 	size_t global_item_size = fileInfo.lenght;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
+	if(ret != CL_SUCCESS){
+		printf("Failed to enqueue NDRangeKernel. Error code: %d", ret);	
+	}
+
+	clWaitForEvents(1, &event);
+	clFinish(command_queue);
 
 	/* Copy results from the memory buffer */
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
