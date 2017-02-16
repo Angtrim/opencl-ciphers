@@ -1,4 +1,4 @@
-#define BLOCK_DIM = 16
+#define BLOCK_DIM 16
 
 __constant uchar clefia_s0[256] = {
   0x57U, 0x49U, 0xd1U, 0xc6U, 0x2fU, 0x33U, 0x74U, 0xfbU,
@@ -75,7 +75,7 @@ __constant uchar nonce[8] = {
   0xf1, 0x42, 0x61, 0xbb, 0xfc, 0x34, 0xc5, 0xe9
 };
 
-void ByteCpy(__local uchar *dst, __local uchar *src, int bytelen)
+void ByteCpy(__private uchar *dst, __private uchar *src, int bytelen)
 {
   #pragma unroll
   for (int b = 0; b < bytelen; ++b) {
@@ -83,7 +83,7 @@ void ByteCpy(__local uchar *dst, __local uchar *src, int bytelen)
   }
 }
 
-void ByteXor(__local uchar *dst, __local uchar *a, __local uchar *b, int bytelen)
+void ByteXor(__private uchar *dst, __private uchar *a, __private uchar *b, int bytelen)
 {
   #pragma unroll
   for (int bb = 0; bb < bytelen; ++bb) {
@@ -91,45 +91,53 @@ void ByteXor(__local uchar *dst, __local uchar *a, __local uchar *b, int bytelen
   }
 }
 
-__kernel void ClefiaMul2(__local uchar x, __local uchar* out)
+void ClefiaMul2(__private uchar x, __private uchar* out)
 {
   /* multiplication over GF(2^8) (p(x) = '11d') */
   if(x & 0x80U){
     x ^= 0x0eU;
   }
-  return ((x << 1) | (x >> 7));
+  out[0] = ((x << 1) | (x >> 7));
 }
 
-#define ClefiaMul4(_x) (ClefiaMul2(ClefiaMul2((_x))))
-#define ClefiaMul6(_x) (ClefiaMul2((_x)) ^ ClefiaMul4((_x)))
-#define ClefiaMul8(_x) (ClefiaMul2(ClefiaMul4((_x))))
-#define ClefiaMulA(_x) (ClefiaMul2((_x)) ^ ClefiaMul8((_x)))
-
-__kernel void ClefiaGfn4(__local *y, uchar *x, uchar *rk, int r)
-{
-  __local uchar fin[16], fout[16];
-
-  ByteCpy(fin, x, 16);
-  #pragma unroll
-  for (int rr = 0; rr < r; ++rr){
-    ClefiaF0Xor(fout + 0, fin + 0, rk + 0);
-    ClefiaF1Xor(fout + 8, fin + 8, rk + 4);
-    rk += 8;
-    if(r){ /* swapping for encryption */
-      ByteCpy(fin + 0,  fout + 4, 12);
-      ByteCpy(fin + 12, fout + 0, 4);
-    }
-  }
-  ByteCpy(y, fout, 16);
+void ClefiaMul4(__private uchar x, __private uchar* out){
+	ClefiaMul2(x, out);
+	ClefiaMul2(out[0], out);
 }
 
-__kernel void ClefiaF0Xor(__local uchar *dst, __local uchar *src, __local uchar *rk)
-{
-  __local uchar x[4], y[4], z[4];
+void ClefiaMul6(__private uchar x, __private uchar* out){
+	
+	__private uchar out2[1];
+	
+	ClefiaMul2(x, out2);
+	ClefiaMul4(x, out);
+	
+	out[0] = out2[0] ^ out[0]; 	
+}
 
-  __local uchar Mul2_OUT[1];
-  __local uchar Mul4_OUT[1];
-  __local uchar Mul6_OUT[1];
+void ClefiaMul8(__private uchar x, __private uchar* out){
+	
+	ClefiaMul4(x, out);
+	ClefiaMul2(out[0], out);
+}
+
+void ClefiaMulA(__private uchar x, __private uchar* out){
+	
+	__private uchar out2[1];
+	
+	ClefiaMul2(x, out2);
+	ClefiaMul8(x, out);
+	
+	out[0] = out2[0] ^ out[0]; 	
+}
+
+void ClefiaF0Xor(__private uchar *dst, __private uchar *src, __private uchar *rk)
+{
+  __private uchar x[4], y[4], z[4];
+
+  __private uchar Mul2_OUT[1];
+  __private uchar Mul4_OUT[1];
+  __private uchar Mul6_OUT[1];
 
   /* F0 */
   /* Key addition */
@@ -143,20 +151,32 @@ __kernel void ClefiaF0Xor(__local uchar *dst, __local uchar *src, __local uchar 
   ClefiaMul2(z[1], Mul2_OUT);
   ClefiaMul4(z[2], Mul4_OUT);
   ClefiaMul6(z[3], Mul6_OUT);
-  
-  y[0] =            z[0]  ^ ClefiaMul2(z[1]) ^ ClefiaMul4(z[2]) ^ ClefiaMul6(z[3]);
-  y[1] = ClefiaMul2(z[0]) ^            z[1]  ^ ClefiaMul6(z[2]) ^ ClefiaMul4(z[3]);
-  y[2] = ClefiaMul4(z[0]) ^ ClefiaMul6(z[1]) ^            z[2]  ^ ClefiaMul2(z[3]);
-  y[3] = ClefiaMul6(z[0]) ^ ClefiaMul4(z[1]) ^ ClefiaMul2(z[2]) ^            z[3] ;
+  y[0] =            z[0]  ^ Mul2_OUT[0] ^ Mul4_OUT[0] ^ Mul6_OUT[0];
+  ClefiaMul2(z[0], Mul2_OUT);
+  ClefiaMul4(z[3], Mul4_OUT);
+  ClefiaMul6(z[2], Mul6_OUT);
+  y[1] = Mul2_OUT[0] ^            z[1]  ^ Mul6_OUT[0] ^ Mul4_OUT[0];
+  ClefiaMul2(z[3], Mul2_OUT);
+  ClefiaMul4(z[0], Mul4_OUT);
+  ClefiaMul6(z[1], Mul6_OUT);
+  y[2] = Mul4_OUT[0] ^ Mul6_OUT[0] ^            z[2]  ^ Mul2_OUT[0];
+  ClefiaMul2(z[2], Mul2_OUT);
+  ClefiaMul4(z[1], Mul4_OUT);
+  ClefiaMul6(z[0], Mul6_OUT);
+  y[3] = Mul6_OUT[0] ^ Mul4_OUT[0] ^ Mul2_OUT[0] ^            z[3] ;
 
   /* Xoring after F0 */
   ByteCpy(dst + 0, src + 0, 4);
   ByteXor(dst + 4, src + 4, y, 4);
 }
 
-__kernel void ClefiaF1Xor(__local uchar *dst, __local uchar *src, __local uchar *rk)
+void ClefiaF1Xor(__private uchar *dst, __private uchar *src, __private uchar *rk)
 {
   unsigned char x[4], y[4], z[4];
+
+  __private uchar Mul2_OUT[1];
+  __private uchar Mul8_OUT[1];
+  __private uchar MulA_OUT[1];
 
   /* F1 */
   /* Key addition */
@@ -167,19 +187,49 @@ __kernel void ClefiaF1Xor(__local uchar *dst, __local uchar *src, __local uchar 
   z[2] = clefia_s1[x[2]];
   z[3] = clefia_s0[x[3]];
   /* Diffusion layer (M1) */
-  y[0] =            z[0]  ^ ClefiaMul8(z[1]) ^ ClefiaMul2(z[2]) ^ ClefiaMulA(z[3]);
-  y[1] = ClefiaMul8(z[0]) ^            z[1]  ^ ClefiaMulA(z[2]) ^ ClefiaMul2(z[3]);
-  y[2] = ClefiaMul2(z[0]) ^ ClefiaMulA(z[1]) ^            z[2]  ^ ClefiaMul8(z[3]);
-  y[3] = ClefiaMulA(z[0]) ^ ClefiaMul2(z[1]) ^ ClefiaMul8(z[2]) ^            z[3] ;
+  ClefiaMul2(z[2], Mul2_OUT);
+  ClefiaMul8(z[1], Mul8_OUT);
+  ClefiaMulA(z[3], MulA_OUT);
+  y[0] =            z[0]  ^ Mul8_OUT[0] ^ Mul2_OUT[0] ^ MulA_OUT[0];
+  ClefiaMul2(z[3], Mul2_OUT);
+  ClefiaMul8(z[0], Mul8_OUT);
+  ClefiaMulA(z[2], MulA_OUT);
+  y[1] = Mul8_OUT[0] ^            z[1]  ^ MulA_OUT[0] ^ Mul2_OUT[0];
+  ClefiaMul2(z[0], Mul2_OUT);
+  ClefiaMul8(z[3], Mul8_OUT);
+  ClefiaMulA(z[1], MulA_OUT);  
+  y[2] = Mul2_OUT[0] ^ MulA_OUT[0] ^            z[2]  ^ Mul8_OUT[0];
+  ClefiaMul2(z[1], Mul2_OUT);
+  ClefiaMul8(z[2], Mul8_OUT);
+  ClefiaMulA(z[0], MulA_OUT);
+  y[3] = MulA_OUT[0] ^ Mul2_OUT[0] ^ Mul8_OUT[0] ^            z[3] ;
 
   /* Xoring after F1 */
   ByteCpy(dst + 0, src + 0, 4);
   ByteXor(dst + 4, src + 4, y, 4);
 }
 
-__kernel void encrypt(__local uchar *ct, __local uchar *pt, __local uchar *rk, int r)
+void ClefiaGfn4(__private uchar *y, __private uchar *x, __private uchar *rk, __global int *r)
 {
-  __local uchar rin[16], rout[16];
+  __private uchar fin[16], fout[16];
+
+  ByteCpy(fin, x, 16);
+  #pragma unroll
+  for (int rr = 0; rr < *r; ++rr){
+    ClefiaF0Xor(fout + 0, fin + 0, rk + 0);
+    ClefiaF1Xor(fout + 8, fin + 8, rk + 4);
+    rk += 8;
+    if(r){ /* swapping for encryption */
+      ByteCpy(fin + 0,  fout + 4, 12);
+      ByteCpy(fin + 12, fout + 0, 4);
+    }
+  }
+  ByteCpy(y, fout, 16);
+}
+
+void encrypt(__private uchar *ct, __private uchar *pt, __private uchar *rk, __global int *r)
+{
+  __private uchar rin[16], rout[16];
 
   ByteCpy(rin,  pt,  16);
 
@@ -190,33 +240,31 @@ __kernel void encrypt(__local uchar *ct, __local uchar *pt, __local uchar *rk, i
   ClefiaGfn4(rout, rin, rk, r); /* GFN_{4,r} */
 
   ByteCpy(ct, rout, 16);
-  ByteXor(ct + 4,  ct + 4,  rk + r * 8 + 0, 4); /* final key whitening */
-  ByteXor(ct + 12, ct + 12, rk + r * 8 + 4, 4);
+  ByteXor(ct + 4,  ct + 4,  rk + (*r * 8) + 0, 4); /* final key whitening */
+  ByteXor(ct + 12, ct + 12, rk + (*r * 8) + 4, 4);
 }
 
-__kernel void clefiaCipher(__global uchar *ct, __global uchar *pt, __global uchar *rk, __global int r){
+__kernel void clefiaCipher(__global uchar *ct, __global uchar *pt, __global uchar *rk, __global int *r){
 
-  __local int gid;
-  gid = get_global_id(0);  
+  __private int gid;
+  gid = get_global_id(0);
 
-  __local uchar _pt[BLOCK_DIM];
+  __private uchar _pt[BLOCK_DIM];
   #pragma unroll
   for(int i = 0; i < BLOCK_DIM; i++){
-    int offset = gid * BLOCK_SIZE + i;
+    int offset = gid * BLOCK_DIM + i;
     _pt[i] = pt[offset];
   }
 
-  __local uchar _rk[8 * 26 + 16];
+  __private uchar _rk[8 * 26 + 16];
   #pragma unroll
   for(int i = 0; i < (8 * 26 + 16); i++){
     _rk[i] = rk[i];
   }
 
-  int _r = r;
-
-  __local uchar outCipher[BLOCK_DIM];
+  __private uchar outCipher[BLOCK_DIM];
   /* encryption */
-  encrypt(outCipher, _pt, _rk, _r);
+  encrypt(outCipher, _pt, _rk, r);
   
   #pragma unroll
   for(int i = 0; i < BLOCK_DIM; i++) {
@@ -225,12 +273,13 @@ __kernel void clefiaCipher(__global uchar *ct, __global uchar *pt, __global ucha
   } 
 }
 
-__kernel void clefiaCtrCipher(__global uchar *ct, __global uchar *pt, __global uchar *rk, __global int r){
+__kernel void clefiaCtrCipher(__global uchar *ct, __global uchar *pt, __global uchar *rk, __global int *r){
 
-  __local int gid;
+  __private int gid;
   gid = get_global_id(0);
   
   /* initialize counter */
+  __private uchar counter[16];
   #pragma unroll
   for(int k = 0; k < 8; k++){
     counter[k] = nonce[k];
@@ -258,24 +307,17 @@ __kernel void clefiaCtrCipher(__global uchar *ct, __global uchar *pt, __global u
   #pragma unroll
   for(int k = 8; k < 16; k++){
     counter[k] = countBytes[k-8];
-  }  
-  __local uchar _pt[BLOCK_DIM];
-  #pragma unroll
-  for(int i = 0; i < BLOCK_DIM; i++){
-    _pt[i] = pt[i];
-  }
+  } 
 
-  __local uchar _rk[8 * 26 + 16];
+  __private uchar _rk[8 * 26 + 16];
   #pragma unroll
   for(int i = 0; i < (8 * 26 + 16); i++){
     _rk[i] = rk[i];
   }
-
-  int _r = r;
-
-  __local uchar outCipher[BLOCK_DIM];
+  
+  __private uchar outCipher[BLOCK_DIM];
   /* encryption */
-  encrypt(outCipher, counter, _rk, _r);
+  encrypt(outCipher, counter, _rk, r);
   
   #pragma unroll
   for(int i = 0; i < BLOCK_DIM; i++) {
@@ -283,20 +325,3 @@ __kernel void clefiaCtrCipher(__global uchar *ct, __global uchar *pt, __global u
     ct[offset] = outCipher[i] ^ pt[offset];
   } 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
