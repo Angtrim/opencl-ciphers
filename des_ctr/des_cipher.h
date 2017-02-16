@@ -48,8 +48,8 @@ cl_event des3CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t loc
 cl_event desEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
 cl_event des2Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
 cl_event des3Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event desDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event des2Decrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event des3Decrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event desCtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event des2CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event des3CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
 
 #endif

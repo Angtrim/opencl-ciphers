@@ -114,19 +114,37 @@ static void setUpOpenCl_2_3(uint8_t* inputText, char* kernelName, des3_context* 
 
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
-	ret = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, &device_id, &ret_num_devices);
+	// allocate memory, get list of platforms
+  	cl_platform_id *platforms = (cl_platform_id *) malloc(ret_num_platforms*sizeof(platform_id));
+
+   	clGetPlatformIDs(ret_num_platforms, platforms, NULL);
+
+	// iterate over platforms
+	for (cl_uint i = 0; i < ret_num_platforms; ++i)
+	{
+		ret = clGetDeviceIDs(platforms[i], device_type, 1, &device_id, &ret_num_devices);
+		if(ret == CL_SUCCESS){
+			if(device_type == CL_DEVICE_TYPE_CPU){
+				printf("\nCPU DEVICE FOUND\n");			
+			}
+			else {
+				printf("\nGPU DEVICE FOUND\n");
+			}	
+		}   
+	}
+
+	free(platforms);
 
 	/* Create OpenCL context */
 	context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
 	if(ret != CL_SUCCESS){
-		printf("failed to create context\n");
+		printf("Failed to create context\n");
 	}
-	
 
 	/* Create Command Queue */
-	command_queue = clCreateCommandQueue(context, device_id, 0, &ret);
+	command_queue = clCreateCommandQueue(context, device_id, CL_QUEUE_PROFILING_ENABLE, &ret);
 	if(ret != CL_SUCCESS){
-		printf("failed to create commandqueue\n");
+		printf("Failed to create command queue\n");
 	}
 
 	/* Create Memory Buffers */
@@ -214,16 +232,14 @@ cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t loc
  	if(source_str == NULL){
 		loadClProgramSource();
 	}
-
-	printf("lenght: %d", fileInfo.lenght);
     
 	long source_size = strlen(source_str);
 	char* modality;
 	if(isCtr){
 		if(mode == 1){
-			modality = "desCipherCtr";
+			modality = "desCtrCipher";
 		}else{
-			modality = "des3CipherCtr";
+			modality = "des3CtrCipher";
 		}
 	}else{
 		if(mode == 1){

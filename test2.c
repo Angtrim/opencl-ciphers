@@ -89,7 +89,7 @@ uint8_t DES3_enc_test[8] = {0xC6, 0x16, 0xAC, 0xE8, 0x43, 0x95, 0x82, 0x47};
 #elif defined (DES3)
 uint8_t DES3_enc_test[8] = {0xC6, 0x16, 0xAC, 0xE8, 0x43, 0x95, 0x82, 0x47};
 #endif
-des2CtrEncrypt("des_plaintext", DES3_keys, desPlaintext, 1, CPU_DEVICE);
+des3CtrEncrypt("des_plaintext", DES3_keys, desPlaintext, 1, CPU_DEVICE);
 	for(int i=0; i < 8; i++){
 	 	printf("%x", desPlaintext[i]);
 	 }
