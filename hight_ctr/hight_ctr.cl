@@ -1,3 +1,6 @@
+
+#define rol8(x, n) (((x) << (n)) | ((x) >> (8 - n)))
+
 #define concat64(a7, a6, a5, a4, a3, a2, a1, a0) \
   ( ((ulong)(a7) << (8*7)) \
   | ((ulong)(a6) << (8*6)) \
@@ -11,20 +14,21 @@
 
 #define byte(a, n) ((a >> (8*n)) & 0xff)
 
-__kernel void F0(__local uchar x, __local uchar F0_OUT) {
-  return rol8(x, 1) ^ rol8(x, 2) ^ rol8(x, 7);
+void F0(__private uchar x, __private uchar F0_OUT) {
+  F0_OUT = rol8(x, 1) ^ rol8(x, 2) ^ rol8(x, 7);
 }
 
-__kernel void F1(__local uchar x, __local uchar F1_OUT) {
-  return rol8(x, 3) ^ rol8(x, 4) ^ rol8(x, 6);
+void F1(__private uchar x, __private uchar F1_OUT) {
+  F1_OUT = rol8(x, 3) ^ rol8(x, 4) ^ rol8(x, 6);
 }
 
-__kernel void hight_encrypt(__local ulong P, __local uchar *WK, __local uchar *SK, __local ulong C) {
-  __local uchar X0, X1, X2, X3, X4, X5, X6, X7;
-  __local uchar F0_OUT, F1_OUT;
+void hight_encrypt(__private ulong P, __global uchar *WK, __global uchar *SK, __private ulong C) {
+  __private uchar X0, X1, X2, X3, X4, X5, X6, X7;
+  __private uchar F0_OUT, F1_OUT;
 
   //cipher round
   X0 = byte(P, 0) + WK[0];
+  printf("X0: %x\n", X0);
   X2 = byte(P, 2) ^ WK[1];
   X4 = byte(P, 4) + WK[2];
   X6 = byte(P, 6) ^ WK[3];
@@ -86,56 +90,48 @@ __kernel void hight_encrypt(__local ulong P, __local uchar *WK, __local uchar *S
 
 __kernel void hightCipher(__global ulong* P, __global uchar *WK, __global uchar *SK, __global ulong* C){
 
-  __local int gid;
+  __private int gid;
   gid = get_global_id(0);
 
-  __local ulong _P;
+  printf("SK: \n");
+  for(int i = 0; i < 128; i++){
+  	printf("%x", SK[i]);
+  }
+  printf("\nWK: \n");
+  for(int i = 0; i < 4; i++){
+  	printf("%x", WK[i]);
+  }
+
+  __private ulong _P;
   _P = P[gid];
 
-  __local uchar* _WK[8];
-  #pragma unroll
-  for(int i = 0; i < 8; i++){
-    _WK[i] = WK[i];
-  }
-  __local uchar* _SK[128];
-  #pragma unroll
-  for(int i = 0; i < 8; i++){
-    _SK[i] = SK[i];
-  }
-  
+  printf("aaaa");
+  printf("%16llx\n", _P);
+
   __local ulong outCipher;
   
   /* encryption */
-  hight_encrypt(_P, _WK, _SK, outCipher);
+  hight_encrypt(_P, WK, SK, outCipher);
+
+  printf("%16llx\n", outCipher);
 
   C[gid] = outCipher;
 }
 
 __kernel void hightCtrCipher(__global ulong* P, __global uchar *WK, __global uchar *SK, __global ulong* C){
   
-  __local int gid;
+  __private int gid;
   gid = get_global_id(0);
 
   /* initialize counter */
-  __local ulong counter; 
+  __private ulong counter; 
   /* increment the counter by gid */
-  counter = ulong(gid);
-
-  __local uchar* _WK[8];
-  #pragma unroll
-  for(int i = 0; i < 8; i++){
-    _WK[i] = WK[i];
-  }
-  __local uchar* _SK[128];
-  #pragma unroll
-  for(int i = 0; i < 8; i++){
-    _SK[i] = SK[i];
-  }
+  counter = (ulong)gid;
   
   __local ulong outCipher;
   
   /* encryption */
-  hight_encrypt(counter, _WK, _SK, outCipher);
+  hight_encrypt(counter, WK, SK, outCipher);
 
   C[gid] = outCipher ^ P[gid];
 }

@@ -15,9 +15,6 @@
 #include <CL/cl.h>
 #endif
 
-
-#define BLOCK_SIZE (128 / 8)
-
 /** -- opencl parameters initialization to run the kernel -- **/
 static cl_device_id device_id = NULL;
 static cl_device_type device_type;
@@ -43,7 +40,8 @@ static FILE *fp;
 static char clFileName[] = "hight_ctr/hight_ctr.cl";
 
 static char* source_str;
-byte* hightEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType);
-byte* hightCtrEncrypt(char* fileName, uint8_t* key, char* outFileName,size_t local_item_size, char* deviceType);
+cl_event hightEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType);
+cl_event hightCtrEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType);
+cl_event hightCtrDecrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType);
 
 #endif
