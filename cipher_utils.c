@@ -21,6 +21,7 @@ struct FileInfo getFileBytes(char* filePath){
 	struct FileInfo fileInfo;
 	fileInfo.filePointer = buffer;
 	fileInfo.lenght = filelen;
+	printf("num bytes: %d\n", filelen);
 	return fileInfo;
 }
 
