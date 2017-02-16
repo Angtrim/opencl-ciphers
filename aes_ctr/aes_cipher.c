@@ -216,14 +216,6 @@ cl_event aesEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item
 	clWaitForEvents(1, &event);
 	clFinish(command_queue);
 	
-	/* compute execution time */
-	double total_time;
-	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
-        clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
-        total_time = time_end-time_start;
-
-        printf("OpenCl Execution time is: %0.3f ms\n",total_time/1000000.0);
-	
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
 	fileInfo.lenght * sizeof(byte),output, 0, NULL, NULL);
 	

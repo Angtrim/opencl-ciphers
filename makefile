@@ -9,7 +9,7 @@ ifdef OPENCL_LIB
 endif
 
 COMPILE_LINUX := cc $(CL_CFLAGS) $(CL_LDFLAGS) -o test $(SOURCES) -lOpenCL 
-COMPILE_APPLE := gcc -o test $(SOURCES) -framework opencl -I aes_ctr
+COMPILE_APPLE := gcc -o test $(SOURCES) -framework opencl 
 
 
 apple: $(SOURCES)

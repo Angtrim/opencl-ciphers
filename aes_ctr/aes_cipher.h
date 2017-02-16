@@ -34,8 +34,6 @@ static cl_device_type device_type;
 static cl_context context = NULL;
 static cl_command_queue command_queue = NULL;
 static cl_event event = NULL;
-static cl_ulong time_start, time_end;
-
 static cl_mem out = NULL;
 static cl_mem in = NULL;
 static cl_mem exKey = NULL;
@@ -53,12 +51,12 @@ static char clFileName[] = "aes_ctr/aes_ctr.cl";
 
 static char* source_str;
 
-cl_event aesCtr128Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event aesCtr192Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event aesCtr256Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event aesCtr128Decrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event aesCtr192Decrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event aesCtr256Decrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event aes128CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event aes192CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event aes256CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event aes128CtrDecrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event aes192CtrDecrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event aes256CtrDecrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
 cl_event aes128Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
 cl_event aes192Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
 cl_event aes256Encrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);

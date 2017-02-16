@@ -1,5 +1,6 @@
 #include "test_aes.h"
 #include "test2.h"
+#include "../benchmarks/benchmarks_main.h"
 
 
 int main(){
@@ -11,6 +12,6 @@ int main(){
 		if(endResult != 0){
 			printf("ALL TEST PASSED SUCCESSEFULLY\n");
 		}
-
-		testFra();
+		mainBench();
+		//testFra();
 }
