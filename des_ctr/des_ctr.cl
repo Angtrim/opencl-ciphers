@@ -105,17 +105,6 @@ __constant uint SB8[64] = {
     0x10001040, 0x00000000, 0x10041040, 0x00041000, 0x00041000, 0x00001040,
     0x00001040, 0x00040040, 0x10000000, 0x10041000};
 
-typedef struct {
-  uint esk[32]; /*!< DES encryption subkeys */
-  uint dsk[32]; /*!< DES decryption subkeys */
-} des_context;
-
-typedef struct {
-  uint esk[96]; /*!< Triple-DES encryption subkeys */
-  uint dsk[96]; /*!< Triple-DES decryption subkeys */
-} des3_context;
-
-
 /*
  * 32-bit integer manipulation macros (big endian)
  */
@@ -198,9 +187,9 @@ typedef struct {
          SB1[(T >> 24) & 0x3F];                                                \
   }
 
-__kernel void des_crypt(__local uint SK[32], __local uchar input[8], __local uchar output[8]){
+void des_crypt(__global uint *SK, __private uchar input[8], __private uchar output[8]){
   
-  __local uint X, Y, T;
+  __private uint X, Y, T;
 
   GET_UINT32_BE(X, input, 0);
   GET_UINT32_BE(Y, input, 4);
@@ -230,9 +219,9 @@ __kernel void des_crypt(__local uint SK[32], __local uchar input[8], __local uch
   PUT_UINT32_BE(X, output, 4);
 }
 
-__kernel void des3_crypt(__local uint SK[96], __local uchar input[8], __local uchar output[8]) {
+void des3_crypt(__global uint *SK, __private uchar input[8], __private uchar output[8]) {
   
-  __local uint X, Y, T;
+  __private uint X, Y, T;
 
   GET_UINT32_BE(X, input, 0);
   GET_UINT32_BE(Y, input, 4);
@@ -296,27 +285,21 @@ __kernel void des3_crypt(__local uint SK[96], __local uchar input[8], __local uc
   PUT_UINT32_BE(X, output, 4);
 }
 
-__kernel void desCipher(__global uint SK[32], __global uchar* input, __global uchar* output){
+__kernel void desCipher(__global uint *SK, __global uchar* input, __global uchar* output){
   
-  __local int gid;
+  __private int gid;
   gid = get_global_id(0);
 
-  __local uchar _input[8];
+  __private uchar _input[8];
   #pragma unroll
   for (int i = 0; i < 8; ++i) {
     int offset = gid * 8 + i;
     _input[i] = input[offset];
   }
 
-  __local uint _SK[32];
-  #pragma unroll
-  for(int i = 0; i < 32; i++){
-    _SK[i] = SK[i];
-  }
-
-  __local uchar outCipher[8];
+  __private uchar outCipher[8];
   /* encryption */
-  des_crypt(_SK, _input, outCipher);
+  des_crypt(SK, _input, outCipher);
 
   #pragma unroll
   for(int i = 0; i < 8; i++) {
@@ -325,27 +308,21 @@ __kernel void desCipher(__global uint SK[32], __global uchar* input, __global uc
   } 
 }
 
-__kernel void des3Cipher(__global uint SK[96], __global uchar* input, __global uchar* output){
+__kernel void des3Cipher(__global uint *SK, __global uchar* input, __global uchar* output){
   
-  __local int gid;
+  __private int gid;
   gid = get_global_id(0);
 
-  __local uchar _input[8];
+  __private uchar _input[8];
   #pragma unroll
   for (int i = 0; i < 8; ++i) {
     int offset = gid * 8 + i;
     _input[i] = input[offset];
   }
 
-  __local uint _SK[96];
-  #pragma unroll
-  for(int i = 0; i < 96; i++){
-    _SK[i] = SK[i];
-  }
-
-  __local uchar outCipher[8];
+  __private uchar outCipher[8];
   /* encryption */
-  des3_crypt(_SK, _input, outCipher);
+  des3_crypt(SK, _input, outCipher);
 
   #pragma unroll
   for(int i = 0; i < 8; i++) {
@@ -354,13 +331,13 @@ __kernel void des3Cipher(__global uint SK[96], __global uchar* input, __global u
   } 
 }
 
-__kernel void desCtrCipher(__global uint SK[32], __global uchar* input, __global uchar* output){
+__kernel void desCtrCipher(__global uint *SK, __global uchar* input, __global uchar* output){
   
-  __local int gid;
+  __private int gid;
   gid = get_global_id(0);
 
   /* initialize counter */
-  __local uchar counter[8]; 
+  __private uchar counter[8]; 
   //initialize counter
   counter[0] = (char)0;
   counter[1] = (char)0;
@@ -380,15 +357,9 @@ __kernel void desCtrCipher(__global uint SK[32], __global uchar* input, __global
     c >>= 8;
   } while (n);
 
-  __local uint _SK[32];
-  #pragma unroll
-  for(int i = 0; i < 32; i++){
-    _SK[i] = SK[i];
-  }
-
-  __local uchar outCipher[8];
+  __private uchar outCipher[8];
   /* encryption */
-  des_crypt(_SK, counter, outCipher);
+  des_crypt(SK, counter, outCipher);
 
   #pragma unroll
   for(int i = 0; i < 8; i++) {
@@ -397,13 +368,13 @@ __kernel void desCtrCipher(__global uint SK[32], __global uchar* input, __global
   } 
 }
 
-__kernel void des3CtrCipher(__global uint SK[32], __global uchar* input, __global uchar* output){
+__kernel void des3CtrCipher(__global uint *SK, __global uchar* input, __global uchar* output){
   
-  __local int gid;
+  __private int gid;
   gid = get_global_id(0);
 
   /* initialize counter */
-  __local uchar counter[8]; 
+  __private uchar counter[8]; 
   //initialize counter
   counter[0] = (char)0;
   counter[1] = (char)0;
@@ -423,16 +394,9 @@ __kernel void des3CtrCipher(__global uint SK[32], __global uchar* input, __globa
     c >>= 8;
   } while (n);
 
-
-  __local uint _SK[32];
-  #pragma unroll
-  for(int i = 0; i < 32; i++){
-    _SK[i] = SK[i];
-  }
-
-  __local uchar outCipher[8];
+  __private uchar outCipher[8];
   /* encryption */
-  des3_crypt(_SK, counter, outCipher);
+  des3_crypt(SK, counter, outCipher);
 
   #pragma unroll
   for(int i = 0; i < 8; i++) {

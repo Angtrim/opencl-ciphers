@@ -21,3 +21,6 @@ PRESENT:
 
 SEED:
 -ha più o meno la struttura di camellia, quindi cifra blocchi da 16 byte ma vanno passanti sempre come array di ulong (uint64_t)
+
+
+EA024714AD5C4D84
