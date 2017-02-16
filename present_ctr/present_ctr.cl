@@ -278,9 +278,9 @@ __constant ushort sBox4_M80[] = {12,5,6,11,9,0,10,13,3,14,15,8,4,7,1,2};
 #define rotate1l_64(r1lin)	 ( high1_64(r1lin) | ( r1lin << 1 ) )	//input rotated left (1x)
 #define rotate4l_64(r4lin)	 ( high4_64(r4lin) | ( r4lin << 4 ) )	//input rotated left (4x)
 
-__kernel void present_speed_encrypt(__local ulong* state, __local ulong* SK, __local ulong* out){
+void present_speed_encrypt(__private ulong* state, __global ulong* SK, __private ulong* out){
  
-  __local ulong temp_0, temp_1, temp_2, temp_3, temp_4, temp_5, temp_6, temp_7;
+  __private ulong temp_0, temp_1, temp_2, temp_3, temp_4, temp_5, temp_6, temp_7;
   #pragma unroll
   for(int i = 0; i < 31; i++){
 
@@ -324,10 +324,10 @@ __kernel void present_speed_encrypt(__local ulong* state, __local ulong* SK, __l
 
 }
 
-__kernel void present_memory_encrypt(__local ulong* state, __local ulong* SK, __local ulong* out){
+void present_memory_encrypt(__private ulong* state, __global ulong* SK, __private ulong* out){
 
-  __local ulong temp;
-  __local ushort sBoxValue;
+  __private ulong temp;
+  __private ushort sBoxValue;
 
   #pragma unroll
   for(int i = 0; i < 31; i++){
@@ -364,92 +364,68 @@ __kernel void present_memory_encrypt(__local ulong* state, __local ulong* SK, __
 
 __kernel void present_speedCipher(__global ulong* in, __global ulong* SK, __global ulong* C){
 
-  __local int gid;
+  __private int gid;
   gid = get_global_id(0);
 
-  __local ulong state[1];
+  __private ulong state[1];
   state[0] = in[gid];
 
-  __local ulong _SK[32];
-  #pragma unroll
-  for(int i = 0; i < 32; i++){
-    _SK[i] = SK[i];
-  }
-
-  __local ulong outCipher[1];
+  __private ulong outCipher[1];
   
   /* encryption */
-  present_speed_encrypt(state, _SK, outCipher);
+  present_speed_encrypt(state, SK, outCipher);
   
   C[gid] = outCipher[0];
 }
 
 __kernel void present_memoryCipher(__global ulong* in, __global ulong* SK, __global ulong* C){
 
-  __local int gid;
+  __private int gid;
   gid = get_global_id(0);
 
-  __local ulong state[1];
+  __private ulong state[1];
   state[0] = in[gid];
 
-  __local ulong _SK[32];
-  #pragma unroll
-  for(int i = 0; i < 32; i++){
-    _SK[i] = SK[i];
-  }
-
-  __local ulong outCipher[1];
+  __private ulong outCipher[1];
   
   /* encryption */
-  present_memory_encrypt(state, _SK, outCipher);
+  present_memory_encrypt(state, SK, outCipher);
   
   C[gid] = outCipher[0];
 }
 
 __kernel void present_speedCtrCipher(__global ulong* in, __global ulong* SK, __global ulong* C){
 
-  __local int gid;
+  __private int gid;
   gid = get_global_id(0);
 
   /* initialize counter */
-  __local ulong counter[1]; 
+  __private ulong counter[1]; 
   /* increment the counter by gid */
   counter[0] = (ulong)gid;
 
-  __local ulong _SK[32];
-  #pragma unroll
-  for(int i = 0; i < 32; i++){
-    _SK[i] = SK[i];
-  }
-
-  __local ulong outCipher[1];
+  __private ulong outCipher[1];
   
   /* encryption */
-  present_speed_encrypt(counter, _SK, outCipher);
+  present_speed_encrypt(counter, SK, outCipher);
   
   C[gid] = outCipher[0] ^ in[gid];
 }
 
 __kernel void present_memoryCtrCipher(__global ulong* in, __global ulong* SK, __global ulong* C){
 
-  __local int gid;
+  __private int gid;
   gid = get_global_id(0);
 
   /* initialize counter */
-  __local ulong counter[1]; 
+  __private ulong counter[1]; 
   /* increment the counter by gid */
   counter[0] = (ulong)gid;
 
-  __local ulong _SK[32];
-  #pragma unroll
-  for(int i = 0; i < 32; i++){
-    _SK[i] = SK[i];
-  }
-
-  __local ulong outCipher[1];
+  __private ulong outCipher[1];
   
   /* encryption */
-  present_memory_encrypt(counter, _SK, outCipher);
+  present_memory_encrypt(counter, SK, outCipher);
   
   C[gid] = outCipher[0] ^ in[gid];
 }

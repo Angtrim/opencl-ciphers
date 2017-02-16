@@ -129,7 +129,7 @@ uint8_t Keys[16] = //{
   	printf("ok\n");
   } else printf("no\n");
 */
-uint64_t* misty1Plaintext = (uint64_t*)malloc(2*sizeof(uint64_t));
+/*uint64_t* misty1Plaintext = (uint64_t*)malloc(2*sizeof(uint64_t));
 
 uint8_t K[16] = {
      0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
@@ -156,5 +156,36 @@ uint8_t K[16] = {
     printf("ok\n");
   } else {
     printf("no\n");
+  }*/
+
+uint64_t* presentPlaintext = (uint64_t*)malloc(1*sizeof(uint64_t));
+  uint64_t Key3[2] = {0, 0};
+  uint64_t ptx = 0; 
+  uint64_t correct = 0x5579c1387b228445;
+
+  present_memory_encrypt("present_plaintext", Key3, presentPlaintext, 1, GPU_DEVICE);
+  for(int i=0; i < 1; i++){
+  	printf("%016llx\n", presentPlaintext[i]);
   }
+
+  if (presentPlaintext[0] == correct) {
+   printf("ok\n");
+  } else {
+    printf("no\n");
+  }
+ 
+  free(presentPlaintext);
+
+  present_memory_CtrEncrypt("present_plaintext", Key3, presentPlaintext, 1, GPU_DEVICE);
+  for(int i=0; i < 1; i++){
+  	printf("%016llx\n", presentPlaintext[i]);
+  }
+
+  if (presentPlaintext[0] == correct) {
+    printf("ok\n");
+  } else {
+    printf("no\n");
+  }
+
+//  free(output);
 }

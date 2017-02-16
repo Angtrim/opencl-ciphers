@@ -38,9 +38,11 @@ static char clFileName[] = "present_ctr/present_ctr.cl";
 
 static char* source_str;
 
-uint64_t* present_memory_encrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* deviceType);
-uint64_t* present_speed_encrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* deviceType);
-uint64_t* present_memory_CtrEncrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* deviceType);
-uint64_t* present_speed_CtrEncrypt(char* fileName, uint64_t* Key, char* outFileName, size_t local_item_size, char* deviceType);
+cl_event present_memory_encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
+cl_event present_speed_encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
+cl_event present_memory_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
+cl_event present_speed_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
+cl_event present_memory_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
+cl_event present_speed_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
 
 #endif
