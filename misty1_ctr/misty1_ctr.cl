@@ -87,9 +87,9 @@ __constant ushort S9TABLE[0x200] = {
 // Kernel FI takes two parameters.
 // One is a 16-bit width input data, namely FI_IN.
 // The other is a part of EK, namely FI_KEY, which is also 16-bit width.
-__kernel void FI(__local ushort* FI_IN, __local ushort* FI_KEY) {
-   __local ushort d9; // 9-bit integer;
-   __local uchar  d7; // 7-bit integer;
+void FI(__private ushort* FI_IN, __global ushort* FI_KEY) {
+   __private ushort d9; // 9-bit integer;
+   __private uchar  d7; // 7-bit integer;
 
    d9 = FI_IN[0] >> 7;
    d7 = FI_IN[0] & 0x7f;
@@ -110,9 +110,9 @@ __kernel void FI(__local ushort* FI_IN, __local ushort* FI_KEY) {
 // Function FO takes two parameters.
 // One is a 32-bit width input data, namely FO_IN.
 // The other is an index of EK, namely k.
-__kernel void FO(__local uint* FO_IN, __local ushort *EK, int k, __local uint* F0_OUT) {
-  __local ushort t0[1];
-  __local ushort t1[1];
+void FO(__private uint* FO_IN, __global ushort *EK, int k, __private uint* F0_OUT) {
+  __private ushort t0[1];
+  __private ushort t1[1];
 
   t0[0] = FO_IN[0] >> 16;
   t1[0] = FO_IN[0] & 0xffff;
@@ -134,10 +134,10 @@ __kernel void FO(__local uint* FO_IN, __local ushort *EK, int k, __local uint* F
 
 // Function FL takes two parameters. One is a 32-bit data, namely FL_IN.
 // The other is an index of EK, namely k.
-__kernel void FL(__local uint* FL_IN, __local ushort *EK, int k) {
-  __local ushort d0;
+void FL(__private uint* FL_IN, __global ushort *EK, int k) {
+  __private ushort d0;
   d0 = FL_IN[0] >> 16;
-  __local ushort d1;
+  __private ushort d1;
   d1 = FL_IN[0] & 0xffff;
 
   if (is_even(k)) {
@@ -151,14 +151,14 @@ __kernel void FL(__local uint* FL_IN, __local ushort *EK, int k) {
   FL_IN[0] = (d0 << 16) | d1;
 }
 
-__kernel void misty1_encrypt(__local ulong* P, __local ushort *EK, __local ulong* C) {
+void misty1_encrypt(__private ulong* P, __global ushort *EK, __private ulong* C) {
   
-  __local uint D0[1];
+  __private uint D0[1];
   D0[0] = P[0] >> 32;        // leftmost 32-bit
-  __local uint D1[1];
+  __private uint D1[1];
   D1[0] = P[0] & 0xffffffff; // rightmost 32-bit
   
-  __local uint F0_OUT[1];
+  __private uint F0_OUT[1];
 
   //round 0
   FL(D0, EK, 0);
@@ -209,46 +209,34 @@ __kernel void misty1_encrypt(__local ulong* P, __local ushort *EK, __local ulong
 
 __kernel void misty1Cipher(__global ulong* P, __global ushort *EK, __global ulong* C){
 
-  __local int gid;
+  __private int gid;
   gid = get_global_id(0);
 
-  __local ulong _P[1];
+  __private ulong _P[1];
   _P[0] = P[gid];
 
-  __local ushort _EK[32];
-  #pragma unroll
-  for(int i = 0; i < 32; i++){
-    _EK[i] = EK[i]; 
-  }
-
-  __local ulong outCipher[1];
+  __private ulong outCipher[1];
   
   /* encryption */
-  misty1_encrypt(_P, _EK, outCipher);
+  misty1_encrypt(_P, EK, outCipher);
 
   C[gid] = outCipher[0];
 }
 
 __kernel void misty1CtrCipher(__global ulong* P, __global ushort *EK, __global ulong* C){
 
-  __local int gid;
+  __private int gid;
   gid = get_global_id(0);
 
   /* initialize counter */
-  __local ulong counter[1]; 
+  __private ulong counter[1]; 
   /* increment the counter by gid */
   counter[0] = (ulong)gid;
 
-  __local ushort _EK[32];
-  #pragma unroll
-  for(int i = 0; i < 32; i++){
-    _EK[i] = EK[i];
-  }
-
-  __local ulong outCipher[1];
+  __private ulong outCipher[1];
   
   /* encryption */
-  misty1_encrypt(counter, _EK, outCipher);
+  misty1_encrypt(counter, EK, outCipher);
 
   C[gid] = outCipher[0] ^ P[gid];
 }
