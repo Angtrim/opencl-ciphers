@@ -40,7 +40,7 @@ int testAes128CPU(){
 
 	int success = 1;
 	uint8_t* aesCiphertext = (uint8_t*)malloc((16000+1)*sizeof(uint8_t));
-	aes128Encrypt("tests/aes_plaintext", aes128Key, aesCiphertext, 2, CPU_DEVICE);
+	aes128Encrypt("tests/aes_plaintext", aes128Key, aesCiphertext, 1, CPU_DEVICE);
 	if (memcmp(aesCiphertext, aes128Ciphertext, 16000) != 0) {
 		success = 0;
 	}
@@ -238,20 +238,6 @@ int testAes256CtrGPU(){
 
 
 
-int testAESAll(){
-
-	int t128 = test128();
-	int t192 = test192();
-	int t256 = test256();	
-	int result = t128&&t192&&t256;
-	if(result){
-		log("--- --- --- ALL AES TEST PASSED");
-	}else{
-		log("--- --- --- TEST AES FAILED");
-	}
-	return result;
-
-}
 
 
 int test128(){
@@ -389,6 +375,21 @@ int test256(){
 
 	return result;
 	
+}
+
+int testAESAll(){
+
+	int t128 = test128();
+	int t192 = test192();
+	int t256 = test256();	
+	int result = t128&&t192&&t256;
+	if(result){
+		log("--- --- --- ALL AES TEST PASSED");
+	}else{
+		log("--- --- --- TEST AES FAILED");
+	}
+	return result;
+
 }
 
 
