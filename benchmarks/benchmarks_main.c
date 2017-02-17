@@ -2,7 +2,7 @@
 
 
 int mainBench(){
-	int localSize[] = {2,4,20,80};
+	int localSize[] = {2,4,20,100};
  benchAes128Multiple(100000,localSize,4,0);
  benchAes192Multiple(100000,localSize,4,0);
  benchAes256Multiple(100000,localSize,4,0);
@@ -17,5 +17,6 @@ int mainBench(){
  benchClefia128Multiple(100000000, localSize, 4,0);
  benchClefia192Multiple(100000000, localSize, 4,0);
  benchClefia256Multiple(100000000, localSize, 4,0);
-
+ benchPresentMemoryMultiple(100000000, localSize, 4,0);
+ benchPresentSpeedMultiple(100000000, localSize, 4,0);
 }
