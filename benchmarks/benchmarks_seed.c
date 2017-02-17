@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "../seed_ctr/seed_cipher.h"
-#include "benchmarks_aes.h"
+#include "benchmarks_seed.h"
 
 static uint32_t SeedKey[4][4] = {
   {0x00000000, 0x00000000, 0x00000000, 0x00000000},
@@ -31,7 +31,7 @@ void benchSeedOldCtr(int fileSize,int localSize,int onGPU, struct BenchInfo* ben
 	uint64_t* seedCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = seed_old_CtrEncrypt(fileName, SeedKey[3], seedCiphertext, 1, device);
+	event = seed_old_CtrEncrypt(fileName, SeedKey[3], seedCiphertext, localSize, device);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
@@ -60,7 +60,7 @@ void benchSeedCtr(int fileSize,int localSize,int onGPU, struct BenchInfo* benchI
 	uint64_t* seedCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = seed_CtrEncrypt(fileName, SeedKey[3], seedCiphertext, 1, device);
+	event = seed_CtrEncrypt(fileName, SeedKey[3], seedCiphertext, localSize, device);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);

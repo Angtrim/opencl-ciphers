@@ -25,7 +25,7 @@ int main(){
 
 
 
-		//mainBench();
+		mainBench();
 
 	 //	testFra();
 

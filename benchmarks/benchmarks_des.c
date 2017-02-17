@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include "../des_ctr/des_cipher.h"
 #include "benchmarks_des.h"
+
 static uint8_t DES3_keys[24] = {0x2B, 0xD6, 0x45, 0x9F, 0x82, 0xC5, 0xB3, 0x00, 0x95, 0x2C, 0x49, 0x10, 0x48, 0x81, 0xFF, 0x48, 0x2B, 0xD6, 0x45, 0x9F, 0x82, 0xC5, 0xB3, 0x00};
 
 
@@ -20,13 +21,13 @@ void benchDes(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo)
 		device = "CPU";
 	}
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize + (fileSize%8);
 	char* fileName = "benchDes";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* desCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = desCtrEncrypt(fileName, DES3_keys, desCiphertext ,1,device);
+	event = desCtrEncrypt(fileName, DES3_keys, desCiphertext ,localSize,device);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
@@ -55,7 +56,7 @@ void benchDes2(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo
 	uint8_t* desCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = des2CtrEncrypt(fileName, DES3_keys, desCiphertext ,1,device);
+	event = des2CtrEncrypt(fileName, DES3_keys, desCiphertext ,localSize,device);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
@@ -84,7 +85,7 @@ void benchDes3(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo
 	uint8_t* desCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = des3CtrEncrypt(fileName, DES3_keys, desCiphertext ,1,device);
+	event = des3CtrEncrypt(fileName, DES3_keys, desCiphertext ,localSize,device);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);

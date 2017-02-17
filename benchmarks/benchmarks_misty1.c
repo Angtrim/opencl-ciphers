@@ -29,7 +29,7 @@ void benchMisty1Ctr(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	uint64_t* misty1Ciphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = misty1CtrEncrypt(fileName, Misty1Key, misty1Ciphertext, 1, device);
+	event = misty1CtrEncrypt(fileName, Misty1Key, misty1Ciphertext, localSize, device);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);

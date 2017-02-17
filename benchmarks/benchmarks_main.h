@@ -5,6 +5,7 @@
 #include "benchmarks_camellia.h"
 #include "benchmarks_misty1.h"
 #include "benchmarks_seed.h"
+#include "benchmarks_present.h"
 
 int mainBench();
 

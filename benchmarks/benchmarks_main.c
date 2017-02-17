@@ -2,7 +2,7 @@
 
 
 int mainBench(){
-	int localSize[] = {2,4,20,80};
+	int localSize[] = {2,4,20,100};
  benchAes128Multiple(100000,localSize,4,0);
  benchDesMultiple(100000,localSize,4,0);
  benchDes2Multiple(100000,localSize,4,0);
@@ -12,4 +12,6 @@ int mainBench(){
  benchCam256Multiple(100000,localSize,4,0);
  benchMisty1CtrMultiple(100000000,localSize,4,0);
  benchSeedCtrMultiple(100000000, localSize, 4,0);
+ benchPresentMemoryMultiple(100000000, localSize, 4,0);
+ benchPresentSpeedMultiple(100000000, localSize, 4,0);
 }
