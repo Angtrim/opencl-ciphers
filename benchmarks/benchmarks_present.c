@@ -60,7 +60,7 @@ void benchPresentSpeedCtr(int fileSize,int localSize,int onGPU, struct BenchInfo
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
 	total_time = time_end-time_start;
-	printf("PRESENT MEMORY CTR execution time is: %0.3f ms\n",total_time/1000000.0);
+	printf("PRESENT SPEED CTR execution time is: %0.3f ms\n",total_time/1000000.0);
 	free(presentCiphertext);
 	remove(fileName);
 	benchInfo->totalTime = total_time;
