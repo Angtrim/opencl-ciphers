@@ -8,14 +8,14 @@
 
 uint64_t Plaintext128[2] = {0x0123456789abcdef, 0xfedcba9876543210};
 uint64_t Ciphertext128[2] = {0x6767313854966973, 0x0857065648eabe43};
-uint64_t Key128[2] = {0x0123456789abcdef, 0xfedcba9876543210};
+static uint64_t Key128[2] = {0x0123456789abcdef, 0xfedcba9876543210};
 
 uint64_t Plaintext192[2] = {0x0123456789abcdef, 0xfedcba9876543210};
 uint64_t Ciphertext192[2] = {0xb4993401b3e996f8, 0x4ee5cee7d79b09b9};
-uint64_t Key192[3] = {0x0123456789abcdef, 0xfedcba9876543210, 0x0011223344556677};
+static uint64_t Key192[3] = {0x0123456789abcdef, 0xfedcba9876543210, 0x0011223344556677};
 uint64_t Plaintext256[2] = {0x0123456789abcdef, 0xfedcba9876543210};
 uint64_t Ciphertext256[2] = {0x9acc237dff16d76c, 0x20ef7c919e3a7509};
-uint64_t Key256[4] = {0x0123456789abcdef, 0xfedcba9876543210,0x0011223344556677, 0x8899aabbccddeeff};
+static uint64_t Key256[4] = {0x0123456789abcdef, 0xfedcba9876543210,0x0011223344556677, 0x8899aabbccddeeff};
 
 
 
@@ -114,8 +114,8 @@ int testCamelia256GPU(){
 
 int testCameliaCTR128CPU(){
 	int success = 1;
-	char* fileName = "camTest";
-	char* fileNameOut = "camTestOut";
+	char* fileName = "camTest1";
+	char* fileNameOut = "camTestOut1";
 	uint64_t out[2];
 	uint64_t outC[2];
 	writeOutputToFileUint64(fileName,Plaintext128,2);
@@ -125,8 +125,8 @@ int testCameliaCTR128CPU(){
 	if (Plaintext128[0] != outC[0] || Plaintext128[1] != outC[1]) {
 		success = 0;
 	}
-	remove(fileName);
-	remove(fileNameOut);
+	//remove(fileName);
+	//remove(fileNameOut);
 	return success;
 }
 

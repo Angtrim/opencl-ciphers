@@ -39,7 +39,8 @@ static cl_int ret;
 static FILE *fp;
 static char clFileName[] = "des_ctr/des_ctr.cl";
 
-static char* source_str;
+static char* source_str = NULL;
+static size_t source_size;
 
 cl_event desCtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
 cl_event des2CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);

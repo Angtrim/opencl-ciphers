@@ -7,7 +7,7 @@ void buildFileOfZeroes(char* outFileName,long lenght){
 	uint8_t* zeroes = (uint8_t*)malloc(lenght*sizeof(uint8_t));
 	// fill with zeroes
 	for(int i = 0; i <lenght; i++){
-		 zeroes[i] = 0;	
+		 zeroes[i] = 'A';	
 	}
 	FILE* fp = fopen(outFileName, "wb");
 	if (!fp) {

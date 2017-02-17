@@ -58,8 +58,6 @@ struct FileInfo64 getFileUint64(char* filePath){
  */
 long getByteLenght(char* filePath){
 	FILE *fileptr;
-	uint64_t *buffer;
-        uint8_t temp[8];
 	long filelen;
 
 	fileptr = fopen(filePath, "rb");  // Open the file in binary mode

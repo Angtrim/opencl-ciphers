@@ -14,13 +14,12 @@ static void loadClProgramSource(){
 	fprintf(stderr, "Failed to load kernel.\n");
 	exit(1);
 	}
-	source_str = (char*)malloc(MAX_SOURCE_SIZE+2);
-	fread(source_str, 1, MAX_SOURCE_SIZE, fp);
-	strcat(source_str, "\0");
+ source_str = (char*)malloc(MAX_SOURCE_SIZE);
+	source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
 	fclose(fp);
 }
 /* set up the opencl parameters */
-static void setUpOpenCl(uint64_t* inputText, uint64_t* k, uint64_t* ke, uint64_t* kw, char* kernelName, char* source_str, long source_size, int kdim, int kedim, int kwdim, long bufferLenght){
+static void setUpOpenCl(uint64_t* inputText, uint64_t* k, uint64_t* ke, uint64_t* kw, char* kernelName, int kdim, int kedim, int kwdim, long bufferLenght){
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
 	// allocate memory, get list of platforms
@@ -110,7 +109,7 @@ static void setUpOpenCl(uint64_t* inputText, uint64_t* k, uint64_t* ke, uint64_t
         ret = clSetKernelArg(kernel, 4, sizeof(cl_mem), (void *)&out);
 }
 
-static void finalizeExecution(char* source_str, uint64_t* inputText){
+static void finalizeExecution(uint64_t* inputText){
 	/* Finalization */
 	ret = clFlush(command_queue);
 	ret = clFinish(command_queue);
@@ -118,14 +117,14 @@ static void finalizeExecution(char* source_str, uint64_t* inputText){
 	ret = clReleaseProgram(program);
 	ret = clReleaseMemObject(in);
 	ret = clReleaseMemObject(_k);
-        ret = clReleaseMemObject(_ke);
+ ret = clReleaseMemObject(_ke);
 	ret = clReleaseMemObject(_kw);
 	ret = clReleaseMemObject(out);
 	ret = clReleaseCommandQueue(command_queue);
 	ret = clReleaseContext(context);
 	free(inputText);
 	inputText = NULL;
-	//free(source_str);
+
 }
 
 /* Selecting the device */
@@ -209,12 +208,9 @@ cl_event camellia_encryption(char* fileName, uint64_t* K, uint64_t* output, size
 	if(source_str == NULL){
 		loadClProgramSource();
 	}
+ setUpOpenCl(inputText, k, ke, kw, modality,kdim, kedim, kwdim, lenght);
 
-	long source_size = strlen(source_str);
-        
-        setUpOpenCl(inputText, k, ke, kw, modality,source_str,source_size,kdim, kedim, kwdim, lenght);
-
-        size_t global_item_size = lenght/2;
+ size_t global_item_size = lenght/2;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
 	if(ret != CL_SUCCESS){
@@ -228,7 +224,7 @@ cl_event camellia_encryption(char* fileName, uint64_t* K, uint64_t* output, size
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
 	lenght * sizeof(uint64_t),output, 0, NULL, NULL);
 
-	finalizeExecution(source_str, inputText);
+	finalizeExecution(inputText);
 
 	return event;
 }

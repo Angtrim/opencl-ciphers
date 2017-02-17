@@ -3,16 +3,6 @@
 #define MAX_SOURCE_SIZE (0x100000)
 
 
-/*
-   This function adds two string pointers together
-*/
-static char* stradd(const char* a, const char* b){
-	size_t len = strlen(a) + strlen(b);
-	char *ret = (char*)malloc(len * sizeof(char) + 1);
-	*ret = '\0';
-	return strcat(strcat(ret, a) ,b);
-} 
-
 static void loadClProgramSource(){
 	/* Load the source code containing the kernel*/
 	fp = fopen(clFileName, "r");
@@ -21,11 +11,11 @@ static void loadClProgramSource(){
 	exit(1);
 	}
 	source_str = (char*)malloc(MAX_SOURCE_SIZE);
-	fread(source_str, 1, MAX_SOURCE_SIZE, fp);
+	source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
 	fclose(fp);
 }
 
-static void setUpOpenCl(byte* inputText, char* kernelName, des_context* K, char* source_str, long source_size, long bufferLenght){
+static void setUpOpenCl(byte* inputText, char* kernelName, des_context* K, long bufferLenght){
 	
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
@@ -110,7 +100,7 @@ static void setUpOpenCl(byte* inputText, char* kernelName, des_context* K, char*
 	ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&out);
 }
 
-static void setUpOpenCl_2_3(uint8_t* inputText, char* kernelName, des3_context* K,char* source_str, long source_size, long bufferLenght){
+static void setUpOpenCl_2_3(uint8_t* inputText, char* kernelName, des3_context* K, long bufferLenght){
 
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
@@ -195,7 +185,7 @@ static void setUpOpenCl_2_3(uint8_t* inputText, char* kernelName, des3_context* 
 	ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&out);
 }
 
-static void finalizeExecution(char* source_str, uint8_t* inputText){
+static void finalizeExecution( uint8_t* inputText){
 	printf("Releasing resources..\n");
 	/* Finalization */
 	ret = clFlush(command_queue);
@@ -233,7 +223,6 @@ cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t loc
 		loadClProgramSource();
 	}
     
-	long source_size = strlen(source_str);
 	char* modality;
 	if(isCtr){
 		if(mode == 1){
@@ -256,15 +245,15 @@ cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t loc
 	switch(mode){
 	case 1:
 		des_expandkey(&K, key);
-		setUpOpenCl(inputText, modality, &K, source_str, source_size, fileInfo.lenght);
+		setUpOpenCl(inputText, modality, &K, fileInfo.lenght);
 		break;
 	case 2:
 		tdes2_expandkey(&_K, key);
-		setUpOpenCl_2_3(inputText, modality, &_K, source_str, source_size, fileInfo.lenght);
+		setUpOpenCl_2_3(inputText, modality, &_K, fileInfo.lenght);
 		break;
 	case 3: 
 		tdes3_expandkey(&_K, key);
-		setUpOpenCl_2_3(inputText, modality, &_K, source_str, source_size, fileInfo.lenght);
+		setUpOpenCl_2_3(inputText, modality, &_K, fileInfo.lenght);
 		break;	
 	}
 	
@@ -282,7 +271,7 @@ cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t loc
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
 	fileInfo.lenght * sizeof(uint8_t),output, 0, NULL, NULL);
 	
-	finalizeExecution(source_str, inputText);
+	finalizeExecution(inputText);
 	
 	return event;
 }	

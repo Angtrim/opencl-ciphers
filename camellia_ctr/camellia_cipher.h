@@ -37,7 +37,8 @@ static cl_int ret;
 static FILE *fp;
 static char clFileName[] = "camellia_ctr/camellia_ctr.cl";
 
-static char* source_str;
+static char* source_str = NULL;
+static size_t source_size;
 
 cl_event camellia128Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType);
 cl_event camellia192Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType);

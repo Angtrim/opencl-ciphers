@@ -35,7 +35,8 @@ static cl_int ret;
 static FILE *fp;
 static char clFileName[] = "seed_ctr/seed_ctr.cl";
 
-static char* source_str;
+static char* source_str = NULL;
+static size_t source_size;
 
 cl_event seed_old_Encrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
 cl_event seed_Encrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);

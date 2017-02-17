@@ -1,16 +1,7 @@
 #include "clefia_cipher.h"
 
-#define MAX_SOURCE_SIZE (0x100000)
+#define MAX_SOURCE_SIZE (0x1000000)
 
-/*
-   This function adds two string pointers together
-*/
-static char* stradd(const char* a, const char* b){
-	size_t len = strlen(a) + strlen(b);
-	char *ret = (char*)malloc(len * sizeof(char) + 1);
-	*ret = '\0';
-	return strcat(strcat(ret, a) ,b);
-} 
 
 static void loadClProgramSource(){
 	/* Load the source code containing the kernel*/
@@ -20,11 +11,11 @@ static void loadClProgramSource(){
 	exit(1);
 	}
 	source_str = (char*)malloc(MAX_SOURCE_SIZE);
-	fread(source_str, 1, MAX_SOURCE_SIZE, fp);
+	source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
 	fclose(fp);
 }
 
-static void setUpOpenCl(uint8_t* inputText, char* kernelName, uint8_t* key, int R, int rk_dim, char* source_str, long source_size, long bufferLenght){
+static void setUpOpenCl(uint8_t* inputText, char* kernelName, uint8_t* key, int R, int rk_dim,long bufferLenght){
 	
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
@@ -67,6 +58,7 @@ static void setUpOpenCl(uint8_t* inputText, char* kernelName, uint8_t* key, int 
 	out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint8_t), NULL, &ret);
 	r = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(int), NULL, &ret);
 	
+
 	/* Copy input data to Memory Buffer */
 	ret = clEnqueueWriteBuffer(command_queue, _rk, CL_TRUE, 0, rk_dim * sizeof(uint8_t), key, 0, NULL, NULL);
 	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(uint8_t), inputText, 0, NULL, NULL);
@@ -111,7 +103,7 @@ static void setUpOpenCl(uint8_t* inputText, char* kernelName, uint8_t* key, int 
 	ret = clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&r);
 }
 
-static void finalizeExecution(char* source_str, uint8_t* inputText){
+static void finalizeExecution(uint8_t* inputText){
 	printf("Releasing resources..\n");
 	/* Finalization */
 	ret = clFlush(command_queue);
@@ -126,7 +118,6 @@ static void finalizeExecution(char* source_str, uint8_t* inputText){
 	ret = clReleaseContext(context);
 	free(inputText);
 	inputText = NULL;
-	//free(source_str);
 }
 
 /* Selecting the device */
@@ -148,10 +139,9 @@ cl_event clefia_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t 
         long lenght = fileInfo.lenght;
     
  	// load program source to build the kernel program
- 	if(source_str == NULL){
+ if(source_str == NULL){
 		loadClProgramSource();
 	}
-	long source_size = strlen(source_str);
 
 	// Key expansion is performed on CPU
 	int rk_dim = 8 * 26 + 16;
@@ -180,8 +170,8 @@ cl_event clefia_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t 
 		modality = "clefiaCipher";
 	}
 	
-	setUpOpenCl(inputText, modality, rk, R, rk_dim, source_str, source_size, lenght);
-	
+	setUpOpenCl(inputText, modality, rk, R, rk_dim,lenght);
+
 	size_t global_item_size = lenght/16;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
@@ -196,7 +186,7 @@ cl_event clefia_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t 
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
 	fileInfo.lenght * sizeof(uint8_t),output, 0, NULL, NULL);
 	
-	finalizeExecution(source_str, inputText);
+	finalizeExecution(inputText);
 
 	return event;
 }

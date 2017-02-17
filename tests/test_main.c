@@ -2,17 +2,19 @@
 #include "test_misty1.h"
 #include "test_des.h"
 #include "test_camelia.h"
+#include "test_clefia.h"
 #include "test2.h"
 #include "../benchmarks/benchmarks_main.h"
 
 
 int main(){
-		int aesResult = testAESAll();
-		int misty1Result = testMisty1All();
-		int desResult = testDESAll();
-		int cameliaResult = testCameliaAll();
+		//int aesResult = testAESAll();
+		//int misty1Result = testMisty1All();
+		//int desResult = testDESAll();
+		//int cameliaResult = testCameliaAll();
+		int clefiaResult = testClefiaAll();
 
-		int endResult = aesResult && misty1Result && desResult && cameliaResult;
+		int endResult = clefiaResult;/*aesResult && misty1Result && desResult && cameliaResult && clefiaResult*/;
 
 		if(endResult != 0){
 			printf("ALL TEST PASSED SUCCESSEFULLY\n");

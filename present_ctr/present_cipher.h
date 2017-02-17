@@ -35,7 +35,8 @@ static cl_int ret;
 static FILE *fp;
 static char clFileName[] = "present_ctr/present_ctr.cl";
 
-static char* source_str;
+static char* source_str = NULL;
+static size_t source_size;
 
 cl_event present_memory_encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
 cl_event present_speed_encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);

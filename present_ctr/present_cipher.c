@@ -13,13 +13,12 @@ static void loadClProgramSource(){
 	fprintf(stderr, "Failed to load kernel.\n");
 	exit(1);
 	}
-	source_str = (char*)malloc(MAX_SOURCE_SIZE+1);
-	fread(source_str, 1, MAX_SOURCE_SIZE, fp);
-	strcat(source_str, "\0");
+ source_str = (char*)malloc(MAX_SOURCE_SIZE);
+	source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
 	fclose(fp);
 }
 /* set up the opencl parameters */
-static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName, char* source_str, long source_size, long bufferLenght){
+static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName,long bufferLenght){
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
 	// allocate memory, get list of platforms
@@ -112,7 +111,7 @@ static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName, cha
 	ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&out);
 }
 
-static void finalizeExecution(char* source_str, uint64_t* inputText){
+static void finalizeExecution(uint64_t* inputText){
 	printf("Releasing resources..\n");
 	/* Finalization */
 	ret = clFlush(command_queue);
@@ -177,9 +176,8 @@ cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, siz
 		loadClProgramSource();
 	}
 
-	long source_size = strlen(source_str);
         
-        setUpOpenCl(inputText, subkey, modality, source_str, source_size, lenght);
+        setUpOpenCl(inputText, subkey, modality,lenght);
 
         size_t global_item_size = lenght;
 	/* Execute OpenCL Kernel instances */
@@ -195,7 +193,7 @@ cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, siz
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
 	lenght * sizeof(uint64_t),output, 0, NULL, NULL);
 	
-	finalizeExecution(source_str, inputText);
+	finalizeExecution(inputText);
 	
 	return event;
 }

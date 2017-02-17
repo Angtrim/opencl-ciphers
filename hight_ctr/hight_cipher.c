@@ -2,15 +2,6 @@
 
 #define MAX_SOURCE_SIZE (0x100000)
 
-/*
-   This function adds two string pointers together
-*/
-static char* stradd(const char* a, const char* b){
-	size_t len = strlen(a) + strlen(b);
-	char *ret = (char*)malloc(len * sizeof(char) + 1);
-	*ret = '\0';
-	return strcat(strcat(ret, a) ,b);
-} 
 
 static void loadClProgramSource(){
 	/* Load the source code containing the kernel*/
@@ -20,11 +11,11 @@ static void loadClProgramSource(){
 	exit(1);
 	}
 	source_str = (char*)malloc(MAX_SOURCE_SIZE);
-	fread(source_str, 1, MAX_SOURCE_SIZE, fp);
+	source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
 	fclose(fp);
 }
 
-static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* WK, uint8_t* SK, char* source_str, long source_size, long bufferLenght){
+static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* WK, uint8_t* SK, long bufferLenght){
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
 	// allocate memory, get list of platforms
@@ -110,7 +101,7 @@ static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* WK, uint8_t*
 	ret = clSetKernelArg(kernel, 3, sizeof(cl_mem), (void *)&out);
 }
 
-static void finalizeExecution(char* source_str, uint64_t* inputText){
+static void finalizeExecution( uint64_t* inputText){
 	printf("Releasing resources..\n");
 	/* Finalization */
 	ret = clFlush(command_queue);
@@ -149,7 +140,6 @@ cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 		loadClProgramSource();
 	}
     
-	long source_size = strlen(source_str);
 
 	uint8_t SK[128];
  	uint8_t WK[8];
@@ -163,7 +153,7 @@ cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 		modality = "hightCipher";
 	}
 	
-	setUpOpenCl(inputText, modality, WK, SK, source_str, source_size, fileInfo.lenght);
+	setUpOpenCl(inputText, modality, WK, SK, fileInfo.lenght);
 	
 	size_t global_item_size = fileInfo.lenght;
 	/* Execute OpenCL Kernel instances */
@@ -179,7 +169,7 @@ cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
 	fileInfo.lenght * sizeof(uint64_t),output, 0, NULL, NULL);
 	
-	finalizeExecution(source_str, inputText);
+	finalizeExecution(inputText);
 	
 	return event;
 }	

@@ -37,7 +37,8 @@ static cl_int ret;
 static FILE *fp;
 static char clFileName[] = "misty1_ctr/misty1_ctr.cl";
 
-static char* source_str;
+static char* source_str = NULL;
+static size_t source_size;
 cl_event misty1Encrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType);
 cl_event misty1CtrEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType);
 cl_event misty1CtrDecrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType);

@@ -49,7 +49,8 @@ static cl_int ret;
 static FILE *fp;
 static char clFileName[] = "aes_ctr/aes_ctr.cl";
 
-static char* source_str;
+static char* source_str = NULL;
+static size_t source_size;
 
 cl_event aes128CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
 cl_event aes192CtrEncrypt(char* fileName, word* key, uint8_t* output,size_t local_item_size, char* deviceType);
