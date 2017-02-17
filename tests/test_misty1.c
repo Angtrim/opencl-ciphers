@@ -9,9 +9,6 @@
 
 #include "../cipher_utils.h"
 
-//includes for testing normal encryption
-#include "../aes_test_vect.h"
-
 #define MAX_LOCAL_SIZE 64
 
 #define CPU_DEVICE "CPU"
@@ -118,6 +115,7 @@ int testMisty1CtrGPU(){
 
 	free(misty1Ciphertext);
 	free(misty1Plaintext);
+	free(fileInfo.filePointer);
 	remove("tests/misty1_ciphertext");
 	return success;
 }

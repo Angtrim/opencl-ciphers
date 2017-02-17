@@ -359,11 +359,11 @@ void G(__private uint* X, __private uint* G_OUT) {
   G_OUT[0] = SS0[X0] ^ SS1[X1] ^ SS2[X2] ^ SS3[X3];
 }
 
-void F(__global uint *Ki, __private ulong* R, __private ulong* F_OUT) {
+void F(__global uint *Ki, __private ulong* R, __private ulong* F_OUT, int offset) {
   uint R0 = R[0] >> 32;
   uint R1 = R[0] & 0xffffffff;
-  uint Ki0 = Ki[0];
-  uint Ki1 = Ki[1];
+  uint Ki0 = Ki[2*offset];
+  uint Ki1 = Ki[(2*offset)+1];
 
   __private uint G_OUT1[1];
   __private uint G_OUT2[1];
@@ -412,11 +412,11 @@ void G_OLD(__private uint* X, __private uint* G_OLD_OUT) {
   G_OLD_OUT[0] = (Z3 & 0xff) << 24 | (Z2 & 0xff) << 16 | (Z1 & 0xff) << 8 | (Z0 & 0xff);
 }
 
-void F_OLD(__global uint *Ki, __private ulong* R, __private ulong* F_OLD_OUT) {
+void F_OLD(__global uint *Ki, __private ulong* R, __private ulong* F_OLD_OUT, int offset) {
   uint R0 = R[0] >> 32;
   uint R1 = R[0] & 0xffffffff;
-  uint Ki0 = Ki[0];
-  uint Ki1 = Ki[1];
+  uint Ki0 = Ki[2*offset];
+  uint Ki1 = Ki[(2*offset)+1];
 
   __private uint G_OLD_OUT1[1];
   __private uint G_OLD_OUT2[1];
@@ -451,7 +451,7 @@ void F_OLD(__global uint *Ki, __private ulong* R, __private ulong* F_OLD_OUT) {
   F_OLD_OUT[0] = ((ulong)oR0 << 32) | oR1;
 }
 
-void seed_old_encrypt(__private ulong *C, __private ulong *P, __global uint K[16][2]) {
+void seed_old_encrypt(__private ulong *C, __private ulong *P, __global uint *K) {
   
   __private ulong L[1];
   L[0] = P[0];
@@ -463,12 +463,12 @@ void seed_old_encrypt(__private ulong *C, __private ulong *P, __global uint K[16
   #pragma unroll
   for (int i = 0; i < 15; ++i) {
     ulong T = R[0];
-    F_OLD(K[i], R, F_OLD_OUT);
+    F_OLD(K, R, F_OLD_OUT, i);
     R[0] = L[0] ^ F_OLD_OUT[0];
     L[0] = T;
   }
 
-  F_OLD(K[15], R, F_OLD_OUT);
+  F_OLD(K, R, F_OLD_OUT, 15);
   L[0] = L[0] ^ F_OLD_OUT[0];
   //R = R;
 
@@ -476,7 +476,7 @@ void seed_old_encrypt(__private ulong *C, __private ulong *P, __global uint K[16
   C[1] = R[0];
 }
 
-void seed_encrypt(__private ulong *C, __private ulong *P, __global uint K[16][2]) {
+void seed_encrypt(__private ulong *C, __private ulong *P, __global uint *K) {
   
   __private ulong L[1];
   L[0] = P[0];
@@ -488,12 +488,12 @@ void seed_encrypt(__private ulong *C, __private ulong *P, __global uint K[16][2]
   #pragma unroll
   for (int i = 0; i < 15; ++i) {
     ulong T = R[0];
-    F(K[i], R, F_OUT);
+    F(K, R, F_OUT, i);
     R[0] = L[0] ^ F_OUT[0];
     L[0] = T;
   }
 
-  F(K[15], R, F_OUT);
+  F(K, R, F_OUT, 15);
   L[0] = L[0] ^ F_OUT[0];
   //R = R;
 
@@ -501,7 +501,7 @@ void seed_encrypt(__private ulong *C, __private ulong *P, __global uint K[16][2]
   C[1] = R[0];
 }
 
-__kernel void seed_oldCipher(__global ulong *C, __global ulong *P, __global uint* K) {
+__kernel void seed_oldCipher(__global ulong *C, __global ulong *P, __global uint *K) {
 
   __private int gid;
   gid = get_global_id(0);
@@ -519,8 +519,8 @@ __kernel void seed_oldCipher(__global ulong *C, __global ulong *P, __global uint
   C[2*gid+1] = outCipher[1];
 }
 
-__kernel void seedCipher(__global ulong *C, __global ulong *P, __global uint* K) {
-  
+__kernel void seedCipher(__global ulong *C, __global ulong *P, __global uint *K) {
+
   __private int gid;
   gid = get_global_id(0);
 
@@ -532,12 +532,12 @@ __kernel void seedCipher(__global ulong *C, __global ulong *P, __global uint* K)
   
   /* encryption */
   seed_encrypt(outCipher, _P, K);
-  
+
   C[2*gid] = outCipher[0];
   C[2*gid+1] = outCipher[1];
 }
 
-__kernel void seed_oldCtrCipher(__global ulong *C, __global ulong *P, __global uint* K) {
+__kernel void seed_oldCtrCipher(__global ulong *C, __global ulong *P, __global uint *K) {
 
   __private int gid;
   gid = get_global_id(0);
@@ -556,7 +556,7 @@ __kernel void seed_oldCtrCipher(__global ulong *C, __global ulong *P, __global u
   C[2*gid+1] = outCipher[1] ^ P[2*gid+1];
 }
 
-__kernel void seedCtrCipher(__global ulong *C, __global ulong *P, __global uint* K) {
+__kernel void seedCtrCipher(__global ulong *C, __global ulong *P, __global uint *K) {
   
   __private int gid;
   gid = get_global_id(0);
@@ -574,5 +574,3 @@ __kernel void seedCtrCipher(__global ulong *C, __global ulong *P, __global uint*
   C[2*gid] = outCipher[0] ^ P[2*gid];
   C[2*gid+1] = outCipher[1] ^ P[2*gid+1];
 }
-
-

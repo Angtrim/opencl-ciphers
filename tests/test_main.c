@@ -9,7 +9,9 @@ int main(){
 
 		int misty1Result = testMisty1All();
 
-		int endResult = aesResult&&misty1Result;
+		int seedResult = testSeedAll();
+
+		int endResult = aesResult&&misty1Result&&seedResult;
 
 		if(endResult != 0){
 			printf("\nALL TEST PASSED SUCCESSEFULLY\n");

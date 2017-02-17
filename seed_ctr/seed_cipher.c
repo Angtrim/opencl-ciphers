@@ -1,6 +1,6 @@
 #include "seed_cipher.h"
 
-#define MAX_SOURCE_SIZE (0x100000)
+#define MAX_SOURCE_SIZE (0x1000000)
 
 #define SEED_OLD "SEED_OLD"
 #define SEED "SEED"
@@ -57,8 +57,8 @@ static void setUpOpenCl(uint64_t* inputText, uint32_t* Ki, char* kernelName, cha
 
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
-	_Ki = clCreateBuffer(context, CL_MEM_READ_WRITE, 32 * sizeof(uint32_t), NULL, &ret); 
-        out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
+	_Ki = clCreateBuffer(context, CL_MEM_READ_WRITE, 32 * sizeof(uint32_t), NULL, &ret);
+    out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
 
 
 	/* Copy input data to Memory Buffer */
@@ -133,10 +133,10 @@ cl_event seed_encryption(char* fileName, uint32_t* Key, uint64_t* output, size_t
 	
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
 
-        //plaintext divided in blocks of uint64_t
-        uint64_t* inputText = fileInfo.filePointer;
-        //number of blocks 
-        long lenght = fileInfo.lenght;
+    //plaintext divided in blocks of uint64_t
+    uint64_t* inputText = fileInfo.filePointer;
+    //number of blocks 
+    long lenght = fileInfo.lenght;
 	
 	uint32_t Ki[32];
 	
@@ -170,9 +170,10 @@ cl_event seed_encryption(char* fileName, uint32_t* Key, uint64_t* output, size_t
 
 	long source_size = strlen(source_str);
         
-        setUpOpenCl(inputText, Ki, modality, source_str, source_size, lenght);
+    setUpOpenCl(inputText, Ki, modality, source_str, source_size, lenght);
 
-        size_t global_item_size = lenght/2;
+    size_t global_item_size = lenght/2;
+
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
 	if(ret != CL_SUCCESS){

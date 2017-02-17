@@ -23,20 +23,20 @@ void benchMisty1Ctr(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 		device = "CPU";
 	}
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize + (fileSize%8);
 	char* fileName = "benchmarks/benchMisty1";
 	buildFileOfZeroes(fileName,fileSize);
-	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
+	uint64_t* misty1Ciphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = misty1CtrEncrypt(fileName, Misty1Key, aesCiphertext, 1, device);
+	event = misty1CtrEncrypt(fileName, Misty1Key, misty1Ciphertext, 1, device);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
 	total_time = time_end-time_start;
 	printf("MISTY1 CTR execution time is: %0.3f ms\n",total_time/1000000.0);
-	free(aesCiphertext);
+	free(misty1Ciphertext);
 	remove(fileName);
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
