@@ -1,6 +1,6 @@
 #include "clefia_cipher.h"
 
-#define MAX_SOURCE_SIZE (0x1000000)
+#define MAX_SOURCE_SIZE (0x10000000)
 
 
 static void loadClProgramSource(){
