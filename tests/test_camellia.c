@@ -2,7 +2,7 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include "test_utils.h"
-#include "test_camelia.h"
+#include "test_camellia.h"
 #define CPU_DEVICE "CPU"
 #define GPU_DEVICE "GPU"
 
@@ -33,7 +33,7 @@ static void writeOutputToFileUint64(char* outFileName, uint64_t* output, long le
 	fclose(fp);
 }
 
-int testCamelia128CPU(){
+int testCamellia128CPU(){
 	int success = 1;
 	char* fileName = "camTest";
 	uint64_t out[2];
@@ -46,7 +46,7 @@ int testCamelia128CPU(){
 	return success;
 }
 
-int testCamelia128GPU(){
+int testCamellia128GPU(){
 	int success = 1;
 	char* fileName = "camTest";
 	uint64_t out[2];
@@ -59,7 +59,7 @@ int testCamelia128GPU(){
 	return success;
 }
 
-int testCamelia192CPU(){
+int testCamellia192CPU(){
 	int success = 1;
 	char* fileName = "camTest";
 	uint64_t out[2];
@@ -72,7 +72,7 @@ int testCamelia192CPU(){
 	return success;
 }
 
-int testCamelia192GPU(){
+int testCamellia192GPU(){
 	int success = 1;
 	char* fileName = "camTest";
 	uint64_t out[2];
@@ -86,7 +86,7 @@ int testCamelia192GPU(){
 }
 
 
-int testCamelia256CPU(){
+int testCamellia256CPU(){
 	int success = 1;
 	char* fileName = "camTest";
 	uint64_t out[2];
@@ -99,7 +99,7 @@ int testCamelia256CPU(){
 	return success;
 }
 
-int testCamelia256GPU(){
+int testCamellia256GPU(){
 	int success = 1;
 	char* fileName = "camTest";
 	uint64_t out[2];
@@ -112,7 +112,7 @@ int testCamelia256GPU(){
 	return success;
 }
 
-int testCameliaCTR128CPU(){
+int testCamelliaCTR128CPU(){
 	int success = 1;
 	char* fileName = "camTest1";
 	char* fileNameOut = "camTestOut1";
@@ -131,7 +131,7 @@ int testCameliaCTR128CPU(){
 }
 
 
-int testCameliaCTR128GPU(){
+int testCamelliaCTR128GPU(){
 	int success = 1;
 	char* fileName = "camTest";
 	char* fileNameOut = "camTestOut";
@@ -150,7 +150,7 @@ int testCameliaCTR128GPU(){
 }
 
 
-int testCameliaCTR192CPU(){
+int testCamelliaCTR192CPU(){
 	int success = 1;
 	char* fileName = "camTest";
 	char* fileNameOut = "camTestOut";
@@ -169,7 +169,7 @@ int testCameliaCTR192CPU(){
 }
 
 
-int testCameliaCTR192GPU(){
+int testCamelliaCTR192GPU(){
 	int success = 1;
 	char* fileName = "camTest";
 	char* fileNameOut = "camTestOut";
@@ -188,7 +188,7 @@ int testCameliaCTR192GPU(){
 }
 
 
-int testCameliaCTR256CPU(){
+int testCamelliaCTR256CPU(){
 	int success = 1;
 	char* fileName = "camTest";
 	char* fileNameOut = "camTestOut";
@@ -207,7 +207,7 @@ int testCameliaCTR256CPU(){
 }
 
 
-int testCameliaCTR256GPU(){
+int testCamelliaCTR256GPU(){
 	int success = 1;
 	char* fileName = "camTest";
 	char* fileNameOut = "camTestOut";
@@ -225,110 +225,156 @@ int testCameliaCTR256GPU(){
 	return success;
 }
 
-
-
-
-
-int testCameliaAll(){
+int testCamellia128(){
 	int result = 1;
-	log("--- --- Starting Camelia tests");
+	log("\n--- --- Starting CAMELLIA 128 tests");
 	
-	log("--- Test Camelia 128 CPU starting");
-	if(testCamelia128CPU() == 1){
-		log("--- Test Camelia 128 CPU passed");
+	log("\n\n--- Test CAMELLIA 128 CPU starting");
+	if(testCamellia128CPU() == 1){
+		log("--- Test CAMELLIA 128 CPU passed");
 	}else{
-		log("--- Test Camelia 128 CPU FAILED!");
+		log("--- Test CAMELLIA 128 CPU FAILED!");
 		result = 0;
 	}
 
-	log("--- Test Camelia 128 GPU starting");
-	if(testCamelia128GPU() == 1){
-		log("--- Test Camelia 128 GPU passed");
+	log("\n\n--- Test CAMELLIA 128 GPU starting");
+	if(testCamellia128GPU() == 1){
+		log("--- Test CAMELLIA 128 GPU passed");
 	}else{
-		log("--- Test Camelia 128 GPU FAILED!");
+		log("--- Test CAMELLIA 128 GPU FAILED!");
 		result = 0;
 	}
 
-	log("--- Test Camelia 192 CPU starting");
-	if(testCamelia192CPU() == 1){
-		log("--- Test Camelia 192 CPU passed");
+	log("\n\n--- Test CAMELLIA CTR 128 CPU starting");
+	if(testCamelliaCTR128CPU() == 1){
+		log("--- Test CAMELLIA CTR 128 CPU passed");
 	}else{
-		log("--- Test Camelia 192 CPU FAILED!");
+		log("--- Test CAMELLIA CTR 128 CPU FAILED!");
 		result = 0;
 	}
 
-	log("--- Test Camelia 192 GPU starting");
-	if(testCamelia192GPU() == 1){
-		log("--- Test Camelia 192 GPU passed");
+	log("\n\n--- Test CAMELLIA CTR 128 GPU starting");
+	if(testCamelliaCTR128GPU() == 1){
+		log("--- Test CAMELLIA CTR 128 GPU passed");
 	}else{
-		log("--- Test Camelia 192 GPU FAILED!");
+		log("--- Test CAMELLIA CTR 128 GPU FAILED!");
 		result = 0;
 	}
 
-	log("--- Test Camelia 256 CPU starting");
-	if(testCamelia256CPU() == 1){
-		log("--- Test Camelia 256 CPU passed");
-	}else{
-		log("--- Test Camelia 256 CPU FAILED!");
-		result = 0;
-	}
+	if(result != 0){
+        log("\n--- --- All CAMELLIA 128 test passed");
+    }else{
+        log("\n--- --- Some CAMELLIA 128 Test FAILED");
+    }
 
-	log("--- Test Camelia 256 GPU starting");
-	if(testCamelia256GPU() == 1){
-		log("--- Test Camelia 256 GPU passed");
-	}else{
-		log("--- Test Camelia 256 GPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test Camelia CTR 128 CPU starting");
-	if(testCameliaCTR128CPU() == 1){
-		log("--- Test Camelia CTR 128 CPU passed");
-	}else{
-		log("--- Test Camelia CTR 128 CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test Camelia CTR 128 GPU starting");
-	if(testCameliaCTR128GPU() == 1){
-		log("--- Test Camelia CTR 128 GPU passed");
-	}else{
-		log("--- Test Camelia CTR 128 GPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test Camelia CTR 192 CPU starting");
-	if(testCameliaCTR192CPU() == 1){
-		log("--- Test Camelia CTR 192 CPU passed");
-	}else{
-		log("--- Test Camelia CTR 192 CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test Camelia CTR 192 GPU starting");
-	if(testCameliaCTR192GPU() == 1){
-		log("--- Test Camelia CTR 192 GPU passed");
-	}else{
-		log("--- Test Camelia CTR 192 GPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test Camelia CTR 256 CPU starting");
-	if(testCameliaCTR256CPU() == 1){
-		log("--- Test Camelia CTR 256 CPU passed");
-	}else{
-		log("--- Test Camelia CTR 256 CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test Camelia CTR 256 GPU starting");
-	if(testCameliaCTR256GPU() == 1){
-		log("--- Test Camelia CTR 256 GPU passed");
-	}else{
-		log("--- Test Camelia CTR 256 GPU FAILED!");
-		result = 0;
-	}
 	return result;
+}
+
+int testCamellia192(){
+	int result = 1;
+
+	log("\n--- --- Starting CAMELLIA 192 tests");
+
+	log("\n\n--- Test CAMELLIA 192 CPU starting");
+	if(testCamellia192CPU() == 1){
+		log("--- Test CAMELLIA 192 CPU passed");
+	}else{
+		log("--- Test CAMELLIA 192 CPU FAILED!");
+		result = 0;
+	}
+
+	log("\n\n--- Test CAMELLIA 192 GPU starting");
+	if(testCamellia192GPU() == 1){
+		log("--- Test CAMELLIA 192 GPU passed");
+	}else{
+		log("--- Test CAMELLIA 192 GPU FAILED!");
+		result = 0;
+	}
+
+	log("\n\n--- Test CAMELLIA CTR 192 CPU starting");
+	if(testCamelliaCTR192CPU() == 1){
+		log("--- Test CAMELLIA CTR 192 CPU passed");
+	}else{
+		log("--- Test CAMELLIA CTR 192 CPU FAILED!");
+		result = 0;
+	}
+
+	log("\n\n--- Test CAMELLIA CTR 192 GPU starting");
+	if(testCamelliaCTR192GPU() == 1){
+		log("--- Test CAMELLIA CTR 192 GPU passed");
+	}else{
+		log("--- Test CAMELLIA CTR 192 GPU FAILED!");
+		result = 0;
+	}
+
+	if(result != 0){
+        log("\n--- --- All CAMELLIA 192 test passed");
+    }else{
+        log("\n--- --- Some CAMELLIA 192 Test FAILED");
+    }
+
+    return result;
+}
+
+int testCamellia256(){
+	int result = 1;
+
+	log("\n--- --- Starting CAMELLIA 256 tests");
+
+	log("\n\n--- Test CAMELLIA 256 CPU starting");
+	if(testCamellia256CPU() == 1){
+		log("--- Test CAMELLIA 256 CPU passed");
+	}else{
+		log("--- Test CAMELLIA 256 CPU FAILED!");
+		result = 0;
+	}
+
+	log("\n\n--- Test CAMELLIA 256 GPU starting");
+	if(testCamellia256GPU() == 1){
+		log("--- Test CAMELLIA 256 GPU passed");
+	}else{
+		log("--- Test CAMELLIA 256 GPU FAILED!");
+		result = 0;
+	}
+
+	log("\n\n--- Test CAMELLIA CTR 256 CPU starting");
+	if(testCamelliaCTR256CPU() == 1){
+		log("--- Test CAMELLIA CTR 256 CPU passed");
+	}else{
+		log("--- Test CAMELLIA CTR 256 CPU FAILED!");
+		result = 0;
+	}
+
+	log("\n\n--- Test CAMELLIA CTR 256 GPU starting");
+	if(testCamelliaCTR256GPU() == 1){
+		log("--- Test CAMELLIA CTR 256 GPU passed");
+	}else{
+		log("--- Test CAMELLIA CTR 256 GPU FAILED!");
+		result = 0;
+	}
+
+	if(result != 0){
+        log("\n--- --- All CAMELLIA 256 test passed");
+    }else{
+        log("\n--- --- Some CAMELLIA 256 Test FAILED");
+    }
+
+	return result;
+}
+
+
+int testCamelliaAll(){
+	
+	int tCamellia128 = testCamellia128();
+	int tCamellia192 = testCamellia192();
+	int tCamellia256 = testCamellia192();
+	int result = tCamellia128&&tCamellia192&&tCamellia256;
+	if(result){
+		log("\n--- --- --- ALL CAMELLIA TEST PASSED");
+	}else{
+		log("\n--- --- --- TEST CAMELLIA FAILED");
+	}
+	return result;	
 }
 
 

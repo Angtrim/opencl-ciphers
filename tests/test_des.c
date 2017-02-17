@@ -37,7 +37,7 @@ static void writeOutputToFile(char* outFileName,uint8_t* output, long lenght){
 }
 
 int testDesCPU(){
-	  	int success = 1;
+  	int success = 1;
     uint8_t DES3_out[8];
     char* fileName = "desTest";
     writeOutputToFile(fileName,DES3_init,8);
@@ -50,7 +50,7 @@ int testDesCPU(){
 }
 
 int testDesGPU(){
-	  	int success = 1;
+  	int success = 1;
     uint8_t DES3_out[8];
     char* fileName = "desTest";
     writeOutputToFile(fileName,DES3_init,8);
@@ -63,7 +63,7 @@ int testDesGPU(){
 }
 
 int testDes2CPU(){
-	  	int success = 1;
+  	int success = 1;
     uint8_t DES3_out[8];
     char* fileName = "desTest";
     writeOutputToFile(fileName,DES3_init,8);
@@ -76,7 +76,7 @@ int testDes2CPU(){
 }
 
 int testDes2GPU(){
-	  	int success = 1;
+  	int success = 1;
     uint8_t DES3_out[8];
     char* fileName = "desTest";
     writeOutputToFile(fileName,DES3_init,8);
@@ -89,7 +89,7 @@ int testDes2GPU(){
 }
 
 int testDes3CPU(){
-	  	int success = 1;
+  	int success = 1;
     uint8_t DES3_out[8];
     char* fileName = "desTest";
     writeOutputToFile(fileName,DES3_init,8);
@@ -102,7 +102,7 @@ int testDes3CPU(){
 }
 
 int testDes3GPU(){
-	  	int success = 1;
+  	int success = 1;
     uint8_t DES3_out[8];
     char* fileName = "desTest";
     writeOutputToFile(fileName,DES3_init,8);
@@ -116,7 +116,7 @@ int testDes3GPU(){
 
 
 int testDesCTRCPU(){
-	  	int success = 1;
+  	int success = 1;
     uint8_t DES3_out[8];
     uint8_t DES3_out_dec[8];
     char* fileName = "desTest";
@@ -134,7 +134,7 @@ int testDesCTRCPU(){
 }
 
 int testDesCTRGPU(){
-	  	int success = 1;
+  	int success = 1;
     uint8_t DES3_out[8];
     uint8_t DES3_out_dec[8];
     char* fileName = "desTest";
@@ -152,7 +152,7 @@ int testDesCTRGPU(){
 }
 
 int testDes2CTRCPU(){
-	  	int success = 1;
+  	int success = 1;
     uint8_t DES3_out[8];
     uint8_t DES3_out_dec[8];
     char* fileName = "desTest";
@@ -170,7 +170,7 @@ int testDes2CTRCPU(){
 }
 
 int testDes2CTRGPU(){
-	  	int success = 1;
+  	int success = 1;
     uint8_t DES3_out[8];
     uint8_t DES3_out_dec[8];
     char* fileName = "desTest";
@@ -188,7 +188,7 @@ int testDes2CTRGPU(){
 }
 
 int testDes3CTRCPU(){
-	  	int success = 1;
+  	int success = 1;
     uint8_t DES3_out[8];
     uint8_t DES3_out_dec[8];
     char* fileName = "desTest";
@@ -206,7 +206,7 @@ int testDes3CTRCPU(){
 }
 
 int testDes3CTRGPU(){
-	  	int success = 1;
+  	int success = 1;
     uint8_t DES3_out[8];
     uint8_t DES3_out_dec[8];
     char* fileName = "desTest";
@@ -223,108 +223,152 @@ int testDes3CTRGPU(){
     return success;
 }
 
+int testDes(){
+    int result = 1;
+    log("\n--- --- Starting DES tests");
+    
+    log("\n\n--- Test DES CPU starting");
+    if(testDesCPU() == 1){
+        log("--- Test DES CPU passed");
+    }else{
+        log("--- Test DES CPU FAILED!");
+        result = 0;
+    }
+
+    log("\n\n--- Test DES GPU starting");
+    if(testDesGPU() == 1){
+        log("--- Test DES GPU passed");
+    }else{
+        log("--- Test DES GPU FAILED!");
+        result = 0;
+    }
+
+    log("\n\n--- Test DES CTR CPU starting");
+    if(testDesCTRCPU() == 1){
+        log("--- Test DES CTR CPU passed");
+    }else{
+        log("--- Test DES CTR CPU FAILED!");
+        result = 0;
+    }
+
+    log("\n\n--- Test DES CTR GPU starting");
+    if(testDesCTRGPU() == 1){
+        log("--- Test DES CTR GPU passed");
+    }else{
+        log("--- Test DES CTR GPU FAILED!");
+        result = 0;
+    }
+
+    if(result != 0){
+        log("\n--- --- All DES test passed");
+    }else{
+        log("\n--- --- Some DES Test FAILED");
+    }
+
+    return result;
+}
+
+int testDes2(){
+    int result = 1;
+
+    log("\n\n--- Test DES2 CPU starting");
+    if(testDes2CPU() == 1){
+        log("--- Test DES2 CPU passed");
+    }else{
+        log("--- Test DES2 CPU FAILED!");
+        result = 0;
+    }
+
+    log("\n\n--- Test DES2 GPU starting");
+    if(testDes2GPU() == 1){
+        log("--- Test DES2 GPU passed");
+    }else{
+        log("--- Test DES2 GPU FAILED!");
+        result = 0;
+    }
+
+    log("\n\n--- Test DES2 CTR CPU starting");
+    if(testDes2CTRCPU() == 1){
+        log("--- Test DES2 CTR CPU passed");
+    }else{
+        log("--- Test DES2 CTR CPU FAILED!");
+        result = 0;
+    }
+
+    log("\n\n--- Test DES2 CTR GPU starting");
+    if(testDes2CTRGPU() == 1){
+        log("--- Test DES2 CTR GPU passed");
+    }else{
+        log("--- Test DES2 CTR GPU FAILED!");
+        result = 0;
+    }
+
+    if(result != 0){
+        log("\n--- --- All DES2 test passed");
+    }else{
+        log("\n--- --- Some DES2 Test FAILED");
+    }
+
+    return result;
+}
+
+int testDes3(){
+    int result = 1;
+
+    log("\n\n--- Test DES3 CPU starting");
+    if(testDes3CPU() == 1){
+        log("--- Test DES3 CPU passed");
+    }else{
+        log("--- Test DES3 CPU FAILED!");
+        result = 0;
+    }
+
+    log("\n\n--- Test DES3 GPU starting");
+    if(testDes3GPU() == 1){
+        log("--- Test DES3 GPU passed");
+    }else{
+        log("--- Test DES3 GPU FAILED!");
+        result = 0;
+    }
+
+    log("\n\n--- Test DES3 CTR CPU starting");
+    if(testDes3CTRCPU() == 1){
+        log("--- Test DES3 CTR CPU passed");
+    }else{
+        log("--- Test DES3 CTR CPU FAILED!");
+        result = 0;
+    }
+
+    log("\n\n--- Test DES3 CTR GPU starting");
+    if(testDes3CTRGPU() == 1){
+        log("--- Test DES3 CTR GPU passed");
+    }else{
+        log("--- Test DES3 CTR GPU FAILED!");
+        result = 0;
+    }
+
+    if(result != 0){
+        log("\n--- --- All DES3 test passed");
+    }else{
+        log("\n--- --- Some DES3 Test FAILED");
+    }
+
+    return result;
+}
 
 
 int testDESAll(){
-	int result = 1;
-	log("--- --- Starting DES tests");
-	
-	log("--- Test DES CPU starting");
-	if(testDesCPU() == 1){
-		log("--- Test DES CPU passed");
-	}else{
-		log("--- Test DES CPU FAILED!");
-		result = 0;
-	}
 
-	log("--- Test DES GPU starting");
-	if(testDesGPU() == 1){
-		log("--- Test DES GPU passed");
-	}else{
-		log("--- Test DES GPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test DES2 CPU starting");
-	if(testDes2CPU() == 1){
-		log("--- Test DES2 CPU passed");
-	}else{
-		log("--- Test DES2 CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test DES2 GPU starting");
-	if(testDes2GPU() == 1){
-		log("--- Test DES2 GPU passed");
-	}else{
-		log("--- Test DES2 GPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test DES3 CPU starting");
-	if(testDes3CPU() == 1){
-		log("--- Test DES3 CPU passed");
-	}else{
-		log("--- Test DES3 CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test DES3 GPU starting");
-	if(testDes3GPU() == 1){
-		log("--- Test DES3 GPU passed");
-	}else{
-		log("--- Test DES3 GPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test DES CTR CPU starting");
-	if(testDesCTRCPU() == 1){
-		log("--- Test DES CTR CPU passed");
-	}else{
-		log("--- Test DES CTR CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test DES CTR GPU starting");
-	if(testDesCTRGPU() == 1){
-		log("--- Test DES CTR GPU passed");
-	}else{
-		log("--- Test DES CTR GPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test DES2 CTR CPU starting");
-	if(testDes2CTRCPU() == 1){
-		log("--- Test DES2 CTR CPU passed");
-	}else{
-		log("--- Test DES2 CTR CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test DES2 CTR GPU starting");
-	if(testDes2CTRGPU() == 1){
-		log("--- Test DES2 CTR GPU passed");
-	}else{
-		log("--- Test DES2 CTR GPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test DES3 CTR CPU starting");
-	if(testDes3CTRCPU() == 1){
-		log("--- Test DES3 CTR CPU passed");
-	}else{
-		log("--- Test DES3 CTR CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test DES3 CTR GPU starting");
-	if(testDes3CTRGPU() == 1){
-		log("--- Test DES3 CTR GPU passed");
-	}else{
-		log("--- Test DES3 CTR GPU FAILED!");
-		result = 0;
-	}
-	return result;
+	int tDES = testDes();
+    int tDES2 = testDes2();
+    int tDES3 = testDes3();   
+    int result = tDES&&tDES2&&tDES3;
+    if(result){
+        log("--- --- --- ALL DES TEST PASSED");
+    }else{
+        log("--- --- --- TEST DES FAILED");
+    }
+    return result;
 	 
 }
 
