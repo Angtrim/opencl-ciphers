@@ -6,6 +6,8 @@
 #include "benchmarks_misty1.h"
 #include "benchmarks_seed.h"
 #include "benchmarks_present.h"
+#include "benchmarks_hight.h"
+#include "benchmarks_clefia.h"
 
 int mainBench();
 

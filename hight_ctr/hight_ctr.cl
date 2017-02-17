@@ -28,7 +28,6 @@ void hight_encrypt(__private ulong *P, __global uchar *WK, __global uchar *SK, _
 
   //cipher round
   X0[0] = byte(P[0], 0) + WK[0];
-  printf("X0: %x\n", X0[0]);
   X2[0] = byte(P[0], 2) ^ WK[1];
   X4[0] = byte(P[0], 4) + WK[2];
   X6[0] = byte(P[0], 6) ^ WK[3];
@@ -86,9 +85,6 @@ void hight_encrypt(__private ulong *P, __global uchar *WK, __global uchar *SK, _
   uchar C7 = X7[0];
 
   out[0] = concat64(C7, C6, C5, C4, C3, C2, C1, C0);
-
-  printf("C:\n");
-  printf("%16llx", out[0]);
 }
 
 __kernel void hightCipher(__global ulong* P, __global uchar *WK, __global uchar *SK, __global ulong* C){
