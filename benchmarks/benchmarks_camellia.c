@@ -50,6 +50,7 @@ void benchCam128Multiple(int fileSize,int* localSize, int numOfLocalSizes, int o
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchCam128(fileSize,localSize[i],onGPU,&infos[i]);
 	}
+	saveDataToFile("CAM128",infos,numOfLocalSizes);
 }
 
 void benchCam192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
@@ -86,6 +87,7 @@ void benchCam192Multiple(int fileSize,int* localSize, int numOfLocalSizes, int o
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchCam192(fileSize,localSize[i],onGPU,&infos[i]);
 	}
+	saveDataToFile("CAM192",infos,numOfLocalSizes);
 }
 
 void benchCam256(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
@@ -122,4 +124,5 @@ void benchCam256Multiple(int fileSize,int* localSize, int numOfLocalSizes, int o
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchCam256(fileSize,localSize[i],onGPU,&infos[i]);
 	}
+	saveDataToFile("CAM256",infos,numOfLocalSizes);
 }

@@ -73,6 +73,7 @@ void benchPresentMemoryMultiple(int fileSize,int* localSize, int numOfLocalSizes
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchPresentMemoryCtr(fileSize,localSize[i],onGPU,&infos[i]);
 	}
+	saveDataToFile("PresMem",infos,numOfLocalSizes);
 }
 
 void benchPresentSpeedMultiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
@@ -80,4 +81,5 @@ void benchPresentSpeedMultiple(int fileSize,int* localSize, int numOfLocalSizes,
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchPresentSpeedCtr(fileSize,localSize[i],onGPU,&infos[i]);
 	}
+	saveDataToFile("PresSpeed",infos,numOfLocalSizes);
 }
