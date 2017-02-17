@@ -390,7 +390,7 @@ __kernel void present_memoryCipher(__global ulong* in, __global ulong* SK, __glo
   
   /* encryption */
   present_memory_encrypt(state, SK, outCipher);
-  
+
   C[gid] = outCipher[0];
 }
 

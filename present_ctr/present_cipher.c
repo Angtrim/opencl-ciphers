@@ -179,9 +179,9 @@ cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, siz
 
 	long source_size = strlen(source_str);
         
-        setUpOpenCl(inputText, subkey, modality, source_str, source_size, lenght);
+    setUpOpenCl(inputText, subkey, modality, source_str, source_size, lenght);
 
-        size_t global_item_size = lenght;
+    size_t global_item_size = lenght;
 	/* Execute OpenCL Kernel instances */
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
 	if(ret != CL_SUCCESS){
@@ -200,14 +200,14 @@ cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, siz
 	return event;
 }
 
-cl_event present_memory_encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
+cl_event present_memory_Encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 	
 	setDeviceType(deviceType);
 	
 	return present_encryption(fileName, Key, output, local_item_size, MEMORY, 0);
 }
 
-cl_event present_speed_encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
+cl_event present_speed_Encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
 	setDeviceType(deviceType);
 

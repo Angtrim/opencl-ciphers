@@ -404,4 +404,3 @@ __kernel void des3CtrCipher(__global uint *SK, __global uchar* input, __global u
     output[offset] = outCipher[i] ^ input[offset];
   } 
 }
-

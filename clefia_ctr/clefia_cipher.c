@@ -21,6 +21,7 @@ static void loadClProgramSource(){
 	}
 	source_str = (char*)malloc(MAX_SOURCE_SIZE);
 	fread(source_str, 1, MAX_SOURCE_SIZE, fp);
+	strcat(source_str, "\0");
 	fclose(fp);
 }
 

@@ -11,7 +11,9 @@ int main(){
 
 		int seedResult = testSeedAll();
 
-		int endResult = aesResult&&misty1Result&&seedResult;
+		int presentResult = testPresentAll();
+
+		int endResult = aesResult&&misty1Result&&seedResult&&presentResult;
 
 		if(endResult != 0){
 			printf("\nALL TEST PASSED SUCCESSEFULLY\n");
@@ -19,6 +21,6 @@ int main(){
 
 
 
-		mainBench();
-		//testFra();
+		//mainBench();
+		testFra();
 }
