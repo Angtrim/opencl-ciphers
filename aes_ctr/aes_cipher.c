@@ -1,6 +1,6 @@
 #include "aes_cipher.h"
 
-#define MAX_SOURCE_SIZE (0x100000)
+#define MAX_SOURCE_SIZE (0x10000)
 
 
 static void loadClProgramSource(){

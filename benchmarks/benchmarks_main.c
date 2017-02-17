@@ -10,5 +10,6 @@ int mainBench(){
  benchCam128Multiple(100000,localSize,4,0);
  benchCam192Multiple(100000,localSize,4,0);
  benchCam256Multiple(100000,localSize,4,0);
-
+ benchMisty1CtrMultiple(100000000,localSize,4,0);
+ benchSeedCtrMultiple(100000000, localSize, 4,0);
 }

@@ -8,22 +8,25 @@
 
 
 int main(){
-		//int aesResult = testAESAll();
-		//int misty1Result = testMisty1All();
-		//int desResult = testDESAll();
-		//int cameliaResult = testCameliaAll();
+		int aesResult = testAESAll();
+		int misty1Result = testMisty1All();
+		int desResult = testDESAll();
+		int cameliaResult = testCameliaAll();
 		int clefiaResult = testClefiaAll();
-
-		int endResult = clefiaResult;/*aesResult && misty1Result && desResult && cameliaResult && clefiaResult*/;
+		int seedResult = testSeedAll();
+		int presentResult = testPresentAll();
+		int endResult = aesResult && misty1Result && desResult && cameliaResult && clefiaResult && seedResult && presentResult;
 
 		if(endResult != 0){
-			printf("ALL TEST PASSED SUCCESSEFULLY\n");
+			printf("\nALL TEST PASSED SUCCESSEFULLY\n");
 		}else{
-			printf("SOME TESTS FAILED, CHECK LOG\n");
+			printf("\nSOME TEST FAILED ");
 		}
 
 
 
 		//mainBench();
-		//testFra();
+
+	 //	testFra();
+
 }
