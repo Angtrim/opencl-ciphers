@@ -24,7 +24,7 @@ void benchAes128Ctr(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	}
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
-	char* fileName = "benchmarks/benchAes128";
+	char* fileName = "benchmarks/benchAes";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
 	cl_event event = NULL;
@@ -53,7 +53,7 @@ void benchAes192Ctr(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	}
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
-	char* fileName = "banchmarks/benchAes128";
+	char* fileName = "banchmarks/benchAes";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
 	cl_event event = NULL;
@@ -82,7 +82,7 @@ void benchAes256Ctr(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	}
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
-	char* fileName = "benchmarks/benchAes128";
+	char* fileName = "benchmarks/benchAes";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
 	cl_event event = NULL;

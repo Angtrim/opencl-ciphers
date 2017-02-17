@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "../misty1_ctr/misty1_cipher.h"
-#include "benchmarks_aes.h"
+#include "benchmarks_misty1.h"
 
 static uint8_t Misty1Key[16] = {
 	0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,

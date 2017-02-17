@@ -26,9 +26,9 @@ void benchSeedOldCtr(int fileSize,int localSize,int onGPU, struct BenchInfo* ben
 	}
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
-	char* fileName = "benchmarks/benchSeedOld";
+	char* fileName = "benchmarks/benchSeed";
 	buildFileOfZeroes(fileName,fileSize);
-	uint64_t* seedCiphertext = (uint64_t*)malloc((fileSize)*sizeof(uint64_t));
+	uint64_t* seedCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
 	event = seed_old_CtrEncrypt(fileName, SeedKey[3], seedCiphertext, 1, device);
@@ -37,11 +37,53 @@ void benchSeedOldCtr(int fileSize,int localSize,int onGPU, struct BenchInfo* ben
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
 	total_time = time_end-time_start;
-	printf("Aes 128 CTR execution time is: %0.3f ms\n",total_time/1000000.0);
+	printf("SEED OLD CTR execution time is: %0.3f ms\n",total_time/1000000.0);
 	free(seedCiphertext);
 	remove(fileName);
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+}
 
+void benchSeedCtr(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
+	char* device;
+	if(onGPU){
+		device = "GPU";
+	}else{
+		device = "CPU";
+	}
+	// Pad file size
+	fileSize = fileSize + (fileSize%16);
+	char* fileName = "benchmarks/benchSeed";
+	buildFileOfZeroes(fileName,fileSize);
+	printf("\nnumber of uint64_t: %d", fileSize/8);
+	uint64_t* seedCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
+	cl_event event = NULL;
+	cl_ulong time_start, time_end;
+	event = seed_CtrEncrypt(fileName, SeedKey[3], seedCiphertext, 1, device);
+	/* compute execution time */
+	double total_time;
+	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
+	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
+	total_time = time_end-time_start;
+	printf("SEED CTR execution time is: %0.3f ms\n",total_time/1000000.0);
+	free(seedCiphertext);
+	remove(fileName);
+	benchInfo->totalTime = total_time;
+	benchInfo->localSize = localSize;
+	benchInfo->fileSize = fileSize;
+}
+
+void benchSeedOldCtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
+	for(int i = 0;i<numOfLocalSizes;i++){
+		benchSeedOldCtr(fileSize,localSize[i],onGPU,&infos[i]);
+	}
+}
+
+void benchSeedCtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
+	for(int i = 0;i<numOfLocalSizes;i++){
+		benchSeedCtr(fileSize,localSize[i],onGPU,&infos[i]);
+	}
 }
