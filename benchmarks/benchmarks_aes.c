@@ -53,7 +53,7 @@ void benchAes192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	}
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
-	char* fileName = "banchmarks/benchAes";
+	char* fileName = "benchmarks/benchAes";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
 	cl_event event = NULL;

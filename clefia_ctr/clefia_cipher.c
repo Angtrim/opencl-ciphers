@@ -1,6 +1,6 @@
 #include "clefia_cipher.h"
 
-#define MAX_SOURCE_SIZE (0x10000000)
+#define MAX_SOURCE_SIZE (0x1000000)
 
 
 static void loadClProgramSource(){
@@ -72,7 +72,8 @@ static void setUpOpenCl(uint8_t* inputText, char* kernelName, uint8_t* key, int 
 	}
 	
 	/* Build Kernel Program */
-	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
+	char* opt = "-cl-opt-disable";
+	ret = clBuildProgram(program, 1, &device_id, opt, NULL, NULL);
 	if(ret != CL_SUCCESS){
 		printf("\nBuild Error = %i", ret);
 		
