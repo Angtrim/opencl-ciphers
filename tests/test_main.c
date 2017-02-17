@@ -12,7 +12,7 @@ int main(){
 		int endResult = aesResult&&misty1Result;
 
 		if(endResult != 0){
-			printf("ALL TEST PASSED SUCCESSEFULLY\n");
+			printf("\nALL TEST PASSED SUCCESSEFULLY\n");
 		}
 
 

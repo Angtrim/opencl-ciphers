@@ -129,7 +129,7 @@ uint8_t Keys[16] = //{
   	printf("ok\n");
   } else printf("no\n");
 */
-/*uint64_t* misty1Plaintext = (uint64_t*)malloc(2*sizeof(uint64_t));
+uint64_t* misty1Plaintext = (uint64_t*)malloc(2*sizeof(uint64_t));
 
 uint8_t K[16] = {
      0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
@@ -146,7 +146,7 @@ uint8_t K[16] = {
      0x04b68240b13be95dUL
    };
 
-  misty1Encrypt("misty1_plaintext", K, misty1Plaintext ,4, GPU_DEVICE);
+  misty1Encrypt("misty1_plaintext", K, misty1Plaintext ,2, GPU_DEVICE);
 
   for(int i=0; i < 2; i++){
   	printf("%016llx\n", misty1Plaintext[i]);
@@ -156,7 +156,7 @@ uint8_t K[16] = {
     printf("ok\n");
   } else {
     printf("no\n");
-  }*/
+  }
 /*
 uint64_t* presentPlaintext = (uint64_t*)malloc(1*sizeof(uint64_t));
   uint64_t Key3[2] = {0, 0};
