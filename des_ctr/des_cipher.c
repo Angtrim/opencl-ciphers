@@ -1,19 +1,5 @@
 #include "des_cipher.h"
 
-#define MAX_SOURCE_SIZE (0x100000)
-
-
-static void loadClProgramSource(){
-	/* Load the source code containing the kernel*/
-	fp = fopen(clFileName, "r");
-	if (!fp) {
-	fprintf(stderr, "Failed to load kernel.\n");
-	exit(1);
-	}
-	source_str = (char*)malloc(MAX_SOURCE_SIZE);
-	source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
-	fclose(fp);
-}
 
 static void setUpOpenCl(byte* inputText, char* kernelName, des_context* K, long bufferLenght){
 	
@@ -186,15 +172,6 @@ static void finalizeExecution( uint8_t* inputText){
 	source_str = NULL;
 }
 
-/* Selecting the device */
-static void setDeviceType(char* deviceType){
-
-	if(strcmp(deviceType,"CPU") == 0)
-		device_type = CL_DEVICE_TYPE_CPU;
-	else if(strcmp(deviceType, "GPU") == 0)
-		device_type = CL_DEVICE_TYPE_GPU;
-}
-
 cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, int mode, int isCtr) {
 
 	
@@ -202,9 +179,8 @@ cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t loc
     
  	uint8_t* inputText = fileInfo.filePointer;
 
- 	// load program source to build the kernel program
- 	if(source_str == NULL){
-		loadClProgramSource();
+ if(source_str == NULL){
+		loadClProgramSource(clFileName,&source_str,&source_size);
 	}
     
 	char* modality;
@@ -262,7 +238,7 @@ cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t loc
 
 cl_event desEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	int mode = 1;
 	return des_encryption(fileName,key,output,local_item_size,mode,0);
@@ -270,7 +246,7 @@ cl_event desEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_i
 
 cl_event des2Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	int mode = 2;
 	return des_encryption(fileName,key,output,local_item_size,mode,0);
@@ -278,7 +254,7 @@ cl_event des2Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_
 
 cl_event des3Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	int mode = 3;
 	return des_encryption(fileName,key,output,local_item_size,mode,0);
@@ -286,7 +262,7 @@ cl_event des3Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_
 
 cl_event desCtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
-	setDeviceType(deviceType);		
+	setDeviceType(deviceType,&device_type);		
 
 	int mode = 1;
 	return des_encryption(fileName,key,output,local_item_size,mode,1);
@@ -294,7 +270,7 @@ cl_event desCtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t loca
 
 cl_event des2CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
-	setDeviceType(deviceType);		
+	setDeviceType(deviceType,&device_type);		
 
 	int mode = 2;
 	return des_encryption(fileName,key,output,local_item_size,mode,1);
@@ -302,7 +278,7 @@ cl_event des2CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t loc
 
 cl_event des3CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
-	setDeviceType(deviceType);	
+	setDeviceType(deviceType,&device_type);	
 	
 	int mode = 3;
 	return des_encryption(fileName,key,output,local_item_size,mode,1);
@@ -310,7 +286,7 @@ cl_event des3CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t loc
 
 cl_event desCtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
-	setDeviceType(deviceType);		
+	setDeviceType(deviceType,&device_type);		
 
 	int mode = 1;
 	return des_encryption(fileName,key,output,local_item_size,mode,1);
@@ -318,7 +294,7 @@ cl_event desCtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t loca
 
 cl_event des2CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
-	setDeviceType(deviceType);		
+	setDeviceType(deviceType,&device_type);		
 
 	int mode = 2;
 	return des_encryption(fileName,key,output,local_item_size,mode,1);
@@ -326,7 +302,7 @@ cl_event des2CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t loc
 
 cl_event des3CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
 
-	setDeviceType(deviceType);	
+	setDeviceType(deviceType,&device_type);	
 	
 	int mode = 3;
 	return des_encryption(fileName,key,output,local_item_size,mode,1);

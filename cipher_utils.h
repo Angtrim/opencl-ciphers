@@ -6,6 +6,11 @@
 #include <string.h>
 #include <stdint.h>
 #include <inttypes.h>
+#ifdef __APPLE__
+#include <OpenCL/opencl.h>
+#else
+#include <CL/cl.h>
+#endif
 
 typedef uint32_t word;
 typedef uint8_t byte;
@@ -25,5 +30,6 @@ struct FileInfo64 getFileUint64(char* filePath);
 struct FileInfo getFileBytes(char* filePath);
 
 long getByteLenght(char* filePath);
-
+void loadClaProgramSource(char* fileName,char** source_str,size_t* source_size);
+void setDeviceType(char* deviceType,cl_device_type* deviceTypeCl);
 #endif

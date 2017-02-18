@@ -1,4 +1,11 @@
 #include "cipher_utils.h"
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+
+#define MAX_SOURCE_SIZE (0x1000000)
 
 /*
  * This function load the size in blocks of bytes 
@@ -66,4 +73,26 @@ long getByteLenght(char* filePath){
 	rewind(fileptr);                      // Jump back to the beginning of the file
  fclose(fileptr);
 	return filelen;	
+}
+
+
+void loadClProgramSource(char* fileName,char** source_str,size_t* source_size){
+	/* Load the source code containing the kernel*/
+	FILE *fp = fopen(fileName, "r");
+	if (!fp) {
+	fprintf(stderr, "Failed to load program source\n");
+	exit(1);
+	}
+	*source_str = (char*)malloc(MAX_SOURCE_SIZE);
+	*source_size = fread(*source_str, 1, MAX_SOURCE_SIZE, fp);
+	fclose(fp);
+}
+
+/* Selecting the device */
+void setDeviceType(char* deviceType,cl_device_type* deviceTypeCl){
+
+	if(strcmp(deviceType,"CPU") == 0)
+		*deviceTypeCl = CL_DEVICE_TYPE_CPU;
+	else if(strcmp(deviceType, "GPU") == 0)
+		*deviceTypeCl = CL_DEVICE_TYPE_GPU;
 }

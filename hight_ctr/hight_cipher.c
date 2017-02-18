@@ -1,19 +1,5 @@
 #include "hight_cipher.h"
 
-#define MAX_SOURCE_SIZE (0x100000)
-
-
-static void loadClProgramSource(){
-	/* Load the source code containing the kernel*/
-	fp = fopen(clFileName, "r");
-	if (!fp) {
-	fprintf(stderr, "Failed to load kernel.\n");
-	exit(1);
-	}
-	source_str = (char*)malloc(MAX_SOURCE_SIZE);
-	source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
-	fclose(fp);
-}
 
 static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* WK, uint8_t* SK, long bufferLenght){
 	/* Get Platform and Device Info */
@@ -112,14 +98,6 @@ static void finalizeExecution( uint64_t* inputText){
 	source_str = NULL;
 }
 
-/* Selecting the device */
-static void setDeviceType(char* deviceType){
-
-	if(strcmp(deviceType,"CPU") == 0)
-		device_type = CL_DEVICE_TYPE_CPU;
-	else if(strcmp(deviceType, "GPU") == 0)
-		device_type = CL_DEVICE_TYPE_GPU;
-}
 
 cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size,int isCtr) {
 
@@ -128,11 +106,9 @@ cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
     
  	uint64_t* inputText = fileInfo.filePointer;
     
- 	// load program source to build the kernel program
- 	if(source_str == NULL){
-		loadClProgramSource();
+ if(source_str == NULL){
+		loadClProgramSource(clFileName,&source_str,&source_size);
 	}
-    
 
 	uint8_t SK[128];
  	uint8_t WK[8];
@@ -170,21 +146,21 @@ cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 
 cl_event hightEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 		
 	return hEncript(fileName,key,output,local_item_size,0);
 }	
 
 cl_event hightCtrEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	return hEncript(fileName,key,output,local_item_size,1);
 }
 
 cl_event hightCtrDecrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	return hEncript(fileName,key,output,local_item_size,1);
 }	

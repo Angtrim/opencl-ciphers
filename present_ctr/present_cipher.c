@@ -1,22 +1,10 @@
 #include "present_cipher.h"
 
-#define MAX_SOURCE_SIZE (0x1000000)
 
 #define MEMORY "MEMORY"
 #define SPEED "SPEED"
 
-/* Function to load cl source */
-static void loadClProgramSource(){
-	/* Load the source code containing the kernel*/
-	fp = fopen(clFileName, "r");
-	if (!fp) {
-	fprintf(stderr, "Failed to load kernel.\n");
-	exit(1);
-	}
- source_str = (char*)malloc(MAX_SOURCE_SIZE);
-	source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
-	fclose(fp);
-}
+
 /* set up the opencl parameters */
 static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName,long bufferLenght){
 	/* Get Platform and Device Info */
@@ -121,14 +109,7 @@ static void finalizeExecution(uint64_t* inputText){
 	source_str = NULL;
 }
 
-/* Selecting the device */
-static void setDeviceType(char* deviceType){
 
-	if(strcmp(deviceType,"CPU") == 0)
-		device_type = CL_DEVICE_TYPE_CPU;
-	else if(strcmp(deviceType, "GPU") == 0)
-		device_type = CL_DEVICE_TYPE_GPU;
-}
 
 cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* encryptionType, int isCtr){
 	
@@ -164,9 +145,8 @@ cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, siz
 			
 	}
 
-	// load program source to build the kernel program
-	if(source_str == NULL){
-		loadClProgramSource();
+ if(source_str == NULL){
+		loadClProgramSource(clFileName,&source_str,&source_size);
 	}
 
         
@@ -194,42 +174,42 @@ cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, siz
 
 cl_event present_memory_Encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 	
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 	
 	return present_encryption(fileName, Key, output, local_item_size, MEMORY, 0);
 }
 
 cl_event present_speed_Encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	return present_encryption(fileName, Key, output, local_item_size, SPEED, 0);
 }
 
 cl_event present_memory_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 	
 	return present_encryption(fileName, Key, output, local_item_size, MEMORY, 1);
 }
 
 cl_event present_speed_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	return present_encryption(fileName, Key, output, local_item_size, SPEED, 1);
 }
 
 cl_event present_memory_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 	
 	return present_encryption(fileName, Key, output, local_item_size, MEMORY, 1);
 }
 
 cl_event present_speed_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	return present_encryption(fileName, Key, output, local_item_size, SPEED, 1);
 }

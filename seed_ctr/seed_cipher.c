@@ -1,22 +1,10 @@
 #include "seed_cipher.h"
 
-#define MAX_SOURCE_SIZE (0x1000000)
 
 #define SEED_OLD "SEED_OLD"
 #define SEED "SEED"
 
-/* Function to load cl source */
-static void loadClProgramSource(){
-	/* Load the source code containing the kernel*/
-	fp = fopen(clFileName, "r");
-	if (!fp) {
-	fprintf(stderr, "Failed to load kernel.\n");
-	exit(1);
-	}
- source_str = (char*)malloc(MAX_SOURCE_SIZE);
-	source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
-	fclose(fp);
-}
+
 /* set up the opencl parameters */
 static void setUpOpenCl(uint64_t* inputText, uint32_t* Ki, char* kernelName, long bufferLenght){
 	/* Get Platform and Device Info */
@@ -112,14 +100,6 @@ static void finalizeExecution(uint64_t* inputText){
 	source_str = NULL;
 }
 
-/* Selecting the device */
-static void setDeviceType(char* deviceType){
-
-	if(strcmp(deviceType,"CPU") == 0)
-		device_type = CL_DEVICE_TYPE_CPU;
-	else if(strcmp(deviceType, "GPU") == 0)
-		device_type = CL_DEVICE_TYPE_GPU;
-}
 
 cl_event seed_encryption(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, int isCtr, char* encryptionType){
 	
@@ -155,11 +135,9 @@ cl_event seed_encryption(char* fileName, uint32_t* Key, uint64_t* output, size_t
 			
 	}
 
-	// load program source to build the kernel program
-	if(source_str == NULL){
-		loadClProgramSource();
+ if(source_str == NULL){
+		loadClProgramSource(clFileName,&source_str,&source_size);
 	}
-
         
 
     setUpOpenCl(inputText, Ki, modality, lenght);
@@ -187,42 +165,42 @@ cl_event seed_encryption(char* fileName, uint32_t* Key, uint64_t* output, size_t
 
 cl_event seed_old_Encrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	return seed_encryption(fileName, Key, output, local_item_size, 0, SEED_OLD);
 }
 
 cl_event seed_Encrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	return seed_encryption(fileName, Key, output, local_item_size, 0, SEED);
 }
 
 cl_event seed_old_CtrEncrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	return seed_encryption(fileName, Key, output, local_item_size, 1, SEED_OLD);
 }
 
 cl_event seed_CtrEncrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	return seed_encryption( fileName, Key, output, local_item_size, 1, SEED);  
 }
 
 cl_event seed_old_CtrDecrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	return seed_encryption(fileName, Key, output, local_item_size, 1, SEED_OLD);
 }
 
 cl_event seed_CtrDecrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 
 	return seed_encryption( fileName, Key, output, local_item_size, 1, SEED);  
 }

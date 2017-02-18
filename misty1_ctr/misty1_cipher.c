@@ -1,28 +1,6 @@
 #include "misty1_cipher.h"
 
-#define MAX_SOURCE_SIZE (0x1000000)
 
-/*
-   This function adds two string pointers together
-*/
-static char* stradd(const char* a, const char* b){
-	size_t len = strlen(a) + strlen(b);
-	char *ret = (char*)malloc(len * sizeof(char) + 1);
-	*ret = '\0';
-	return strcat(strcat(ret, a) ,b);
-} 
-
-static void loadClProgramSource(){
-	/* Load the source code containing the kernel*/
-	fp = fopen(clFileName, "r");
-	if (!fp) {
-	fprintf(stderr, "Failed to load kernel.\n");
-	exit(1);
-	}
- source_str = (char*)malloc(MAX_SOURCE_SIZE);
-	source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
-	fclose(fp);
-}
 
 static void setUpOpenCl(uint64_t* inputText,  char* kernelName,uint16_t* EK, long bufferLenght){
 	/* Get Platform and Device Info */
@@ -117,15 +95,6 @@ static void finalizeExecution(uint64_t* inputText){
 	source_str = NULL;
 }
 
-/* Selecting the device */
-static void setDeviceType(char* deviceType){
-
-	if(strcmp(deviceType,"CPU") == 0)
-		device_type = CL_DEVICE_TYPE_CPU;
-	else if(strcmp(deviceType, "GPU") == 0)
-		device_type = CL_DEVICE_TYPE_GPU;
-}
-
 cl_event mEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size,int isCtr) {
 
 	
@@ -135,11 +104,9 @@ cl_event mEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 	//number of blocks 
         long lenght = fileInfo.lenght;
     
- 	// load program source to build the kernel program
- 	if(source_str == NULL){
-		loadClProgramSource();
+ if(source_str == NULL){
+		loadClProgramSource(clFileName,&source_str,&source_size);
 	}
-    
 
 	char* modality;
 
@@ -177,19 +144,19 @@ cl_event mEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 
 cl_event misty1Encrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
 
-	setDeviceType(deviceType);
+	setDeviceType(deviceType,&device_type);
 	return mEncript(fileName,key,output,local_item_size,0);
 }	
 
 cl_event misty1CtrEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
 	
-	setDeviceType(deviceType);	
+	setDeviceType(deviceType,&device_type);	
 	return mEncript(fileName,key,output,local_item_size,1);
 }
 
 cl_event misty1CtrDecrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
 	
-	setDeviceType(deviceType);	
+	setDeviceType(deviceType,&device_type);	
 	return mEncript(fileName,key,output,local_item_size,1);
 }	
 
