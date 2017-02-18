@@ -31,10 +31,6 @@ static void writeOutputToFileUint64(char* outFileName, uint64_t* output, long le
 		fprintf(stderr, "Failed to load file.\n");
 		exit(1);
 	}
-	printf("\nwriting %d uint64_t..\n", lenght);
-	for(int i = 0; i < 1; i++){
-		printf("%016llx", output[i]);	
-	}
 	fwrite(output, sizeof(uint64_t), lenght, fp);
 	fclose(fp);
 }
@@ -117,9 +113,9 @@ int testHightCtrGPU(){
 
 int testHight(){
 	int result = 1;
-	log("\n--- --- Starting HIGHT tests");
+	log("--- --- Starting HIGHT tests");
 	
-	log("\n\n--- Test HIGHT CPU starting");
+	log("--- Test HIGHT CPU starting");
 	if(testHightCPU() == 1){
 		log("--- Test HIGHT CPU passed");
 	}else{
@@ -127,7 +123,7 @@ int testHight(){
 		result = 0;
 	}
 
-	log("\n\n--- Test HIGHT GPU starting");
+	log("--- Test HIGHT GPU starting");
 	if(testHightGPU() == 1){
 		log("--- Test HIGHT GPU passed");
 	}else{
@@ -135,7 +131,7 @@ int testHight(){
 		result = 0;
 	}
 
-	log("\n\n--- Test HIGHT CTR CPU starting");
+	log("--- Test HIGHT CTR CPU starting");
 	if(testHightCtrCPU() == 1){
 		log("--- Test HIGHT CTR CPU passed");
 	}else{
@@ -143,7 +139,7 @@ int testHight(){
 		result = 0;
 	}
 
-	log("\n\n--- Test HIGHT CTR GPU starting");
+	log("--- Test HIGHT CTR GPU starting");
 	if(testHightCtrGPU() == 1){
 		log("--- Test HIGHT CTR GPU passed");
 	}else{
@@ -158,9 +154,9 @@ int testHightAll(){
 	int tHight = testHight();
 	int result = tHight;
 	if(result){
-		log("\n--- --- --- ALL HIGHT TEST PASSED");
+		log("--- --- --- ALL HIGHT TEST PASSED");
 	}else{
-		log("\n--- --- --- TEST HIGHT FAILED");
+		log("--- --- --- TEST HIGHT FAILED");
 	}
 	return result;
 }

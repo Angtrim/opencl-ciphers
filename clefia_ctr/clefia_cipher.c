@@ -27,15 +27,7 @@ static void setUpOpenCl(uint8_t* inputText, char* kernelName, uint8_t* key, int 
 	// iterate over platforms
 	for (cl_uint i = 0; i < ret_num_platforms; ++i)
 	{
-		ret = clGetDeviceIDs(platforms[i], device_type, 1, &device_id, &ret_num_devices);
-		if(ret == CL_SUCCESS){
-			if(device_type == CL_DEVICE_TYPE_CPU){
-				printf("\nCPU DEVICE FOUND\n");			
-			}
-			else {
-				printf("\nGPU DEVICE FOUND\n");
-			}	
-		}   
+		ret = clGetDeviceIDs(platforms[i], device_type, 1, &device_id, &ret_num_devices);   
 	}
 
 	free(platforms);
@@ -105,7 +97,6 @@ static void setUpOpenCl(uint8_t* inputText, char* kernelName, uint8_t* key, int 
 }
 
 static void finalizeExecution(uint8_t* inputText){
-	printf("Releasing resources..\n");
 	/* Finalization */
 	ret = clFlush(command_queue);
 	ret = clFinish(command_queue);
@@ -119,6 +110,8 @@ static void finalizeExecution(uint8_t* inputText){
 	ret = clReleaseContext(context);
 	free(inputText);
 	inputText = NULL;
+	free(source_str);
+	source_str = NULL;
 }
 
 /* Selecting the device */

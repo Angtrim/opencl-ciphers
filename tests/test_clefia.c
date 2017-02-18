@@ -28,10 +28,6 @@ static void writeOutputToFileUint64(char* outFileName, uint8_t* output, long len
 		fprintf(stderr, "Failed to load file.\n");
 		exit(1);
 	}
-	printf("\nwriting %d uint8_t..\n", lenght);
-	for(int i = 0; i <lenght; i++){
-		printf("%x", output[i]);	
-	}
 	fwrite(output, sizeof(uint8_t), lenght, fp);
 	fclose(fp);
 }

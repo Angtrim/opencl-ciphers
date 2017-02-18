@@ -28,10 +28,6 @@ static void writeOutputToFile(char* outFileName,uint8_t* output, long lenght){
 		fprintf(stderr, "Failed to load file.\n");
 		exit(1);
 	}
-	printf("\nwriting %d bytes..\n", lenght);
-	for(int i = 0; i <16; i++){
-		printf("%x", output[i]);	
-	}
 	fwrite(output, sizeof(char), lenght, fp);
 	fclose(fp);
 }
@@ -225,9 +221,9 @@ int testDes3CTRGPU(){
 
 int testDes(){
     int result = 1;
-    log("\n--- --- Starting DES tests");
+    log("--- --- Starting DES tests");
     
-    log("\n\n--- Test DES CPU starting");
+    log("--- Test DES CPU starting");
     if(testDesCPU() == 1){
         log("--- Test DES CPU passed");
     }else{
@@ -235,7 +231,7 @@ int testDes(){
         result = 0;
     }
 
-    log("\n\n--- Test DES GPU starting");
+    log("--- Test DES GPU starting");
     if(testDesGPU() == 1){
         log("--- Test DES GPU passed");
     }else{
@@ -243,7 +239,7 @@ int testDes(){
         result = 0;
     }
 
-    log("\n\n--- Test DES CTR CPU starting");
+    log("--- Test DES CTR CPU starting");
     if(testDesCTRCPU() == 1){
         log("--- Test DES CTR CPU passed");
     }else{
@@ -251,7 +247,7 @@ int testDes(){
         result = 0;
     }
 
-    log("\n\n--- Test DES CTR GPU starting");
+    log("--- Test DES CTR GPU starting");
     if(testDesCTRGPU() == 1){
         log("--- Test DES CTR GPU passed");
     }else{
@@ -260,9 +256,9 @@ int testDes(){
     }
 
     if(result != 0){
-        log("\n--- --- All DES test passed");
+        log("--- --- All DES test passed");
     }else{
-        log("\n--- --- Some DES Test FAILED");
+        log("--- --- Some DES Test FAILED");
     }
 
     return result;
@@ -271,7 +267,7 @@ int testDes(){
 int testDes2(){
     int result = 1;
 
-    log("\n\n--- Test DES2 CPU starting");
+    log("--- Test DES2 CPU starting");
     if(testDes2CPU() == 1){
         log("--- Test DES2 CPU passed");
     }else{
@@ -279,7 +275,7 @@ int testDes2(){
         result = 0;
     }
 
-    log("\n\n--- Test DES2 GPU starting");
+    log("--- Test DES2 GPU starting");
     if(testDes2GPU() == 1){
         log("--- Test DES2 GPU passed");
     }else{
@@ -287,7 +283,7 @@ int testDes2(){
         result = 0;
     }
 
-    log("\n\n--- Test DES2 CTR CPU starting");
+    log("--- Test DES2 CTR CPU starting");
     if(testDes2CTRCPU() == 1){
         log("--- Test DES2 CTR CPU passed");
     }else{
@@ -295,7 +291,7 @@ int testDes2(){
         result = 0;
     }
 
-    log("\n\n--- Test DES2 CTR GPU starting");
+    log("--- Test DES2 CTR GPU starting");
     if(testDes2CTRGPU() == 1){
         log("--- Test DES2 CTR GPU passed");
     }else{
@@ -304,9 +300,9 @@ int testDes2(){
     }
 
     if(result != 0){
-        log("\n--- --- All DES2 test passed");
+        log("--- --- All DES2 test passed");
     }else{
-        log("\n--- --- Some DES2 Test FAILED");
+        log("--- --- Some DES2 Test FAILED");
     }
 
     return result;
@@ -315,7 +311,7 @@ int testDes2(){
 int testDes3(){
     int result = 1;
 
-    log("\n\n--- Test DES3 CPU starting");
+    log("--- Test DES3 CPU starting");
     if(testDes3CPU() == 1){
         log("--- Test DES3 CPU passed");
     }else{
@@ -323,7 +319,7 @@ int testDes3(){
         result = 0;
     }
 
-    log("\n\n--- Test DES3 GPU starting");
+    log("--- Test DES3 GPU starting");
     if(testDes3GPU() == 1){
         log("--- Test DES3 GPU passed");
     }else{
@@ -331,7 +327,7 @@ int testDes3(){
         result = 0;
     }
 
-    log("\n\n--- Test DES3 CTR CPU starting");
+    log("--- Test DES3 CTR CPU starting");
     if(testDes3CTRCPU() == 1){
         log("--- Test DES3 CTR CPU passed");
     }else{
@@ -339,7 +335,7 @@ int testDes3(){
         result = 0;
     }
 
-    log("\n\n--- Test DES3 CTR GPU starting");
+    log("--- Test DES3 CTR GPU starting");
     if(testDes3CTRGPU() == 1){
         log("--- Test DES3 CTR GPU passed");
     }else{
@@ -348,9 +344,9 @@ int testDes3(){
     }
 
     if(result != 0){
-        log("\n--- --- All DES3 test passed");
+        log("--- --- All DES3 test passed");
     }else{
-        log("\n--- --- Some DES3 Test FAILED");
+        log("--- --- Some DES3 Test FAILED");
     }
 
     return result;

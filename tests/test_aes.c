@@ -63,10 +63,6 @@ static void writeOutputToFile(char* outFileName,uint8_t* output, long lenght){
 		fprintf(stderr, "Failed to load file.\n");
 		exit(1);
 	}
-	printf("\nwriting %d bytes..\n", lenght);
-	for(int i = 0; i <16; i++){
-		printf("%x", output[i]);	
-	}
 	fwrite(output, sizeof(char), lenght, fp);
 	fclose(fp);
 }
@@ -303,9 +299,9 @@ int testAes256CtrGPU(){
 
 int test128(){
 	int result = 1;
-	log("\n--- --- Starting AES128 tests");
+	log("--- --- Starting AES128 tests");
 	
-	log("\n\n--- Test AES 128 CPU starting");
+	log("--- Test AES 128 CPU starting");
 	if(testAes128CPU() == 1){
 		log("--- Test AES 128 CPU passed");
 	}else{
@@ -313,7 +309,7 @@ int test128(){
 		result = 0;
 	}
 
-	log("\n\n--- Test AES 128 GPU starting");
+	log("--- Test AES 128 GPU starting");
 	if(testAes128GPU() == 1){
 		log("--- Test AES 128 GPU passed");
 	}else{
@@ -321,7 +317,7 @@ int test128(){
 		result = 0;
 	}
 
-	log("\n\n--- Test AES 128 CTR CPU starting");
+	log("--- Test AES 128 CTR CPU starting");
 	if(testAes128CtrCPU() == 1){
 		log("--- Test AES 128 CTR CPU passed");
 	}else{
@@ -329,7 +325,7 @@ int test128(){
 		result = 0;
 	}
 
-	log("\n\n--- Test AES 128 CTR GPU starting");
+	log("--- Test AES 128 CTR GPU starting");
 	if(testAes128CtrGPU() == 1){
 		log("--- Test AES 128 CTR GPU passed");
 	}else{
@@ -338,9 +334,9 @@ int test128(){
 	}
 
 	if(result != 0){
-		log("\n--- --- All Aes 128 test passed");
+		log("--- --- All Aes 128 test passed");
 	}else{
-		log("\n--- --- Some AES 128 Test FAILED");
+		log("--- --- Some AES 128 Test FAILED");
 	}
 	return result;
 
@@ -350,7 +346,7 @@ int test192(){
 	int result = 1;
 	log("--- --- Starting AES192 tests");
 	
-	log("\n--- Test AES 192 CPU starting");
+	log("--- Test AES 192 CPU starting");
 	if(testAes192CPU() == 1){
 		log("--- Test AES 192 CPU passed");
 	}else{
@@ -358,7 +354,7 @@ int test192(){
 		result = 0;
 	}
 
-	log("\n--- Test AES 192 GPU starting");
+	log("--- Test AES 192 GPU starting");
 	if(testAes192GPU() == 1){
 		log("--- Test AES 192 GPU passed");
 	}else{
@@ -366,7 +362,7 @@ int test192(){
 		result = 0;
 	}
 
-	log("\n--- Test AES 192 CTR CPU starting");
+	log("--- Test AES 192 CTR CPU starting");
 	if(testAes192CtrCPU() == 1){
 		log("--- Test AES 192 CTR CPU passed");
 	}else{
@@ -374,7 +370,7 @@ int test192(){
 		result = 0;
 	}
 
-	log("\n--- Test AES 192 CTR GPU starting");
+	log("--- Test AES 192 CTR GPU starting");
 	if(testAes192CtrGPU() == 1){
 		log("--- Test AES 192 CTR GPU passed");
 	}else{
@@ -383,9 +379,9 @@ int test192(){
 	}
 
 	if(result != 0){
-		log("\n--- --- All Aes 192 test passed");
+		log("--- --- All Aes 192 test passed");
 	}else{
-		log("\n--- --- Some AES 192 Test FAILED");
+		log("--- --- Some AES 192 Test FAILED");
 	}
 
 	return result;
@@ -394,9 +390,9 @@ int test192(){
 
 int test256(){
 	int result = 1;
-	log("\n--- --- Starting AES256 tests");
+	log("--- --- Starting AES256 tests");
 	
-	log("\n--- Test AES 256 CPU starting");
+	log("--- Test AES 256 CPU starting");
 	if(testAes256CPU() == 1){
 		log("--- Test AES 256 CPU passed");
 	}else{
@@ -404,7 +400,7 @@ int test256(){
 		result = 0;
 	}
 
-	log("\n--- Test AES 256 GPU starting");
+	log("--- Test AES 256 GPU starting");
 	if(testAes256GPU() == 1){
 		log("--- Test AES 256 GPU passed");
 	}else{
@@ -412,7 +408,7 @@ int test256(){
 		result = 0;
 	}
 
-	log("\n--- Test AES 256 CTR CPU starting");
+	log("--- Test AES 256 CTR CPU starting");
 	if(testAes256CtrCPU() == 1){
 		log("--- Test AES 256 CTR CPU passed");
 	}else{
@@ -420,7 +416,7 @@ int test256(){
 		result = 0;
 	}
 
-	log("\n--- Test AES 256 CTR GPU starting");
+	log("--- Test AES 256 CTR GPU starting");
 	if(testAes256CtrGPU() == 1){
 		log("--- Test AES 256 CTR GPU passed");
 	}else{
@@ -429,9 +425,9 @@ int test256(){
 	}
 
 	if(result != 0){
-		log("\n--- --- All Aes 256 test passed");
+		log("--- --- All Aes 256 test passed");
 	}else{
-		log("\n--- --- Some AES 256 Test FAILED");
+		log("--- --- Some AES 256 Test FAILED");
 	}
 
 	return result;

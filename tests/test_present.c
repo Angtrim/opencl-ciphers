@@ -26,10 +26,6 @@ static void writeOutputToFileUint64(char* outFileName, uint64_t* output, long le
 		fprintf(stderr, "Failed to load file.\n");
 		exit(1);
 	}
-	printf("\nwriting %d uint64_t..\n", lenght);
-	for(int i = 0; i < 1; i++){
-		printf("%016llx", output[i]);	
-	}
 	fwrite(output, sizeof(uint64_t), lenght, fp);
 	fclose(fp);
 }
@@ -188,9 +184,9 @@ int testPresentSpeedCtrGPU(){
 
 int testPresentMemory(){
 	int result = 1;
-	log("\n--- --- Starting PRESENT MEMORY tests");
+	log("--- --- Starting PRESENT MEMORY tests");
 	
-	log("\n\n--- Test PRESENT MEMORY CPU starting");
+	log("--- Test PRESENT MEMORY CPU starting");
 	if(testPresentMemoryCPU() == 1){
 		log("--- Test PRESENT MEMORY CPU passed");
 	}else{
@@ -198,7 +194,7 @@ int testPresentMemory(){
 		result = 0;
 	}
 
-	log("\n\n--- Test PRESENT MEMORY GPU starting");
+	log("--- Test PRESENT MEMORY GPU starting");
 	if(testPresentMemoryGPU() == 1){
 		log("--- Test PRESENT MEMORY GPU passed");
 	}else{
@@ -206,7 +202,7 @@ int testPresentMemory(){
 		result = 0;
 	}
 
-	log("\n\n--- Test PRESENT MEMORY CTR CPU starting");
+	log("--- Test PRESENT MEMORY CTR CPU starting");
 	if(testPresentMemoryCtrCPU() == 1){
 		log("--- Test PRESENT MEMORY CTR CPU passed");
 	}else{
@@ -214,7 +210,7 @@ int testPresentMemory(){
 		result = 0;
 	}
 
-	log("\n\n--- Test PRESENT MEMORY CTR GPU starting");
+	log("--- Test PRESENT MEMORY CTR GPU starting");
 	if(testPresentMemoryCtrGPU() == 1){
 		log("--- Test PRESENT MEMORY CTR GPU passed");
 	}else{
@@ -223,18 +219,18 @@ int testPresentMemory(){
 	}
 
 	if(result != 0){
-		log("\n--- --- All PRESENT MEMORY test passed");
+		log("--- --- All PRESENT MEMORY test passed");
 	}else{
-		log("\n--- --- Some PRESENT MEMORY Test FAILED");
+		log("--- --- Some PRESENT MEMORY Test FAILED");
 	}
 	return result;
 }
 
 int testPresentSpeed(){
 	int result = 1;
-	log("\n--- --- Starting PRESENT SPEED tests");
+	log("--- --- Starting PRESENT SPEED tests");
 	
-	log("\n\n--- Test PRESENT SPEED CPU starting");
+	log("--- Test PRESENT SPEED CPU starting");
 	if(testPresentSpeedCPU() == 1){
 		log("--- Test PRESENT SPEED CPU passed");
 	}else{
@@ -242,7 +238,7 @@ int testPresentSpeed(){
 		result = 0;
 	}
 
-	log("\n\n--- Test PRESENT SPEED GPU starting");
+	log("--- Test PRESENT SPEED GPU starting");
 	if(testPresentSpeedGPU() == 1){
 		log("--- Test PRESENT SPEED GPU passed");
 	}else{
@@ -250,7 +246,7 @@ int testPresentSpeed(){
 		result = 0;
 	}
 
-	log("\n\n--- Test PRESENT SPEED CTR CPU starting");
+	log("--- Test PRESENT SPEED CTR CPU starting");
 	if(testPresentSpeedCtrCPU() == 1){
 		log("--- Test PRESENT SPEED CTR CPU passed");
 	}else{
@@ -258,7 +254,7 @@ int testPresentSpeed(){
 		result = 0;
 	}
 
-	log("\n\n--- Test PRESENT SPEED CTR GPU starting");
+	log("--- Test PRESENT SPEED CTR GPU starting");
 	if(testPresentSpeedCtrGPU() == 1){
 		log("--- Test PRESENT SPEED CTR GPU passed");
 	}else{
@@ -267,9 +263,9 @@ int testPresentSpeed(){
 	}
 
 	if(result != 0){
-		log("\n--- --- All PRESENT SPEED test passed");
+		log("--- --- All PRESENT SPEED test passed");
 	}else{
-		log("\n--- --- Some PRESENT SPEED Test FAILED");
+		log("--- --- Some PRESENT SPEED Test FAILED");
 	}
 	return result;
 }
@@ -280,9 +276,9 @@ int testPresentAll(){
 	int tPresentSpeed = testPresentSpeed();
 	int result = tPresentMemory&&tPresentSpeed;
 	if(result){
-		log("\n--- --- --- ALL PRESENT TEST PASSED");
+		log("--- --- --- ALL PRESENT TEST PASSED");
 	}else{
-		log("\n--- --- --- TEST PRESENT FAILED");
+		log("--- --- --- TEST PRESENT FAILED");
 	}
 	return result;
 }

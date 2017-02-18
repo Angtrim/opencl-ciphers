@@ -24,7 +24,7 @@ int main(){
 		if(endResult != 0){
 			printf("\nALL TEST PASSED SUCCESSEFULLY\n");
 		}else{
-			printf("\nSOME TEST FAILED ");
+			printf("\nSOME TEST FAILED\n");
 		}
 
 

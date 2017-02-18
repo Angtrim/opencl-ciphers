@@ -36,13 +36,21 @@ void saveDataToFile(char* nameCiph,struct BenchInfo* infos,int numInfos){
 	strcat(outFileName, "_");
 	strcat(outFileName, asctime (timeinfo));
 	strcat(outFileName, ".dat");
-	printf("%s ",outFileName);
+
 
 	FILE* fp = fopen(outFileName, "w");
 	if (!fp) {
 		fprintf(stderr, "Failed to load file.\n");
 		exit(1);
 	}
+
+
+
+	fprintf(fp, "%s %s\n","# CIPHER: ",nameCiph);
+	fprintf(fp, "%s %ld\n","# FILESIZE (bytes): ",infos[0].fileSize);
+	fprintf(fp, "%s %s\n","# DEVICE: ",nameCiph);
+
+ fprintf(fp, "\n\n%s \t  %s \n","# LOCAL_SIZE","TOTAL_TIME (ns)");
 
 	for(int i = 0;i< numInfos;i++){
 			fprintf(fp, "%d %ld\n",infos[i].localSize, infos[i].totalTime);

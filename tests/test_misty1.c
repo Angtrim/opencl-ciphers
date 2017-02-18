@@ -37,10 +37,6 @@ static void writeOutputToFileUint64(char* outFileName, uint64_t* output, long le
 		fprintf(stderr, "Failed to load file.\n");
 		exit(1);
 	}
-	printf("\nwriting %d uint64_t..\n", lenght);
-	for(int i = 0; i < 2; i++){
-		printf("%016llx", output[i]);	
-	}
 	fwrite(output, sizeof(uint64_t), lenght, fp);
 	fclose(fp);
 }
@@ -52,9 +48,6 @@ int testMisty1CPU(){
 	uint64_t* misty1Ciphertext = (uint64_t*)malloc((2)*sizeof(uint64_t));
 	writeOutputToFileUint64("tests/misty1_plaintext", Misty1P, 2);
 	misty1Encrypt("tests/misty1_plaintext", Misty1Key, misty1Ciphertext, 2, CPU_DEVICE);
-	for(int i = 0; i < 2; i++){
-			printf("\n%016llx", misty1Ciphertext[i]);
-	}
 	if (misty1Ciphertext[0] != Misty1C[0] || misty1Ciphertext[1] != Misty1C[1]) {
 		success = 0;
 	}
@@ -122,9 +115,9 @@ int testMisty1CtrGPU(){
 
 int testMisty1(){
 	int result = 1;
-	log("\n--- --- Starting MISTY1 tests");
+	log("--- --- Starting MISTY1 tests");
 	
-	log("\n\n--- Test MISTY1 CPU starting");
+	log("--- Test MISTY1 CPU starting");
 	if(testMisty1CPU() == 1){
 		log("--- Test MISTY1 CPU passed");
 	}else{
@@ -132,7 +125,7 @@ int testMisty1(){
 		result = 0;
 	}
 
-	log("\n\n--- Test MISTY1 GPU starting");
+	log("--- Test MISTY1 GPU starting");
 	if(testMisty1GPU() == 1){
 		log("--- Test MISTY1 GPU passed");
 	}else{
@@ -140,7 +133,7 @@ int testMisty1(){
 		result = 0;
 	}
 
-	log("\n\n--- Test MISTY1 CTR CPU starting");
+	log("--- Test MISTY1 CTR CPU starting");
 	if(testMisty1CtrCPU() == 1){
 		log("--- Test MISTY1 CTR CPU passed");
 	}else{
@@ -148,7 +141,7 @@ int testMisty1(){
 		result = 0;
 	}
 
-	log("\n\n--- Test MISTY1 CTR GPU starting");
+	log("--- Test MISTY1 CTR GPU starting");
 	if(testMisty1CtrGPU() == 1){
 		log("--- Test MISTY1 CTR GPU passed");
 	}else{
@@ -157,9 +150,9 @@ int testMisty1(){
 	}
 
 	if(result != 0){
-		log("\n--- --- All MISTY1 test passed");
+		log("--- --- All MISTY1 test passed");
 	}else{
-		log("\n--- --- Some MISTY1 Test FAILED");
+		log("--- --- Some MISTY1 Test FAILED");
 	}
 	return result;
 
@@ -170,9 +163,9 @@ int testMisty1All(){
 	int tMisty1 = testMisty1();
 	int result = tMisty1;
 	if(result){
-		log("\n--- --- --- ALL MISTY1 TEST PASSED");
+		log("--- --- --- ALL MISTY1 TEST PASSED");
 	}else{
-		log("\n--- --- --- TEST MISTY1 FAILED");
+		log("--- --- --- TEST MISTY1 FAILED");
 	}
 	return result;
 }

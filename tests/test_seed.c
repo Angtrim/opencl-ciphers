@@ -42,10 +42,6 @@ static void writeOutputToFileUint64(char* outFileName, uint64_t* output, long le
 		fprintf(stderr, "Failed to load file.\n");
 		exit(1);
 	}
-	printf("\nwriting %d uint64_t..\n", lenght);
-	for(int i = 0; i < 2; i++){
-		printf("%016llx", output[i]);	
-	}
 	fwrite(output, sizeof(uint64_t), lenght, fp);
 	fclose(fp);
 }
@@ -57,9 +53,6 @@ int testSeedOldCPU(){
 	uint64_t* seedCiphertext = (uint64_t*)malloc(2*sizeof(uint64_t));
 	writeOutputToFileUint64("tests/seed_plaintext", SeedPlaintext[3], 2);
 	seed_old_Encrypt("tests/seed_plaintext", SeedKey[3], seedCiphertext, 1, CPU_DEVICE);
-	for(int i = 0; i < 2; i++){
-			printf("\n%016llx", seedCiphertext[i]);
-	}
 	if (seedCiphertext[0] != SeedCiphertext[3][0] || seedCiphertext[1] != SeedCiphertext[3][1]) {
 		success = 0;
 	}
@@ -73,9 +66,6 @@ int testSeedOldGPU(){
 	uint64_t* seedCiphertext = (uint64_t*)malloc(2*sizeof(uint64_t));
 	writeOutputToFileUint64("tests/seed_plaintext", SeedPlaintext[3], 2);
 	seed_old_Encrypt("tests/seed_plaintext", SeedKey[3], seedCiphertext, 1, GPU_DEVICE);
-	for(int i = 0; i < 2; i++){
-			printf("\n%016llx", seedCiphertext[i]);
-	}
 	if (seedCiphertext[0] != SeedCiphertext[3][0] || seedCiphertext[1] != SeedCiphertext[3][1]) {
 		success = 0;
 	}
@@ -91,9 +81,6 @@ int testSeedCPU(){
 	uint64_t* seedCiphertext = (uint64_t*)malloc(2*sizeof(uint64_t));
 	writeOutputToFileUint64("tests/seed_plaintext", SeedPlaintext[3], 2);
 	seed_Encrypt("tests/seed_plaintext", SeedKey[3], seedCiphertext, 1, CPU_DEVICE);
-	for(int i = 0; i < 2; i++){
-			printf("\n%016llx", seedCiphertext[i]);
-	}
 	if (seedCiphertext[0] != SeedCiphertext[3][0] || seedCiphertext[1] != SeedCiphertext[3][1]) {
 		success = 0;
 	}
@@ -107,9 +94,6 @@ int testSeedGPU(){
 	uint64_t* seedCiphertext = (uint64_t*)malloc(2*sizeof(uint64_t));
 	writeOutputToFileUint64("tests/seed_plaintext", SeedPlaintext[3], 2);
 	seed_Encrypt("tests/seed_plaintext", SeedKey[3], seedCiphertext, 1, GPU_DEVICE);
-	for(int i = 0; i < 2; i++){
-			printf("\n%016llx", seedCiphertext[i]);
-	}
 	if (seedCiphertext[0] != SeedCiphertext[3][0] || seedCiphertext[1] != SeedCiphertext[3][1]) {
 		success = 0;
 	}
@@ -212,9 +196,9 @@ int testSeedCtrGPU(){
 
 int testSeedOld(){
 	int result = 1;
-	log("\n--- --- Starting SEED OLD tests");
+	log("--- --- Starting SEED OLD tests");
 	
-	log("\n\n--- Test SEED OLD CPU starting");
+	log("--- Test SEED OLD CPU starting");
 	if(testSeedOldCPU() == 1){
 		log("--- Test SEED OLD CPU passed");
 	}else{
@@ -222,7 +206,7 @@ int testSeedOld(){
 		result = 0;
 	}
 
-	log("\n\n--- Test SEED OLD GPU starting");
+	log("--- Test SEED OLD GPU starting");
 	if(testSeedOldGPU() == 1){
 		log("--- Test SEED OLD GPU passed");
 	}else{
@@ -230,7 +214,7 @@ int testSeedOld(){
 		result = 0;
 	}
 
-	log("\n\n--- Test SEED OLD CTR CPU starting");
+	log("--- Test SEED OLD CTR CPU starting");
 	if(testSeedOldCtrCPU() == 1){
 		log("--- Test SEED OLD CTR CPU passed");
 	}else{
@@ -238,7 +222,7 @@ int testSeedOld(){
 		result = 0;
 	}
 
-	log("\n\n--- Test SEED OLD CTR GPU starting");
+	log("--- Test SEED OLD CTR GPU starting");
 	if(testSeedOldCtrGPU() == 1){
 		log("--- Test SEED OLD CTR GPU passed");
 	}else{
@@ -247,18 +231,18 @@ int testSeedOld(){
 	}
 
 	if(result != 0){
-		log("\n--- --- All SEED OLD test passed");
+		log("--- --- All SEED OLD test passed");
 	}else{
-		log("\n--- --- Some SEED OLD Test FAILED");
+		log("--- --- Some SEED OLD Test FAILED");
 	}
 	return result;
 }
 
 int testSeed(){
 	int result = 1;
-	log("\n--- --- Starting SEED tests");
+	log("--- --- Starting SEED tests");
 	
-	log("\n\n--- Test SEED CPU starting");
+	log("--- Test SEED CPU starting");
 	if(testSeedCPU() == 1){
 		log("--- Test SEED CPU passed");
 	}else{
@@ -266,7 +250,7 @@ int testSeed(){
 		result = 0;
 	}
 
-	log("\n\n--- Test SEED GPU starting");
+	log("--- Test SEED GPU starting");
 	if(testSeedGPU() == 1){
 		log("--- Test SEED GPU passed");
 	}else{
@@ -274,7 +258,7 @@ int testSeed(){
 		result = 0;
 	}
 
-	log("\n\n--- Test SEED CTR CPU starting");
+	log("--- Test SEED CTR CPU starting");
 	if(testSeedCtrCPU() == 1){
 		log("--- Test SEED CTR CPU passed");
 	}else{
@@ -282,7 +266,7 @@ int testSeed(){
 		result = 0;
 	}
 
-	log("\n\n--- Test SEED CTR GPU starting");
+	log("--- Test SEED CTR GPU starting");
 	if(testSeedCtrGPU() == 1){
 		log("--- Test SEED CTR GPU passed");
 	}else{
@@ -291,9 +275,9 @@ int testSeed(){
 	}
 
 	if(result != 0){
-		log("\n--- --- All SEED test passed");
+		log("--- --- All SEED test passed");
 	}else{
-		log("\n--- --- Some SEED Test FAILED");
+		log("--- --- Some SEED Test FAILED");
 	}
 	return result;
 }
@@ -304,9 +288,9 @@ int testSeedAll(){
 	int tSeed = testSeed();	
 	int result = tSeedOld&&tSeed;
 	if(result){
-		log("\n--- --- --- ALL SEED TEST PASSED");
+		log("--- --- --- ALL SEED TEST PASSED");
 	}else{
-		log("\n--- --- --- TEST SEED FAILED");
+		log("--- --- --- TEST SEED FAILED");
 	}
 	return result;
 

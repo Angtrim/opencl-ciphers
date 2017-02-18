@@ -3,6 +3,7 @@
 
 int mainBench(){
 	int localSize[] = {2,4,20,100};
+	printf("\nSTARTING BENCHMARKS");
  benchAes128Multiple(100000,localSize,4,1);
  benchAes192Multiple(100000,localSize,4,1);
  benchAes256Multiple(100000,localSize,4,1);
