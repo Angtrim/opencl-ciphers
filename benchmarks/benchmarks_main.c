@@ -18,7 +18,8 @@ int mainBench(){
  benchClefia128Multiple(100000, localSize, 4,0);
  benchClefia192Multiple(100000, localSize, 4,0);
  benchClefia256Multiple(100000, localSize, 4,0);
- benchPresentMemoryMultiple(100000, localSize, 4,1);
- benchPresentSpeedMultiple(1000000, localSize, 4,1);
- benchHightMultiple(1000000, localSize, 4, 1);
+ benchHightMultiple(1000000, localSize, 4, 0);
+ benchPresentSpeedMultiple(1000000, localSize, 4,0);
+ benchPresentMemoryMultiple(100000, localSize, 4,0);
+ 
 }

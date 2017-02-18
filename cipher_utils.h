@@ -33,4 +33,5 @@ long getByteLenght(char* filePath);
 void loadClaProgramSource(char* fileName,char** source_str,size_t* source_size);
 void setDeviceType(char* deviceType,cl_device_type* deviceTypeCl);
 void logBuildError(cl_int* ret, cl_program* program, cl_device_id* deviceId);
+void initClSetup(cl_device_id* device_id,cl_device_type* device_type,cl_context* context,cl_command_queue* command_queue);
 #endif

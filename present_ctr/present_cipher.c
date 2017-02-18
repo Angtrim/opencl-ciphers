@@ -7,33 +7,7 @@
 
 /* set up the opencl parameters */
 static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName,long bufferLenght){
-	/* Get Platform and Device Info */
-	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
-	// allocate memory, get list of platforms
-  	cl_platform_id *platforms = (cl_platform_id *) malloc(ret_num_platforms*sizeof(platform_id));
-
-   	clGetPlatformIDs(ret_num_platforms, platforms, NULL);
-
-	// iterate over platforms
-	for (cl_uint i = 0; i < ret_num_platforms; ++i)
-	{
-		ret = clGetDeviceIDs(platforms[i], device_type, 1, &device_id, &ret_num_devices);
-  
-	}
-
-	free(platforms);
-
-	/* Create OpenCL context */
-	context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
-	if(ret != CL_SUCCESS){
-		printf("Failed to create context\n");
-	}
-
-	/* Create Command Queue */
-	command_queue = clCreateCommandQueue(context, device_id, CL_QUEUE_PROFILING_ENABLE, &ret);
-	if(ret != CL_SUCCESS){
-		printf("Failed to create commandqueue\n");
-	}
+ initClSetup(&device_id,&device_type,&context,&command_queue);
 
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);

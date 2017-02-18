@@ -91,9 +91,9 @@ void loadClProgramSource(char* fileName,char** source_str,size_t* source_size){
 /* Selecting the device */
 void setDeviceType(char* deviceType,cl_device_type* deviceTypeCl){
 	if(strcmp(deviceType,"CPU") == 0){
-			*deviceTypeCl = CL_DEVICE_TYPE_CPU;
+		*deviceTypeCl = CL_DEVICE_TYPE_CPU;
 	}else if(strcmp(deviceType, "GPU") == 0){
-		 *deviceTypeCl = CL_DEVICE_TYPE_GPU;
+		*deviceTypeCl = CL_DEVICE_TYPE_GPU;
 	}
 }
 
@@ -109,6 +109,32 @@ void logBuildError(cl_int* ret,cl_program* program, cl_device_id* deviceId){
 	clGetProgramBuildInfo(*program, *deviceId, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
 	// Print the log
 	printf("%s\n", log);
+}
+
+void initClSetup(cl_device_id* device_id,cl_device_type* device_type,cl_context* context,cl_command_queue* command_queue){
+ cl_uint ret_num_devices;
+ cl_uint ret_num_platforms;
+ cl_platform_id platform_id = NULL;
+	// Get Platform and Device Info 
+	cl_int ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
+	// allocate memory, get list of platforms
+	cl_platform_id *platforms = (cl_platform_id *) malloc(ret_num_platforms*sizeof(platform_id));
+	clGetPlatformIDs(ret_num_platforms, platforms, NULL);
+	// iterate over platforms
+	for (cl_uint i = 0; i < ret_num_platforms; ++i){
+		ret = clGetDeviceIDs(platforms[i], *device_type, 1, &(*device_id), &ret_num_devices);
+	}
+	free(platforms);
+	// Create OpenCL context 
+	*context = clCreateContext(NULL, 1, &(*device_id), NULL, NULL, &ret);
+	if(ret != CL_SUCCESS){
+		printf("Failed to create context\n");
+	}
+	// Create Command Queue 
+	*command_queue = clCreateCommandQueue(*context, *device_id, CL_QUEUE_PROFILING_ENABLE, &ret);
+	if(ret != CL_SUCCESS){
+		printf("Failed to create commandqueue\n");
+	}
 }
 
 

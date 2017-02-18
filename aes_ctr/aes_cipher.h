@@ -40,9 +40,6 @@ static cl_mem exKey = NULL;
 
 static cl_program program = NULL;
 static cl_kernel kernel = NULL;
-static cl_platform_id platform_id = NULL;
-static cl_uint ret_num_devices;
-static cl_uint ret_num_platforms;
 static cl_int ret;
 
 //cl file parameters
