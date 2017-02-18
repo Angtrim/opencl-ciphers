@@ -41,6 +41,10 @@ The benchmarks suite that can be used to verify the performances of the algorith
 
 
 By calling the makefile a binary executable is produced that call all the functions of the test suite and tries some default benchmarks.
+
+`make ubuntu`
+`make apple`
+
 The output of the benchmarks suite are .dat file that provide the statistics about the performances measured.
 They can be visualized with gnuplot
 For more details check : benchmarks/benchmarks_main.c and /tests/test_main.c
