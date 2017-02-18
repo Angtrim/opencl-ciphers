@@ -3,7 +3,7 @@
 
 static void setUpOpenCl(uint8_t* inputText, char* kernelName, uint8_t* key, int R, int rk_dim,long bufferLenght){
 	
- initClSetup(&device_id,&device_type,&context,&command_queue);
+	initClSetup(&device_id,&device_type,&context,&command_queue);
 
 	/* Create Memory Buffers */
 	_rk = clCreateBuffer(context, CL_MEM_READ_WRITE, rk_dim * sizeof(uint8_t), NULL, &ret);
@@ -28,7 +28,7 @@ static void setUpOpenCl(uint8_t* inputText, char* kernelName, uint8_t* key, int 
 	char* opt = "-cl-opt-disable";
 	ret = clBuildProgram(program, 1, &device_id, opt, NULL, NULL);
 	if(ret != CL_SUCCESS){
-			logBuildError(&ret,&program,&device_id);
+		logBuildError(&ret,&program,&device_id);
 	}
 	
 	/* Create OpenCL Kernel */
@@ -65,12 +65,12 @@ static void finalizeExecution(uint8_t* inputText){
 cl_event clefia_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size,int mode, int isCtr){
 
 	struct FileInfo fileInfo = getFileBytes(fileName);
-    
- 	uint8_t* inputText = fileInfo.filePointer;
+	
+	uint8_t* inputText = fileInfo.filePointer;
 
 	//number of blocks 
-        long lenght = fileInfo.lenght;
- if(source_str == NULL){
+	long lenght = fileInfo.lenght;
+	if(source_str == NULL){
 		loadClProgramSource(clFileName,&source_str,&source_size);
 	}
 
@@ -79,15 +79,15 @@ cl_event clefia_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t 
 	uint8_t rk[rk_dim];
 	int R = 0;
 	switch(mode){
-	case 128:
+		case 128:
 		Clefia128KeySet(rk, key);
 		R = 18;
 		break;
-	case 192:
+		case 192:
 		Clefia192KeySet(rk, key);
 		R = 22;
 		break;
-	case 256:
+		case 256:
 		Clefia256KeySet(rk, key);
 		R = 26;
 		break;	

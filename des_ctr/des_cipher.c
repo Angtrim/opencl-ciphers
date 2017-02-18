@@ -3,7 +3,7 @@
 
 static void setUpOpenCl(byte* inputText, char* kernelName, des_context* K, long bufferLenght){
 	
- initClSetup(&device_id,&device_type,&context,&command_queue);
+	initClSetup(&device_id,&device_type,&context,&command_queue);
 	/* Create Memory Buffers */
 	_esk = clCreateBuffer(context, CL_MEM_READ_WRITE, 32*sizeof(uint32_t), NULL, &ret); 
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint8_t), NULL, &ret);
@@ -24,7 +24,7 @@ static void setUpOpenCl(byte* inputText, char* kernelName, des_context* K, long 
 	/* Build Kernel Program */
 	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
-			logBuildError(&ret,&program,&device_id);
+		logBuildError(&ret,&program,&device_id);
 	}
 	
 	/* Create OpenCL Kernel */
@@ -44,9 +44,9 @@ static void setUpOpenCl_2_3(uint8_t* inputText, char* kernelName, des3_context* 
 	/* Get Platform and Device Info */
 	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
 	// allocate memory, get list of platforms
-  	cl_platform_id *platforms = (cl_platform_id *) malloc(ret_num_platforms*sizeof(platform_id));
+	cl_platform_id *platforms = (cl_platform_id *) malloc(ret_num_platforms*sizeof(platform_id));
 
-   	clGetPlatformIDs(ret_num_platforms, platforms, NULL);
+	clGetPlatformIDs(ret_num_platforms, platforms, NULL);
 
 	// iterate over platforms
 	for (cl_uint i = 0; i < ret_num_platforms; ++i)
@@ -137,13 +137,13 @@ cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t loc
 
 	
 	struct FileInfo fileInfo = getFileBytes(fileName);
-    
- 	uint8_t* inputText = fileInfo.filePointer;
+	
+	uint8_t* inputText = fileInfo.filePointer;
 
- if(source_str == NULL){
+	if(source_str == NULL){
 		loadClProgramSource(clFileName,&source_str,&source_size);
 	}
-    
+	
 	char* modality;
 	if(isCtr){
 		if(mode == 1){
@@ -164,15 +164,15 @@ cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t loc
 	des3_context _K;
 	// Key expansion is performed on CPU
 	switch(mode){
-	case 1:
+		case 1:
 		des_expandkey(&K, key);
 		setUpOpenCl(inputText, modality, &K, fileInfo.lenght);
 		break;
-	case 2:
+		case 2:
 		tdes2_expandkey(&_K, key);
 		setUpOpenCl_2_3(inputText, modality, &_K, fileInfo.lenght);
 		break;
-	case 3: 
+		case 3: 
 		tdes3_expandkey(&_K, key);
 		setUpOpenCl_2_3(inputText, modality, &_K, fileInfo.lenght);
 		break;	

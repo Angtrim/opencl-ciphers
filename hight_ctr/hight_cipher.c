@@ -3,7 +3,7 @@
 
 static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* WK, uint8_t* SK, long bufferLenght){
 	/* Get Platform and Device Info */
- initClSetup(&device_id,&device_type,&context,&command_queue);
+	initClSetup(&device_id,&device_type,&context,&command_queue);
 
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
@@ -26,7 +26,7 @@ static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* WK, uint8_t*
 	
 	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
-			logBuildError(&ret,&program,&device_id);
+		logBuildError(&ret,&program,&device_id);
 	}
 	
 	/* Create OpenCL Kernel */
@@ -65,15 +65,15 @@ cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 
 	
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
-    
- 	uint64_t* inputText = fileInfo.filePointer;
-    
- if(source_str == NULL){
+	
+	uint64_t* inputText = fileInfo.filePointer;
+	
+	if(source_str == NULL){
 		loadClProgramSource(clFileName,&source_str,&source_size);
 	}
 
 	uint8_t SK[128];
- 	uint8_t WK[8];
+	uint8_t WK[8];
 	hight_expandkey(key, WK, SK);
 	
 	char* modality;
@@ -109,7 +109,7 @@ cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 cl_event hightEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
 
 	setDeviceType(deviceType,&device_type);
-		
+	
 	return hEncript(fileName,key,output,local_item_size,0);
 }	
 

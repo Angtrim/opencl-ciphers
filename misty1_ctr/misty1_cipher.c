@@ -4,7 +4,7 @@
 
 static void setUpOpenCl(uint64_t* inputText,  char* kernelName,uint16_t* EK, long bufferLenght){
 	/* Get Platform and Device Info */
- initClSetup(&device_id,&device_type,&context,&command_queue);
+	initClSetup(&device_id,&device_type,&context,&command_queue);
 
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
@@ -24,7 +24,7 @@ static void setUpOpenCl(uint64_t* inputText,  char* kernelName,uint16_t* EK, lon
 	
 	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
-			logBuildError(&ret,&program,&device_id);
+		logBuildError(&ret,&program,&device_id);
 	}
 	
 	/* Create OpenCL Kernel */
@@ -60,12 +60,12 @@ cl_event mEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 
 	
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
-    
- 	uint64_t* inputText = fileInfo.filePointer;
+	
+	uint64_t* inputText = fileInfo.filePointer;
 	//number of blocks 
-        long lenght = fileInfo.lenght;
-    
- if(source_str == NULL){
+	long lenght = fileInfo.lenght;
+	
+	if(source_str == NULL){
 		loadClProgramSource(clFileName,&source_str,&source_size);
 	}
 

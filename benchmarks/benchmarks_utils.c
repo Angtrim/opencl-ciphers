@@ -56,10 +56,10 @@ void saveDataToFile(char* nameCiph,int onGPU,struct BenchInfo* infos,int numInfo
 	fprintf(fp, "%s %ld\n","# FILESIZE (bytes): ",infos[0].fileSize);
 	fprintf(fp, "%s %s\n","# DEVICE: ",device);
 
- fprintf(fp, "\n\n%s \t  %s \n","# LOCAL_SIZE","TOTAL_TIME (ns)");
+	fprintf(fp, "\n\n%s \t  %s \n","# LOCAL_SIZE","TOTAL_TIME (ns)");
 
 	for(int i = 0;i< numInfos;i++){
-			fprintf(fp, "%d %ld\n",infos[i].localSize, infos[i].totalTime);
+		fprintf(fp, "%d %ld\n",infos[i].localSize, infos[i].totalTime);
 	}
 	
 	fclose(fp);

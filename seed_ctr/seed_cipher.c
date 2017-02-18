@@ -7,11 +7,11 @@
 
 /* set up the opencl parameters */
 static void setUpOpenCl(uint64_t* inputText, uint32_t* Ki, char* kernelName, long bufferLenght){
- initClSetup(&device_id,&device_type,&context,&command_queue);
+	initClSetup(&device_id,&device_type,&context,&command_queue);
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
 	_Ki = clCreateBuffer(context, CL_MEM_READ_WRITE, 32 * sizeof(uint32_t), NULL, &ret);
- out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
+	out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
 
 
 	/* Copy input data to Memory Buffer */
@@ -28,7 +28,7 @@ static void setUpOpenCl(uint64_t* inputText, uint32_t* Ki, char* kernelName, lon
 	/* Build Kernel Program */
 	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
-			logBuildError(&ret,&program,&device_id);
+		logBuildError(&ret,&program,&device_id);
 	}
 	
 	/* Create OpenCL Kernel */
@@ -66,9 +66,9 @@ cl_event seed_encryption(char* fileName, uint32_t* Key, uint64_t* output, size_t
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
 
     //plaintext divided in blocks of uint64_t
-    uint64_t* inputText = fileInfo.filePointer;
+	uint64_t* inputText = fileInfo.filePointer;
     //number of blocks 
-    long lenght = fileInfo.lenght;
+	long lenght = fileInfo.lenght;
 	
 	uint32_t Ki[32];
 	
@@ -81,46 +81,46 @@ cl_event seed_encryption(char* fileName, uint32_t* Key, uint64_t* output, size_t
 		
 		if(isCtr)
 		modality = "seed_oldCtrCipher";
-		else
-		modality = "seed_oldCipher";
-		
-	} else if(strcmp(encryptionType, SEED) == 0){
+	else
+	modality = "seed_oldCipher";
+
+} else if(strcmp(encryptionType, SEED) == 0){
 		//key expansion is performed on the cpu
-		seed_expandkey(Key, Ki);
-		
-		if(isCtr)
-		modality = "seedCtrCipher";
-		else
-		modality = "seedCipher";
-			
-	}
+	seed_expandkey(Key, Ki);
+	
+	if(isCtr)
+	modality = "seedCtrCipher";
+else
+modality = "seedCipher";
 
- if(source_str == NULL){
-		loadClProgramSource(clFileName,&source_str,&source_size);
-	}
-        
+}
 
-    setUpOpenCl(inputText, Ki, modality, lenght);
+if(source_str == NULL){
+	loadClProgramSource(clFileName,&source_str,&source_size);
+}
 
 
-    size_t global_item_size = lenght/2;
+setUpOpenCl(inputText, Ki, modality, lenght);
+
+
+size_t global_item_size = lenght/2;
 
 	/* Execute OpenCL Kernel instances */
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
-	if(ret != CL_SUCCESS){
-		printf("Failed to enqueue NDRangeKernel. Error code: %d", ret);	
-	}
+ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &event);
+if(ret != CL_SUCCESS){
+	printf("Failed to enqueue NDRangeKernel. Error code: %d", ret);	
+}
 
-	clWaitForEvents(1, &event);
-	clFinish(command_queue);
+clWaitForEvents(1, &event);
+clFinish(command_queue);
 
 	/* Copy results from the memory buffer */
-	ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
-	lenght * sizeof(uint64_t),output, 0, NULL, NULL);
-	
-	finalizeExecution( inputText);
-	
-	return event;
+ret = clEnqueueReadBuffer(command_queue, out, CL_TRUE, 0,
+lenght * sizeof(uint64_t),output, 0, NULL, NULL);
+
+finalizeExecution( inputText);
+
+return event;
 }
 
 cl_event seed_old_Encrypt(char* fileName, uint32_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
