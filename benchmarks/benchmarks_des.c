@@ -106,7 +106,7 @@ void benchDesMultiple(int fileSize,int* localSize, int numOfLocalSizes, int onGP
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchDes(fileSize,localSize[i],onGPU,&infos[i]);
 	}
-	saveDataToFile("Des",infos,numOfLocalSizes);
+	saveDataToFile("Des",onGPU,infos,numOfLocalSizes);
 }
 
 void benchDes2Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
@@ -114,7 +114,7 @@ void benchDes2Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onG
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchDes2(fileSize,localSize[i],onGPU,&infos[i]);
 	}
-	saveDataToFile("Des2",infos,numOfLocalSizes);
+	saveDataToFile("Des2",onGPU,infos,numOfLocalSizes);
 }
 
 void benchDes3Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
@@ -122,5 +122,5 @@ void benchDes3Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onG
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchDes3(fileSize,localSize[i],onGPU,&infos[i]);
 	}
-	saveDataToFile("Des3",infos,numOfLocalSizes);
+	saveDataToFile("Des3",onGPU,infos,numOfLocalSizes);
 }

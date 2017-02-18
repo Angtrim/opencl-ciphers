@@ -49,5 +49,5 @@ void benchMisty1CtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, in
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchMisty1Ctr(fileSize,localSize[i],onGPU,&infos[i]);
 	}
-	saveDataToFile("Misty",infos,numOfLocalSizes);
+	saveDataToFile("Misty1",onGPU,infos,numOfLocalSizes);
 }

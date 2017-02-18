@@ -108,7 +108,7 @@ void benchAes128Multiple(int fileSize,int* localSize, int numOfLocalSizes, int o
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchAes128(fileSize,localSize[i],onGPU,&infos[i]);
 	}
-	saveDataToFile("AES128",infos,numOfLocalSizes);
+	saveDataToFile("AES128",onGPU,infos,numOfLocalSizes);
 }
 
 void benchAes192Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
@@ -116,7 +116,7 @@ void benchAes192Multiple(int fileSize,int* localSize, int numOfLocalSizes, int o
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchAes192(fileSize,localSize[i],onGPU,&infos[i]);
 	}
-	saveDataToFile("AES192",infos,numOfLocalSizes);
+	saveDataToFile("AES192",onGPU,infos,numOfLocalSizes);
 }
 
 void benchAes256Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
@@ -124,5 +124,5 @@ void benchAes256Multiple(int fileSize,int* localSize, int numOfLocalSizes, int o
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchAes256(fileSize,localSize[i],onGPU,&infos[i]);
 	}
-	saveDataToFile("AES256",infos,numOfLocalSizes);
+	saveDataToFile("AES256",onGPU,infos,numOfLocalSizes);
 }

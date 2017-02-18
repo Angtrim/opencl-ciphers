@@ -50,4 +50,5 @@ void benchHightMultiple(int fileSize,int* localSize, int numOfLocalSizes, int on
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchHight(fileSize,localSize[i],onGPU,&infos[i]);
 	}
+	saveDataToFile("Hight",onGPU,infos,numOfLocalSizes);
 }

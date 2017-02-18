@@ -9,7 +9,7 @@ static struct BenchInfo {
 }; 
 
 void buildFileOfZeroes(char* outFileName,long lenght);
-void saveDataToFile(char* nameCiph,struct BenchInfo* infos,int numInfos);
+void saveDataToFile(char* nameCiph,int onGpu,struct BenchInfo* infos,int numInfos);
 
 
 #endif

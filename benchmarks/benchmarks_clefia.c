@@ -53,7 +53,7 @@ void benchClefia128Multiple(int fileSize,int* localSize, int numOfLocalSizes, in
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchClefia128(fileSize,localSize[i],onGPU,&infos[i]);
 	}
-	saveDataToFile("Clefia128",infos,numOfLocalSizes);
+	saveDataToFile("Clefia128",onGPU,infos,numOfLocalSizes);
 }
 
 void benchClefia256(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
@@ -90,7 +90,7 @@ void benchClefia256Multiple(int fileSize,int* localSize, int numOfLocalSizes, in
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchClefia256(fileSize,localSize[i],onGPU,&infos[i]);
 	}
-	saveDataToFile("Clefia256",infos,numOfLocalSizes);
+	saveDataToFile("Clefia256",onGPU,infos,numOfLocalSizes);
 }
 
 void benchClefia192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
@@ -127,6 +127,6 @@ void benchClefia192Multiple(int fileSize,int* localSize, int numOfLocalSizes, in
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchClefia192(fileSize,localSize[i],onGPU,&infos[i]);
 	}
-	saveDataToFile("Clefia192",infos,numOfLocalSizes);
+	saveDataToFile("Clefia192",onGPU,infos,numOfLocalSizes);
 }
 

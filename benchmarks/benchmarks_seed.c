@@ -79,7 +79,7 @@ void benchSeedOldCtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, i
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchSeedOldCtr(fileSize,localSize[i],onGPU,&infos[i]);
 	}
-	saveDataToFile("SeedOld",infos,numOfLocalSizes);
+	saveDataToFile("SeedOLD",onGPU,infos,numOfLocalSizes);
 }
 
 void benchSeedCtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
@@ -87,5 +87,5 @@ void benchSeedCtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, int 
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchSeedCtr(fileSize,localSize[i],onGPU,&infos[i]);
 	}
-	saveDataToFile("Seed",infos,numOfLocalSizes);
+	saveDataToFile("Seed",onGPU,infos,numOfLocalSizes);
 }
