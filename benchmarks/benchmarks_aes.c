@@ -29,7 +29,7 @@ void benchAes128(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = aes128CtrEncrypt(fileName, aes128Key, aesCiphertext, 1, device);
+	event = aes128CtrEncrypt(fileName, aes128Key, aesCiphertext, localSize, device);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
@@ -58,7 +58,7 @@ void benchAes192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = aes192CtrEncrypt(fileName, aes192Key, aesCiphertext, 1, device);
+	event = aes192CtrEncrypt(fileName, aes192Key, aesCiphertext, localSize, device);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
@@ -87,7 +87,7 @@ void benchAes256(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = aes256CtrEncrypt(fileName, aes256Key, aesCiphertext, 1, device);
+	event = aes256CtrEncrypt(fileName, aes256Key, aesCiphertext, localSize, device);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
