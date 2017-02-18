@@ -35,6 +35,7 @@ This project provides the open-cl implementations of the following ciphers, with
 The project is divided in 3 main parts.
 
 The implementation itself of the algorithms.
+
 The test suite that verifies the correctness of the implemented algorithms.
 
 The benchmarks suite that can be used to verify the performances of the algorithms by choosing the parallelization parameters and the file size.
