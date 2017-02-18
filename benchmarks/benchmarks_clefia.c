@@ -33,7 +33,7 @@ void benchClefia128(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	uint8_t* clefCiphertext = (uint8_t*)malloc(fileSize*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = clefia_128_Encrypt(fileName, skey, clefCiphertext, 1,device);
+	event = clefia_128_Encrypt(fileName, skey, clefCiphertext, localSize,device);
 
 	/* compute execution time */
 	double total_time;
@@ -70,7 +70,7 @@ void benchClefia256(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	uint8_t* clefCiphertext = (uint8_t*)malloc(fileSize*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = clefia_256_Encrypt(fileName, skey, clefCiphertext, 1,device);
+	event = clefia_256_Encrypt(fileName, skey, clefCiphertext, localSize,device);
 
 	/* compute execution time */
 	double total_time;
@@ -107,7 +107,7 @@ void benchClefia192(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	uint8_t* clefCiphertext = (uint8_t*)malloc(fileSize*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = clefia_192_Encrypt(fileName, skey, clefCiphertext, 1,device);
+	event = clefia_192_Encrypt(fileName, skey, clefCiphertext, localSize,device);
 
 	/* compute execution time */
 	double total_time;

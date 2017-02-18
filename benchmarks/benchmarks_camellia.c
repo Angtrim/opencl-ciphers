@@ -30,7 +30,7 @@ void benchCam128(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	uint64_t* camCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = camelliaCtr128Encrypt(fileName, Key128, camCiphertext, 1,device);
+	event = camelliaCtr128Encrypt(fileName, Key128, camCiphertext,localSize,device);
 
 	/* compute execution time */
 	double total_time;
@@ -67,7 +67,7 @@ void benchCam192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	uint64_t* camCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = camelliaCtr192Encrypt(fileName, Key192, camCiphertext, 1,device);
+	event = camelliaCtr192Encrypt(fileName, Key192, camCiphertext, localSize,device);
 
 	/* compute execution time */
 	double total_time;
@@ -104,7 +104,7 @@ void benchCam256(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	uint64_t* camCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = camelliaCtr256Encrypt(fileName, Key256, camCiphertext, 1,device);
+	event = camelliaCtr256Encrypt(fileName, Key256, camCiphertext, localSize,device);
 
 	/* compute execution time */
 	double total_time;
