@@ -6,7 +6,6 @@
 #include "test_hight.h"
 #include "test_present.h"
 #include "test_seed.h"
-#include "test2.h"
 #include "../benchmarks/benchmarks_main.h"
 
 
@@ -31,6 +30,6 @@ int main(){
 
 		mainBench();
 
-	 //	testFra();
+
 
 }

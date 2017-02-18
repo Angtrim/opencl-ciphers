@@ -110,8 +110,8 @@ int testCamellia256GPU(){
 
 int testCamelliaCTR128CPU(){
 	int success = 1;
-	char* fileName = "camTest1";
-	char* fileNameOut = "camTestOut1";
+	char* fileName = "camTest";
+	char* fileNameOut = "camTestOut";
 	uint64_t out[2];
 	uint64_t outC[2];
 	writeOutputToFileUint64(fileName,Plaintext128,2);
@@ -121,8 +121,8 @@ int testCamelliaCTR128CPU(){
 	if (Plaintext128[0] != outC[0] || Plaintext128[1] != outC[1]) {
 		success = 0;
 	}
-	//remove(fileName);
-	//remove(fileNameOut);
+	remove(fileName);
+	remove(fileNameOut);
 	return success;
 }
 
