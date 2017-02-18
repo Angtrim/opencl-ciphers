@@ -38,7 +38,7 @@ static void setUpOpenCl(uint64_t* inputText, uint32_t* Ki, char* kernelName, lon
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
 	_Ki = clCreateBuffer(context, CL_MEM_READ_WRITE, 32 * sizeof(uint32_t), NULL, &ret);
-    out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
+ out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
 
 
 	/* Copy input data to Memory Buffer */
@@ -55,20 +55,7 @@ static void setUpOpenCl(uint64_t* inputText, uint32_t* Ki, char* kernelName, lon
 	/* Build Kernel Program */
 	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
-		printf("Build Error = %i", ret);
-		
-		// Determine the size of the log
-		size_t log_size;
-		clGetProgramBuildInfo(program, device_id, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
-
-		// Allocate memory for the log
-		char *log = (char *) malloc(log_size);
-
-		// Get the log
-		clGetProgramBuildInfo(program, device_id, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
-
-		// Print the log
-		printf("%s\n", log);
+			logBuildError(&ret,&program,&device_id);
 	}
 	
 	/* Create OpenCL Kernel */

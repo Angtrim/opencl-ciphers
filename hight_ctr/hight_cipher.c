@@ -51,20 +51,7 @@ static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* WK, uint8_t*
 	
 	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
-		printf("\nBuild Error = %i", ret);
-		
-		// Determine the size of the log
-		size_t log_size;
-		clGetProgramBuildInfo(program, device_id, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
-
-		// Allocate memory for the log
-		char *log = (char *) malloc(log_size);
-
-		// Get the log
-		clGetProgramBuildInfo(program, device_id, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
-
-		// Print the log
-		printf("%s\n", log);
+			logBuildError(&ret,&program,&device_id);
 	}
 	
 	/* Create OpenCL Kernel */

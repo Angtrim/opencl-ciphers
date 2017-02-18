@@ -32,4 +32,5 @@ struct FileInfo getFileBytes(char* filePath);
 long getByteLenght(char* filePath);
 void loadClaProgramSource(char* fileName,char** source_str,size_t* source_size);
 void setDeviceType(char* deviceType,cl_device_type* deviceTypeCl);
+void logBuildError(cl_int* ret, cl_program* program, cl_device_id* deviceId);
 #endif
