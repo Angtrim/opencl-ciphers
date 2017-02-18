@@ -30,6 +30,10 @@ This project provides the open-cl implementations of the following ciphers, with
 - SEED OLD
 - SEED
 
+## Prerequisites
+
+To use this library you need to install on your machine the opencl framework and the drivers of your devices (cpu/gpu)
+
 ## Project details
 
 The project is divided in 3 main parts.
@@ -43,7 +47,7 @@ The benchmarks suite that can be used to verify the performances of the algorith
 
 By calling the makefile a binary executable is produced that call all the functions of the test suite and tries some default benchmarks.
 
-`make ubuntu`
+`make ubuntu OPENCL_INC=/usr/local/cuda-8.0/include OPENCL_LIB=/usr/local/cuda-8.0/lib64`
 `make apple`
 
 The output of the benchmarks suite are .dat file that provide the statistics about the performances measured.
