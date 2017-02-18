@@ -36,9 +36,13 @@ The project is divided in 3 main parts.
 
 The implementation itself of the algorithms.
 The test suite that verifies the correctness of the implemented algorithms.
+
 The benchmarks suite that can be used to verify the performances of the algorithms by choosing the parallelization parameters and the file size.
 
+
 By calling the makefile a binary executable is produced that call all the functions of the test suite and tries some default benchmarks.
+The output of the benchmarks suite are .dat file that provide the statistics about the performances measured.
+They can be visualized with gnuplot
 For more details check : benchmarks/benchmarks_main.c and /tests/test_main.c
 
 ## Usage
