@@ -118,7 +118,7 @@ void initClSetup(cl_device_id* device_id,cl_device_type* device_type,cl_context*
 	cl_int ret;
 
 	cl_platform_id *platforms = (cl_platform_id *) malloc(sizeof(platform_id));
-	clGetPlatformIDs(ret_num_platforms, platforms, NULL);
+	clGetPlatformIDs(1, platforms, NULL);
 	// iterate over platforms
 	ret = clGetDeviceIDs(platforms[0], *device_type, 1, &(*device_id), &ret_num_devices);
 
