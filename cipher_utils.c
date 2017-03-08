@@ -128,7 +128,7 @@ void initClSetup(cl_device_id* device_id,cl_device_type* device_type,cl_context*
 	// Create OpenCL context 
 	*context = clCreateContext(NULL, 1, &(*device_id), NULL, NULL, &ret);
 	if(ret != CL_SUCCESS){
-		printf("Failed to create context\n");
+		printf("Failed to create context : %d\n",ret);
 	}
 	// Create Command Queue 
 	*command_queue = clCreateCommandQueue(*context, *device_id, CL_QUEUE_PROFILING_ENABLE, &ret);
