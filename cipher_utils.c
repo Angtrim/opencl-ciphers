@@ -121,7 +121,9 @@ void initClSetup(cl_device_id* device_id,cl_device_type* device_type,cl_context*
 	clGetPlatformIDs(1, platforms, NULL);
 	// iterate over platforms
 	ret = clGetDeviceIDs(platforms[0], *device_type, 1, &(*device_id), &ret_num_devices);
-
+	if(ret != CL_SUCCESS){
+		printf("Failed to get device : %d\n",ret);
+	}
 	free(platforms);
 	// Create OpenCL context 
 	*context = clCreateContext(NULL, 1, &(*device_id), NULL, NULL, &ret);
