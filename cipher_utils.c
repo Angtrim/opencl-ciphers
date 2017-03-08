@@ -115,15 +115,13 @@ void initClSetup(cl_device_id* device_id,cl_device_type* device_type,cl_context*
 	cl_uint ret_num_devices;
 	cl_uint ret_num_platforms;
 	cl_platform_id platform_id = NULL;
-	// Get Platform and Device Info 
-	cl_int ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
-	// allocate memory, get list of platforms
-	cl_platform_id *platforms = (cl_platform_id *) malloc(ret_num_platforms*sizeof(platform_id));
+	cl_int ret;
+
+	cl_platform_id *platforms = (cl_platform_id *) malloc(sizeof(platform_id));
 	clGetPlatformIDs(ret_num_platforms, platforms, NULL);
 	// iterate over platforms
-	for (cl_uint i = 0; i < ret_num_platforms; ++i){
-		ret = clGetDeviceIDs(platforms[i], *device_type, 1, &(*device_id), &ret_num_devices);
-	}
+	ret = clGetDeviceIDs(platforms[0], *device_type, 1, &(*device_id), &ret_num_devices);
+
 	free(platforms);
 	// Create OpenCL context 
 	*context = clCreateContext(NULL, 1, &(*device_id), NULL, NULL, &ret);
