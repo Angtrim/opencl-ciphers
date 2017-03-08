@@ -6,10 +6,12 @@
 #include "test_hight.h"
 #include "test_present.h"
 #include "test_seed.h"
+#include "../cipher_utils.h"
 #include "../benchmarks/benchmarks_main.h"
 
 
 int main(){
+		getSystemInfo();
 		int aesResult = testAESAll();
 		int misty1Result = testMisty1All();
 		int desResult = testDESAll();
