@@ -1,9 +1,9 @@
 #include "des_cipher.h"
 
 
-static void setUpOpenCl(byte* inputText, char* kernelName, des_context* K, long bufferLenght){
+static void setUpOpenCl(byte* inputText, char* kernelName, des_context* K, long bufferLenght,cl_device_id* device_id){
 	
-	initClSetup(&device_id,&device_type,&context,&command_queue);
+	initClSetup(device_id,&device_type,&context,&command_queue);
 	/* Create Memory Buffers */
 	_esk = clCreateBuffer(context, CL_MEM_READ_WRITE, 32*sizeof(uint32_t), NULL, &ret); 
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint8_t), NULL, &ret);
@@ -22,9 +22,9 @@ static void setUpOpenCl(byte* inputText, char* kernelName, des_context* K, long 
 	}
 	
 	/* Build Kernel Program */
-	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
+	ret = clBuildProgram(program, 1, device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
-		logBuildError(&ret,&program,&device_id);
+		logBuildError(&ret,&program,device_id);
 	}
 	
 	/* Create OpenCL Kernel */
@@ -39,31 +39,17 @@ static void setUpOpenCl(byte* inputText, char* kernelName, des_context* K, long 
 	ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&out);
 }
 
-static void setUpOpenCl_2_3(uint8_t* inputText, char* kernelName, des3_context* K, long bufferLenght){
+static void setUpOpenCl_2_3(uint8_t* inputText, char* kernelName, des3_context* K, long bufferLenght,cl_device_id* device_id){
 
-	/* Get Platform and Device Info */
-	ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
-	// allocate memory, get list of platforms
-	cl_platform_id *platforms = (cl_platform_id *) malloc(ret_num_platforms*sizeof(platform_id));
-
-	clGetPlatformIDs(ret_num_platforms, platforms, NULL);
-
-	// iterate over platforms
-	for (cl_uint i = 0; i < ret_num_platforms; ++i)
-	{
-		ret = clGetDeviceIDs(platforms[i], device_type, 1, &device_id, &ret_num_devices);   
-	}
-
-	free(platforms);
 
 	/* Create OpenCL context */
-	context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
+	context = clCreateContext(NULL, 1, device_id, NULL, NULL, &ret);
 	if(ret != CL_SUCCESS){
 		printf("Failed to create context\n");
 	}
 
 	/* Create Command Queue */
-	command_queue = clCreateCommandQueue(context, device_id, CL_QUEUE_PROFILING_ENABLE, &ret);
+	command_queue = clCreateCommandQueue(context, *device_id, CL_QUEUE_PROFILING_ENABLE, &ret);
 	if(ret != CL_SUCCESS){
 		printf("Failed to create command queue\n");
 	}
@@ -86,19 +72,19 @@ static void setUpOpenCl_2_3(uint8_t* inputText, char* kernelName, des3_context* 
 	}
 	
 	/* Build Kernel Program */
-	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
+	ret = clBuildProgram(program, 1, device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
 		printf("\nBuild Error = %i", ret);
 		
 		// Determine the size of the log
 		size_t log_size;
-		clGetProgramBuildInfo(program, device_id, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
+		clGetProgramBuildInfo(program, *device_id, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
 
 		// Allocate memory for the log
 		char *log = (char *) malloc(log_size);
 
 		// Get the log
-		clGetProgramBuildInfo(program, device_id, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
+		clGetProgramBuildInfo(program, *device_id, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
 
 		// Print the log
 		printf("%s\n", log);
@@ -133,7 +119,7 @@ static void finalizeExecution( uint8_t* inputText){
 	source_str = NULL;
 }
 
-cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, int mode, int isCtr) {
+cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, int mode, int isCtr,cl_device_id* device_id) {
 
 	
 	struct FileInfo fileInfo = getFileBytes(fileName);
@@ -166,15 +152,15 @@ cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t loc
 	switch(mode){
 		case 1:
 		des_expandkey(&K, key);
-		setUpOpenCl(inputText, modality, &K, fileInfo.lenght);
+		setUpOpenCl(inputText, modality, &K, fileInfo.lenght, device_id);
 		break;
 		case 2:
 		tdes2_expandkey(&_K, key);
-		setUpOpenCl_2_3(inputText, modality, &_K, fileInfo.lenght);
+		setUpOpenCl_2_3(inputText, modality, &_K, fileInfo.lenght, device_id);
 		break;
 		case 3: 
 		tdes3_expandkey(&_K, key);
-		setUpOpenCl_2_3(inputText, modality, &_K, fileInfo.lenght);
+		setUpOpenCl_2_3(inputText, modality, &_K, fileInfo.lenght, device_id);
 		break;	
 	}
 	
@@ -197,74 +183,56 @@ cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t loc
 	return event;
 }	
 
-cl_event desEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
-
-	setDeviceType(deviceType,&device_type);
+cl_event desEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id) {
 
 	int mode = 1;
-	return des_encryption(fileName,key,output,local_item_size,mode,0);
+	return des_encryption(fileName,key,output,local_item_size,mode,0,device_id);
 }
 
-cl_event des2Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
-
-	setDeviceType(deviceType,&device_type);
+cl_event des2Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id) {
 
 	int mode = 2;
-	return des_encryption(fileName,key,output,local_item_size,mode,0);
+	return des_encryption(fileName,key,output,local_item_size,mode,0,device_id);
 }	
 
-cl_event des3Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
-
-	setDeviceType(deviceType,&device_type);
+cl_event des3Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id) {
 
 	int mode = 3;
-	return des_encryption(fileName,key,output,local_item_size,mode,0);
+	return des_encryption(fileName,key,output,local_item_size,mode,0,device_id);
 }
 
-cl_event desCtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
-
-	setDeviceType(deviceType,&device_type);		
+cl_event desCtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id) {
 
 	int mode = 1;
-	return des_encryption(fileName,key,output,local_item_size,mode,1);
+	return des_encryption(fileName,key,output,local_item_size,mode,1,device_id);
 }
 
-cl_event des2CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
-
-	setDeviceType(deviceType,&device_type);		
+cl_event des2CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id) {
 
 	int mode = 2;
-	return des_encryption(fileName,key,output,local_item_size,mode,1);
+	return des_encryption(fileName,key,output,local_item_size,mode,1, device_id);
 }	
 
-cl_event des3CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
-
-	setDeviceType(deviceType,&device_type);	
+cl_event des3CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id) {
 	
 	int mode = 3;
-	return des_encryption(fileName,key,output,local_item_size,mode,1);
+	return des_encryption(fileName,key,output,local_item_size,mode,1, device_id);
 }
 
-cl_event desCtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
-
-	setDeviceType(deviceType,&device_type);		
+cl_event desCtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id) {
 
 	int mode = 1;
-	return des_encryption(fileName,key,output,local_item_size,mode,1);
+	return des_encryption(fileName,key,output,local_item_size,mode,1, device_id);
 }
 
-cl_event des2CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
-
-	setDeviceType(deviceType,&device_type);		
+cl_event des2CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id) {
 
 	int mode = 2;
-	return des_encryption(fileName,key,output,local_item_size,mode,1);
+	return des_encryption(fileName,key,output,local_item_size,mode,1,device_id);
 }	
 
-cl_event des3CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType) {
-
-	setDeviceType(deviceType,&device_type);	
+cl_event des3CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id) {
 	
 	int mode = 3;
-	return des_encryption(fileName,key,output,local_item_size,mode,1);
+	return des_encryption(fileName,key,output,local_item_size,mode,1, device_id);
 }

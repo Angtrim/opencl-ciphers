@@ -192,38 +192,25 @@ void getSystemInfo(){
 
    void logBuildError(cl_int* ret,cl_program* program, cl_device_id* deviceId){
    	printf("\nBuild Error = %i", *ret);
-	// Determine the size of the log
+				// Determine the size of the log
    	size_t log_size;
    	clGetProgramBuildInfo(*program, *deviceId, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
-	// Allocate memory for the log
+				// Allocate memory for the log
    	char *log = (char *) malloc(log_size);
-	// Get the log
+				// Get the log
    	clGetProgramBuildInfo(*program, *deviceId, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
-	// Print the log
+				// Print the log
    	printf("%s\n", log);
    }
 
-   void initClSetup(cl_device_id* device_id,cl_device_type* device_type,cl_context* context,cl_command_queue* command_queue){
-   	cl_uint ret_num_devices;
-   	cl_uint ret_num_platforms;
-   	cl_platform_id platform_id = NULL;
+   void initClSetup(cl_device_id* device_id,cl_context* context,cl_command_queue* command_queue){
    	cl_int ret;
-
-
-   	cl_platform_id *platforms = (cl_platform_id *) malloc(sizeof(platform_id));
-   	clGetPlatformIDs(1, platforms, NULL);
-	// iterate over platforms
-   	ret = clGetDeviceIDs(platforms[0], *device_type, 1, &(*device_id), &ret_num_devices);
-   	if(ret != CL_SUCCESS){
-   		printf("Failed to get device : %d\n",ret);
-   	}
-   	free(platforms);
-	// Create OpenCL context 
-   	*context = clCreateContext(NULL, 1, &(*device_id), NULL, NULL, &ret);
+				// Create OpenCL context 
+   	*context = clCreateContext(NULL, 1,device_id, NULL, NULL, &ret);
    	if(ret != CL_SUCCESS){
    		printf("Failed to create context : %d\n",ret);
    	}
-	// Create Command Queue 
+				// Create Command Queue 
    	*command_queue = clCreateCommandQueue(*context, *device_id, CL_QUEUE_PROFILING_ENABLE, &ret);
    	if(ret != CL_SUCCESS){
    		printf("Failed to create commandqueue\n");

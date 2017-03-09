@@ -14,7 +14,6 @@
 #endif
 
 /** -- opencl parameters initialization to run the kernel -- **/
-static cl_device_id device_id = NULL;
 static cl_device_type device_type;
 static cl_context context = NULL;
 static cl_command_queue command_queue = NULL;
@@ -40,14 +39,14 @@ static char clFileName[] = "camellia_ctr/camellia_ctr.cl";
 static char* source_str = NULL;
 static size_t source_size;
 
-cl_event camellia128Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType);
-cl_event camellia192Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType);
-cl_event camellia256Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType);
-cl_event camelliaCtr128Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType);
-cl_event camelliaCtr192Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType);
-cl_event camelliaCtr256Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType);
-cl_event camelliaCtr128Decrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType);
-cl_event camelliaCtr192Decrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType);
-cl_event camelliaCtr256Decrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, char* deviceType);
+cl_event camellia128Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event camellia192Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event camellia256Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event camelliaCtr128Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event camelliaCtr192Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event camelliaCtr256Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event camelliaCtr128Decrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event camelliaCtr192Decrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event camelliaCtr256Decrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
 
 #endif

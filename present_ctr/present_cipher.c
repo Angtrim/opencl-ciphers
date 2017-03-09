@@ -6,8 +6,8 @@
 
 
 /* set up the opencl parameters */
-static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName,long bufferLenght){
-	initClSetup(&device_id,&device_type,&context,&command_queue);
+static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName,long bufferLenght,cl_device_id* device_id){
+	initClSetup(device_id,&device_type,&context,&command_queue);
 
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
@@ -36,9 +36,9 @@ static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName,long
 	}
 	
 	/* Build Kernel Program */
-	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
+	ret = clBuildProgram(program, 1, device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
-		logBuildError(&ret,&program,&device_id);
+		logBuildError(&ret,&program,device_id);
 	}
 
 	/* Create OpenCL Kernel */
@@ -72,7 +72,7 @@ static void finalizeExecution(uint64_t* inputText){
 
 
 
-cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* encryptionType, int isCtr){
+cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* encryptionType, int isCtr,cl_device_id* device_id){
 	
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
 
@@ -111,7 +111,7 @@ if(source_str == NULL){
 }
 
 
-setUpOpenCl(inputText, subkey, modality,lenght);
+setUpOpenCl(inputText, subkey, modality,lenght,device_id);
 
 
 size_t global_item_size = lenght;
@@ -133,44 +133,34 @@ finalizeExecution(inputText);
 return event;
 }
 
-cl_event present_memory_Encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
+cl_event present_memory_Encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, cl_device_id* device_id){
+		
+	return present_encryption(fileName, Key, output, local_item_size, MEMORY, 0, device_id);
+}
+
+cl_event present_speed_Encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, cl_device_id* device_id){
+
+
+	return present_encryption(fileName, Key, output, local_item_size, SPEED, 0, device_id);
+}
+
+cl_event present_memory_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, cl_device_id* device_id){
+
 	
-	setDeviceType(deviceType,&device_type);
+	return present_encryption(fileName, Key, output, local_item_size, MEMORY, 1, device_id);
+}
+
+cl_event present_speed_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, cl_device_id* device_id){
+
+	return present_encryption(fileName, Key, output, local_item_size, SPEED, 1,device_id);
+}
+
+cl_event present_memory_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, cl_device_id* device_id){
 	
-	return present_encryption(fileName, Key, output, local_item_size, MEMORY, 0);
+	return present_encryption(fileName, Key, output, local_item_size, MEMORY, 1, device_id);
 }
 
-cl_event present_speed_Encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
+cl_event present_speed_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, cl_device_id* device_id){
 
-	setDeviceType(deviceType,&device_type);
-
-	return present_encryption(fileName, Key, output, local_item_size, SPEED, 0);
-}
-
-cl_event present_memory_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
-
-	setDeviceType(deviceType,&device_type);
-	
-	return present_encryption(fileName, Key, output, local_item_size, MEMORY, 1);
-}
-
-cl_event present_speed_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
-
-	setDeviceType(deviceType,&device_type);
-
-	return present_encryption(fileName, Key, output, local_item_size, SPEED, 1);
-}
-
-cl_event present_memory_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
-
-	setDeviceType(deviceType,&device_type);
-	
-	return present_encryption(fileName, Key, output, local_item_size, MEMORY, 1);
-}
-
-cl_event present_speed_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType){
-
-	setDeviceType(deviceType,&device_type);
-
-	return present_encryption(fileName, Key, output, local_item_size, SPEED, 1);
+	return present_encryption(fileName, Key, output, local_item_size, SPEED, 1,device_id);
 }

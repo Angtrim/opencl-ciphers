@@ -1,9 +1,9 @@
 #include "clefia_cipher.h"
 
 
-static void setUpOpenCl(uint8_t* inputText, char* kernelName, uint8_t* key, int R, int rk_dim,long bufferLenght){
+static void setUpOpenCl(uint8_t* inputText, char* kernelName, uint8_t* key, int R, int rk_dim,long bufferLenght,cl_device_id* device_id){
 	
-	initClSetup(&device_id,&device_type,&context,&command_queue);
+	initClSetup(device_id,&device_type,&context,&command_queue);
 
 	/* Create Memory Buffers */
 	_rk = clCreateBuffer(context, CL_MEM_READ_WRITE, rk_dim * sizeof(uint8_t), NULL, &ret);
@@ -26,9 +26,9 @@ static void setUpOpenCl(uint8_t* inputText, char* kernelName, uint8_t* key, int 
 	
 	/* Build Kernel Program */
 	char* opt = "-cl-opt-disable";
-	ret = clBuildProgram(program, 1, &device_id, opt, NULL, NULL);
+	ret = clBuildProgram(program, 1, device_id, opt, NULL, NULL);
 	if(ret != CL_SUCCESS){
-		logBuildError(&ret,&program,&device_id);
+		logBuildError(&ret,&program,device_id);
 	}
 	
 	/* Create OpenCL Kernel */
@@ -62,7 +62,7 @@ static void finalizeExecution(uint8_t* inputText){
 	source_str = NULL;
 }
 
-cl_event clefia_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size,int mode, int isCtr){
+cl_event clefia_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size,int mode, int isCtr,cl_device_id* device_id){
 
 	struct FileInfo fileInfo = getFileBytes(fileName);
 	
@@ -101,7 +101,7 @@ cl_event clefia_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t 
 		modality = "clefiaCipher";
 	}
 	
-	setUpOpenCl(inputText, modality, rk, R, rk_dim,lenght);
+	setUpOpenCl(inputText, modality, rk, R, rk_dim,lenght,device_id);
 
 	size_t global_item_size = lenght/16;
 	/* Execute OpenCL Kernel instances */
@@ -122,74 +122,57 @@ cl_event clefia_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t 
 	return event;
 }
 
-cl_event clefia_128_Encrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType){
+cl_event clefia_128_Encrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size,cl_device_id* device_id){
 
-	setDeviceType(deviceType,&device_type);
 
 	int mode = 128;	
-	return clefia_encryption(fileName, key, output, local_item_size, mode, 0);
+	return clefia_encryption(fileName, key, output, local_item_size, mode, 0,device_id);
 }
 
-cl_event clefia_192_Encrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType){
-
-	setDeviceType(deviceType,&device_type);
+cl_event clefia_192_Encrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id){
 
 	int mode = 192;	
-	return clefia_encryption(fileName, key, output, local_item_size, mode, 0);
+	return clefia_encryption(fileName, key, output, local_item_size, mode, 0,device_id);
 }
 
-cl_event clefia_256_Encrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType){
-
-	setDeviceType(deviceType,&device_type);
+cl_event clefia_256_Encrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id){
 
 	int mode = 256;	
-	return clefia_encryption(fileName, key, output, local_item_size, mode, 0);
+	return clefia_encryption(fileName, key, output, local_item_size, mode, 0,device_id);
 }
 
-cl_event clefia_128_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType){
-
-	setDeviceType(deviceType,&device_type);
+cl_event clefia_128_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id){
 	
 	int mode = 128;
-	return clefia_encryption(fileName, key, output, local_item_size, mode, 1);
+	return clefia_encryption(fileName, key, output, local_item_size, mode, 1,device_id);
 }
 
-cl_event clefia_192_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType){
-
-	setDeviceType(deviceType,&device_type);
+cl_event clefia_192_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id){
 	
 	int mode = 192;
-	return clefia_encryption(fileName, key, output, local_item_size, mode, 1);
+	return clefia_encryption(fileName, key, output, local_item_size, mode, 1,device_id);
 }
 
-cl_event clefia_256_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType){
-
-	setDeviceType(deviceType,&device_type);
+cl_event clefia_256_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id){
 	
 	int mode = 256;
-	return clefia_encryption(fileName, key, output, local_item_size, mode, 1);
+	return clefia_encryption(fileName, key, output, local_item_size, mode, 1,device_id);
 }
 
-cl_event clefia_128_CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType){
-
-	setDeviceType(deviceType,&device_type);
+cl_event clefia_128_CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id){
 	
 	int mode = 128;
-	return clefia_encryption(fileName, key, output, local_item_size, mode, 1);
+	return clefia_encryption(fileName, key, output, local_item_size, mode, 1,device_id);
 }
 
-cl_event clefia_192_CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType){
-
-	setDeviceType(deviceType,&device_type);
+cl_event clefia_192_CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id){
 	
 	int mode = 192;
-	return clefia_encryption(fileName, key, output, local_item_size, mode, 1);
+	return clefia_encryption(fileName, key, output, local_item_size, mode, 1,device_id);
 }
 
-cl_event clefia_256_CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType){
-
-	setDeviceType(deviceType,&device_type);
+cl_event clefia_256_CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id){
 	
 	int mode = 256;
-	return clefia_encryption(fileName, key, output, local_item_size, mode, 1);
+	return clefia_encryption(fileName, key, output, local_item_size, mode, 1,device_id);
 }

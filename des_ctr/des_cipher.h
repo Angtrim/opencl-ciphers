@@ -18,7 +18,6 @@
 #define BLOCK_DIMEN 8
 
 /** -- opencl parameters initialization to run the kernel -- **/
-static cl_device_id device_id = NULL;
 static cl_device_type device_type;
 static cl_context context = NULL;
 static cl_command_queue command_queue = NULL;
@@ -42,14 +41,14 @@ static char clFileName[] = "des_ctr/des_ctr.cl";
 static char* source_str = NULL;
 static size_t source_size;
 
-cl_event desCtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event des2CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event des3CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event desEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event des2Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event des3Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event desCtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event des2CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
-cl_event des3CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, char* deviceType);
+cl_event desCtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id);
+cl_event des2CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id);
+cl_event des3CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id);
+cl_event desEncrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id);
+cl_event des2Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id);
+cl_event des3Encrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id);
+cl_event desCtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id);
+cl_event des2CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id);
+cl_event des3CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, cl_device_id* device_id);
 
 #endif

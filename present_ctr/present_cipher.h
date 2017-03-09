@@ -14,7 +14,6 @@
 #endif
 
 /** -- opencl parameters initialization to run the kernel -- **/
-static cl_device_id device_id = NULL;
 static cl_device_type device_type;
 static cl_context context = NULL;
 static cl_command_queue command_queue = NULL;
@@ -38,11 +37,11 @@ static char clFileName[] = "present_ctr/present_ctr.cl";
 static char* source_str = NULL;
 static size_t source_size;
 
-cl_event present_memory_Encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
-cl_event present_speed_Encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
-cl_event present_memory_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
-cl_event present_speed_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
-cl_event present_memory_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
-cl_event present_speed_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, char* deviceType);
+cl_event present_memory_Encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event present_speed_Encrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event present_memory_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event present_speed_CtrEncrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event present_memory_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event present_speed_CtrDecrypt(char* fileName, uint64_t* Key, uint64_t* output, size_t local_item_size, cl_device_id* device_id);
 
 #endif

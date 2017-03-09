@@ -16,8 +16,6 @@
 #endif
 
 /** -- opencl parameters initialization to run the kernel -- **/
-static cl_device_id device_id = NULL;
-static cl_device_type device_type;
 static cl_context context = NULL;
 static cl_command_queue command_queue = NULL;
 static cl_event event = NULL;
@@ -40,14 +38,14 @@ static char clFileName[] = "clefia_ctr/clefia_ctr.cl";
 
 static char* source_str = NULL;
 static size_t source_size;
-cl_event clefia_128_Encrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType);
-cl_event clefia_192_Encrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType);
-cl_event clefia_256_Encrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType);
-cl_event clefia_128_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType);
-cl_event clefia_192_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType);
-cl_event clefia_256_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType);
-cl_event clefia_128_CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType);
-cl_event clefia_192_CtrDerypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType);
-cl_event clefia_256_CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, char* deviceType);
+cl_event clefia_128_Encrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event clefia_192_Encrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event clefia_256_Encrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event clefia_128_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event clefia_192_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event clefia_256_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event clefia_128_CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event clefia_192_CtrDerypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event clefia_256_CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
 
 #endif

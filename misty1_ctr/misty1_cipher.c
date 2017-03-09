@@ -2,9 +2,9 @@
 
 
 
-static void setUpOpenCl(uint64_t* inputText,  char* kernelName,uint16_t* EK, long bufferLenght){
+static void setUpOpenCl(uint64_t* inputText,  char* kernelName,uint16_t* EK, long bufferLenght,cl_device_id* device_id){
 	/* Get Platform and Device Info */
-	initClSetup(&device_id,&device_type,&context,&command_queue);
+	initClSetup(device_id,&device_type,&context,&command_queue);
 
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
@@ -22,9 +22,9 @@ static void setUpOpenCl(uint64_t* inputText,  char* kernelName,uint16_t* EK, lon
 		printf("Failed to create program with source\n");
 	}
 	
-	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
+	ret = clBuildProgram(program, 1, device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
-		logBuildError(&ret,&program,&device_id);
+		logBuildError(&ret,&program,device_id);
 	}
 	
 	/* Create OpenCL Kernel */
@@ -56,7 +56,7 @@ static void finalizeExecution(uint64_t* inputText){
 	source_str = NULL;
 }
 
-cl_event mEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size,int isCtr) {
+cl_event mEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size,int isCtr,cl_device_id* device_id) {
 
 	
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
@@ -81,7 +81,7 @@ cl_event mEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 	uint16_t EK[32];
 	misty1_expandkey(EK,key);
 	
-	setUpOpenCl(inputText, modality, EK, lenght);
+	setUpOpenCl(inputText, modality, EK, lenght, device_id);
 	
 	size_t global_item_size = lenght;
 	/* Execute OpenCL Kernel instances */
@@ -103,22 +103,19 @@ cl_event mEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 }	
 
 
-cl_event misty1Encrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
+cl_event misty1Encrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, cl_device_id* device_id) {
 
-	setDeviceType(deviceType,&device_type);
-	return mEncript(fileName,key,output,local_item_size,0);
+	return mEncript(fileName,key,output,local_item_size,0,device_id);
 }	
 
-cl_event misty1CtrEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
+cl_event misty1CtrEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, cl_device_id* device_id) {
 	
-	setDeviceType(deviceType,&device_type);	
-	return mEncript(fileName,key,output,local_item_size,1);
+	return mEncript(fileName,key,output,local_item_size,1, device_id);
 }
 
-cl_event misty1CtrDecrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
+cl_event misty1CtrDecrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, cl_device_id* device_id) {
 	
-	setDeviceType(deviceType,&device_type);	
-	return mEncript(fileName,key,output,local_item_size,1);
+	return mEncript(fileName,key,output,local_item_size,1,device_id);
 }	
 
 

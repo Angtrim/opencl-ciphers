@@ -1,9 +1,9 @@
 #include "hight_cipher.h"
 
 
-static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* WK, uint8_t* SK, long bufferLenght){
+static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* WK, uint8_t* SK, long bufferLenght,cl_device_id* device_id){
 	/* Get Platform and Device Info */
-	initClSetup(&device_id,&device_type,&context,&command_queue);
+	initClSetup(device_id,&device_type,&context,&command_queue);
 
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
@@ -24,9 +24,9 @@ static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* WK, uint8_t*
 		printf("Failed to create program with source\n");
 	}
 	
-	ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
+	ret = clBuildProgram(program, 1, device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
-		logBuildError(&ret,&program,&device_id);
+		logBuildError(&ret,&program,device_id);
 	}
 	
 	/* Create OpenCL Kernel */
@@ -61,7 +61,7 @@ static void finalizeExecution( uint64_t* inputText){
 }
 
 
-cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size,int isCtr) {
+cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size,int isCtr,cl_device_id* device_id) {
 
 	
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
@@ -84,7 +84,7 @@ cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 		modality = "hightCipher";
 	}
 	
-	setUpOpenCl(inputText, modality, WK, SK, fileInfo.lenght);
+	setUpOpenCl(inputText, modality, WK, SK, fileInfo.lenght,device_id);
 	
 	size_t global_item_size = fileInfo.lenght;
 	/* Execute OpenCL Kernel instances */
@@ -106,25 +106,19 @@ cl_event hEncript(char* fileName, uint8_t* key, uint64_t* output,size_t local_it
 }	
 
 
-cl_event hightEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
-
-	setDeviceType(deviceType,&device_type);
+cl_event hightEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, cl_device_id* device_id) {
 	
-	return hEncript(fileName,key,output,local_item_size,0);
+	return hEncript(fileName,key,output,local_item_size,0,device_id);
 }	
 
-cl_event hightCtrEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
+cl_event hightCtrEncrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, cl_device_id* device_id) {
 
-	setDeviceType(deviceType,&device_type);
-
-	return hEncript(fileName,key,output,local_item_size,1);
+	return hEncript(fileName,key,output,local_item_size,1, device_id);
 }
 
-cl_event hightCtrDecrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, char* deviceType) {
+cl_event hightCtrDecrypt(char* fileName, uint8_t* key, uint64_t* output,size_t local_item_size, cl_device_id* device_id) {
 
-	setDeviceType(deviceType,&device_type);
-
-	return hEncript(fileName,key,output,local_item_size,1);
+	return hEncript(fileName,key,output,local_item_size,1, device_id);
 }	
 
 
