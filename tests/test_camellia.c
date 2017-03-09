@@ -29,12 +29,12 @@ static void writeOutputToFileUint64(char* outFileName, uint64_t* output, long le
 	fclose(fp);
 }
 
-int testCamellia128CPU(){
+int testCamellia128(cl_device_id* device_id){
 	int success = 1;
 	char* fileName = "camTest";
 	uint64_t out[2];
 	writeOutputToFileUint64(fileName,Plaintext128,2);
-	camellia128Encrypt(fileName, Key128, out, 1,CPU_DEVICE);
+	camellia128Encrypt(fileName, Key128, out, 1, device_id);
 	if (out[0] != Ciphertext128[0] || out[1] != Ciphertext128[1]) {
 		success = 0;
 	}
@@ -42,38 +42,13 @@ int testCamellia128CPU(){
 	return success;
 }
 
-int testCamellia128GPU(){
-	int success = 1;
-	char* fileName = "camTest";
-	uint64_t out[2];
-	writeOutputToFileUint64(fileName,Plaintext128,2);
-	camellia128Encrypt(fileName, Key128, out, 1,GPU_DEVICE);
-	if (out[0] != Ciphertext128[0] || out[1] != Ciphertext128[1]) {
-		success = 0;
-	}
-	remove(fileName);
-	return success;
-}
 
-int testCamellia192CPU(){
+int testCamellia192(cl_device_id* device_id){
 	int success = 1;
 	char* fileName = "camTest";
 	uint64_t out[2];
 	writeOutputToFileUint64(fileName,Plaintext192,2);
-	camellia192Encrypt(fileName, Key192, out, 1,CPU_DEVICE);
-	if (out[0] != Ciphertext192[0] || out[1] != Ciphertext192[1]) {
-		success = 0;
-	}
-	remove(fileName);
-	return success;
-}
-
-int testCamellia192GPU(){
-	int success = 1;
-	char* fileName = "camTest";
-	uint64_t out[2];
-	writeOutputToFileUint64(fileName,Plaintext192,2);
-	camellia192Encrypt(fileName, Key192, out, 1,GPU_DEVICE);
+	camellia192Encrypt(fileName, Key192, out, 1,device_id);
 	if (out[0] != Ciphertext192[0] || out[1] != Ciphertext192[1]) {
 		success = 0;
 	}
@@ -82,12 +57,13 @@ int testCamellia192GPU(){
 }
 
 
-int testCamellia256CPU(){
+
+int testCamellia256(cl_device_id* device_id){
 	int success = 1;
 	char* fileName = "camTest";
 	uint64_t out[2];
 	writeOutputToFileUint64(fileName,Plaintext256,2);
-	camellia256Encrypt(fileName, Key256, out, 1,CPU_DEVICE);
+	camellia256Encrypt(fileName, Key256, out, 1,device_id);
 	if (out[0] != Ciphertext256[0] || out[1] != Ciphertext256[1]) {
 		success = 0;
 	}
@@ -95,29 +71,18 @@ int testCamellia256CPU(){
 	return success;
 }
 
-int testCamellia256GPU(){
-	int success = 1;
-	char* fileName = "camTest";
-	uint64_t out[2];
-	writeOutputToFileUint64(fileName,Plaintext256,2);
-	camellia256Encrypt(fileName, Key256, out, 1,GPU_DEVICE);
-	if (out[0] != Ciphertext256[0] || out[1] != Ciphertext256[1]) {
-		success = 0;
-	}
-	remove(fileName);
-	return success;
-}
 
-int testCamelliaCTR128CPU(){
+
+int testCamelliaCTR128(cl_device_id* device_id){
 	int success = 1;
 	char* fileName = "camTest";
 	char* fileNameOut = "camTestOut";
 	uint64_t out[2];
 	uint64_t outC[2];
 	writeOutputToFileUint64(fileName,Plaintext128,2);
-	camelliaCtr128Encrypt(fileName, Key128, out, 1,CPU_DEVICE);
+	camelliaCtr128Encrypt(fileName, Key128, out, 1, device_id);
 	writeOutputToFileUint64(fileNameOut,out,2);
-	camelliaCtr128Decrypt(fileNameOut, Key128, outC, 1,CPU_DEVICE);
+	camelliaCtr128Decrypt(fileNameOut, Key128, outC, 1, device_id);
 	if (Plaintext128[0] != outC[0] || Plaintext128[1] != outC[1]) {
 		success = 0;
 	}
@@ -127,35 +92,19 @@ int testCamelliaCTR128CPU(){
 }
 
 
-int testCamelliaCTR128GPU(){
-	int success = 1;
-	char* fileName = "camTest";
-	char* fileNameOut = "camTestOut";
-	uint64_t out[2];
-	uint64_t outC[2];
-	writeOutputToFileUint64(fileName,Plaintext128,2);
-	camelliaCtr128Encrypt(fileName, Key128, out, 1,GPU_DEVICE);
-	writeOutputToFileUint64(fileNameOut,out,2);
-	camelliaCtr128Decrypt(fileNameOut, Key128, outC, 1,GPU_DEVICE);
-	if (Plaintext128[0] != outC[0] || Plaintext128[1] != outC[1]) {
-		success = 0;
-	}
-	remove(fileName);
-	remove(fileNameOut);
-	return success;
-}
 
 
-int testCamelliaCTR192CPU(){
+
+int testCamelliaCTR192(cl_device_id* device_id){
 	int success = 1;
 	char* fileName = "camTest";
 	char* fileNameOut = "camTestOut";
 	uint64_t out[2];
 	uint64_t outC[2];
 	writeOutputToFileUint64(fileName,Plaintext192,2);
-	camelliaCtr192Encrypt(fileName, Key192, out, 1,CPU_DEVICE);
+	camelliaCtr192Encrypt(fileName, Key192, out, 1, device_id);
 	writeOutputToFileUint64(fileNameOut,out,2);
-	camelliaCtr192Decrypt(fileNameOut, Key192, outC, 1,CPU_DEVICE);
+	camelliaCtr192Decrypt(fileNameOut, Key192, outC, 1, device_id);
 	if (Plaintext192[0] != outC[0] || Plaintext192[1] != outC[1]) {
 		success = 0;
 	}
@@ -165,35 +114,18 @@ int testCamelliaCTR192CPU(){
 }
 
 
-int testCamelliaCTR192GPU(){
-	int success = 1;
-	char* fileName = "camTest";
-	char* fileNameOut = "camTestOut";
-	uint64_t out[2];
-	uint64_t outC[2];
-	writeOutputToFileUint64(fileName,Plaintext192,2);
-	camelliaCtr192Encrypt(fileName, Key192, out, 1,GPU_DEVICE);
-	writeOutputToFileUint64(fileNameOut,out,2);
-	camelliaCtr192Decrypt(fileNameOut, Key192, outC, 1,GPU_DEVICE);
-	if (Plaintext192[0] != outC[0] || Plaintext192[1] != outC[1]) {
-		success = 0;
-	}
-	remove(fileName);
-	remove(fileNameOut);
-	return success;
-}
 
 
-int testCamelliaCTR256CPU(){
+int testCamelliaCTR256(cl_device_id* device_id){
 	int success = 1;
 	char* fileName = "camTest";
 	char* fileNameOut = "camTestOut";
 	uint64_t out[2];
 	uint64_t outC[2];
 	writeOutputToFileUint64(fileName,Plaintext256,2);
-	camelliaCtr256Encrypt(fileName, Key256, out, 1,CPU_DEVICE);
+	camelliaCtr256Encrypt(fileName, Key256, out, 1,device_id);
 	writeOutputToFileUint64(fileNameOut,out,2);
-	camelliaCtr256Decrypt(fileNameOut, Key256, outC, 1,CPU_DEVICE);
+	camelliaCtr256Decrypt(fileNameOut, Key256, outC, 1, device_id);
 	if (Plaintext256[0] != outC[0] || Plaintext256[1] != outC[1]) {
 		success = 0;
 	}
@@ -203,59 +135,30 @@ int testCamelliaCTR256CPU(){
 }
 
 
-int testCamelliaCTR256GPU(){
-	int success = 1;
-	char* fileName = "camTest";
-	char* fileNameOut = "camTestOut";
-	uint64_t out[2];
-	uint64_t outC[2];
-	writeOutputToFileUint64(fileName,Plaintext256,2);
-	camelliaCtr256Encrypt(fileName, Key256, out, 1,GPU_DEVICE);
-	writeOutputToFileUint64(fileNameOut,out,2);
-	camelliaCtr256Decrypt(fileNameOut, Key256, outC, 1,GPU_DEVICE);
-	if (Plaintext256[0] != outC[0] || Plaintext256[1] != outC[1]) {
-		success = 0;
-	}
-	remove(fileName);
-	remove(fileNameOut);
-	return success;
-}
 
-int testCamellia128(){
+
+int testCamellia128(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting CAMELLIA 128 tests");
 	
-	log("--- Test CAMELLIA 128 CPU starting");
-	if(testCamellia128CPU() == 1){
-		log("--- Test CAMELLIA 128 CPU passed");
+	log("--- Test CAMELLIA 128  starting");
+	if(testCamellia128(cl_device_id* device_id) == 1){
+		log("--- Test CAMELLIA 128  passed");
 	}else{
-		log("--- Test CAMELLIA 128 CPU FAILED!");
+		log("--- Test CAMELLIA 128  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test CAMELLIA 128 GPU starting");
-	if(testCamellia128GPU() == 1){
-		log("--- Test CAMELLIA 128 GPU passed");
+
+
+	log("--- Test CAMELLIA CTR 128  starting");
+	if(testCamelliaCTR128(cl_device_id* device_id) == 1){
+		log("--- Test CAMELLIA CTR 128  passed");
 	}else{
-		log("--- Test CAMELLIA 128 GPU FAILED!");
+		log("--- Test CAMELLIA CTR 128  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test CAMELLIA CTR 128 CPU starting");
-	if(testCamelliaCTR128CPU() == 1){
-		log("--- Test CAMELLIA CTR 128 CPU passed");
-	}else{
-		log("--- Test CAMELLIA CTR 128 CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test CAMELLIA CTR 128 GPU starting");
-	if(testCamelliaCTR128GPU() == 1){
-		log("--- Test CAMELLIA CTR 128 GPU passed");
-	}else{
-		log("--- Test CAMELLIA CTR 128 GPU FAILED!");
-		result = 0;
-	}
 
 	if(result != 0){
         log("--- --- All CAMELLIA 128 test passed");
@@ -266,42 +169,28 @@ int testCamellia128(){
 	return result;
 }
 
-int testCamellia192(){
+int testCamellia192(cl_device_id* device_id){
 	int result = 1;
 
 	log("--- --- Starting CAMELLIA 192 tests");
 
-	log("--- Test CAMELLIA 192 CPU starting");
-	if(testCamellia192CPU() == 1){
-		log("--- Test CAMELLIA 192 CPU passed");
+	log("--- Test CAMELLIA 192  starting");
+	if(testCamellia192(cl_device_id* device_id) == 1){
+		log("--- Test CAMELLIA 192  passed");
 	}else{
-		log("--- Test CAMELLIA 192 CPU FAILED!");
+		log("--- Test CAMELLIA 192  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test CAMELLIA 192 GPU starting");
-	if(testCamellia192GPU() == 1){
-		log("--- Test CAMELLIA 192 GPU passed");
+
+	log("--- Test CAMELLIA CTR 192  starting");
+	if(testCamelliaCTR192(cl_device_id* device_id) == 1){
+		log("--- Test CAMELLIA CTR 192  passed");
 	}else{
-		log("--- Test CAMELLIA 192 GPU FAILED!");
+		log("--- Test CAMELLIA CTR 192  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test CAMELLIA CTR 192 CPU starting");
-	if(testCamelliaCTR192CPU() == 1){
-		log("--- Test CAMELLIA CTR 192 CPU passed");
-	}else{
-		log("--- Test CAMELLIA CTR 192 CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test CAMELLIA CTR 192 GPU starting");
-	if(testCamelliaCTR192GPU() == 1){
-		log("--- Test CAMELLIA CTR 192 GPU passed");
-	}else{
-		log("--- Test CAMELLIA CTR 192 GPU FAILED!");
-		result = 0;
-	}
 
 	if(result != 0){
         log("--- --- All CAMELLIA 192 test passed");
@@ -317,37 +206,24 @@ int testCamellia256(){
 
 	log("--- --- Starting CAMELLIA 256 tests");
 
-	log("--- Test CAMELLIA 256 CPU starting");
-	if(testCamellia256CPU() == 1){
-		log("--- Test CAMELLIA 256 CPU passed");
+	log("--- Test CAMELLIA 256  starting");
+	if(testCamellia256(cl_device_id* device_id) == 1){
+		log("--- Test CAMELLIA 256  passed");
 	}else{
-		log("--- Test CAMELLIA 256 CPU FAILED!");
+		log("--- Test CAMELLIA 256  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test CAMELLIA 256 GPU starting");
-	if(testCamellia256GPU() == 1){
-		log("--- Test CAMELLIA 256 GPU passed");
+
+
+	log("--- Test CAMELLIA CTR 256  starting");
+	if(testCamelliaCTR256(cl_device_id* device_id) == 1){
+		log("--- Test CAMELLIA CTR 256  passed");
 	}else{
-		log("--- Test CAMELLIA 256 GPU FAILED!");
+		log("--- Test CAMELLIA CTR 256  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test CAMELLIA CTR 256 CPU starting");
-	if(testCamelliaCTR256CPU() == 1){
-		log("--- Test CAMELLIA CTR 256 CPU passed");
-	}else{
-		log("--- Test CAMELLIA CTR 256 CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test CAMELLIA CTR 256 GPU starting");
-	if(testCamelliaCTR256GPU() == 1){
-		log("--- Test CAMELLIA CTR 256 GPU passed");
-	}else{
-		log("--- Test CAMELLIA CTR 256 GPU FAILED!");
-		result = 0;
-	}
 
 	if(result != 0){
         log("--- --- All CAMELLIA 256 test passed");
@@ -359,11 +235,11 @@ int testCamellia256(){
 }
 
 
-int testCamelliaAll(){
+int testCamelliaAll(cl_device_id* device_id){
 	
-	int tCamellia128 = testCamellia128();
-	int tCamellia192 = testCamellia192();
-	int tCamellia256 = testCamellia192();
+	int tCamellia128 = testCamellia128(cl_device_id* device_id);
+	int tCamellia192 = testCamellia192(cl_device_id* device_id);
+	int tCamellia256 = testCamellia192(cl_device_id* device_id);
 	int result = tCamellia128&&tCamellia192&&tCamellia256;
 	if(result){
 		log("--- --- --- ALL CAMELLIA TEST PASSED");

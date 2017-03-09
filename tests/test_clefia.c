@@ -32,25 +32,12 @@ static void writeOutputToFileUint64(char* outFileName, uint8_t* output, long len
 	fclose(fp);
 }
 
-int testClefia128CPU(){
+int testClefia128(cl_device_id* device_id){
 	int success = 1;
 	char* fileName = "clefTest";
 	unsigned char dst[16];
 	writeOutputToFileUint64(fileName,pt,16);
-	clefia_128_Encrypt(fileName, skey, dst, 1,CPU_DEVICE);
-	if (memcmp(ct128, dst, sizeof(ct128)) != 0) {
-		success = 0;
-	}
-	remove(fileName);
-	return success;
-}
-
-int testClefia128GPU(){
-	int success = 1;
-	char* fileName = "clefTest";
-	unsigned char dst[16];
-	writeOutputToFileUint64(fileName,pt,16);
-	clefia_128_Encrypt(fileName, skey, dst, 1,GPU_DEVICE);
+	clefia_128_Encrypt(fileName, skey, dst, 1, device_id);
 	if (memcmp(ct128, dst, sizeof(ct128)) != 0) {
 		success = 0;
 	}
@@ -59,12 +46,14 @@ int testClefia128GPU(){
 }
 
 
-int testClefia192CPU(){
+
+
+int testClefia192(cl_device_id* device_id){
 	int success = 1;
 	char* fileName = "clefTest";
 	unsigned char dst[16];
 	writeOutputToFileUint64(fileName,pt,16);
-	clefia_192_Encrypt(fileName, skey, dst, 1,CPU_DEVICE);
+	clefia_192_Encrypt(fileName, skey, dst, 1,device_id);
 	if (memcmp(ct192, dst, sizeof(ct192)) != 0) {
 		success = 0;
 	}
@@ -72,38 +61,13 @@ int testClefia192CPU(){
 	return success;
 }
 
-int testClefia192GPU(){
-	int success = 1;
-	char* fileName = "clefTest";
-	unsigned char dst[16];
-	writeOutputToFileUint64(fileName,pt,16);
-	clefia_192_Encrypt(fileName, skey, dst, 1,GPU_DEVICE);
-	if (memcmp(ct192, dst, sizeof(ct192)) != 0) {
-		success = 0;
-	}
-	remove(fileName);
-	return success;
-}
 
-int testClefia256CPU(){
+int testClefia256(cl_device_id* device_id){
 	int success = 1;
 	char* fileName = "clefTest";
 	unsigned char dst[16];
 	writeOutputToFileUint64(fileName,pt,16);
-	clefia_256_Encrypt(fileName, skey, dst, 1,CPU_DEVICE);
-	if (memcmp(ct256, dst, sizeof(ct256)) != 0) {
-		success = 0;
-	}
-	remove(fileName);
-	return success;
-}
-
-int testClefia256GPU(){
-	int success = 1;
-	char* fileName = "clefTest";
-	unsigned char dst[16];
-	writeOutputToFileUint64(fileName,pt,16);
-	clefia_256_Encrypt(fileName, skey, dst, 1,GPU_DEVICE);
+	clefia_256_Encrypt(fileName, skey, dst, 1, device_id);
 	if (memcmp(ct256, dst, sizeof(ct256)) != 0) {
 		success = 0;
 	}
@@ -112,35 +76,18 @@ int testClefia256GPU(){
 }
 
 
-int testClefia128CTRCPU(){
+
+
+int testClefia128CTR(cl_device_id* device_id){
 	int success = 1;
 	char* fileName = "clefTest";
 	char* fileNameOut = "clefTestOut";
 	unsigned char dst[16];
 	unsigned char dstC[16];
 	writeOutputToFileUint64(fileName,pt,16);
-	clefia_128_CtrEncrypt(fileName, skey, dst, 1,CPU_DEVICE);
+	clefia_128_CtrEncrypt(fileName, skey, dst, 1, device_id);
 	writeOutputToFileUint64(fileNameOut,dst,16);
-	clefia_128_CtrDecrypt(fileNameOut, skey, dstC, 1,CPU_DEVICE);
-
-	if (memcmp(pt, dstC, sizeof(pt)) != 0) {
-		success = 0;
-	}
-	remove(fileName);
-	remove(fileNameOut);
-	return success;
-}
-
-int testClefia128CTRGPU(){
-	int success = 1;
-	char* fileName = "clefTest";
-	char* fileNameOut = "clefTestOut";
-	unsigned char dst[16];
-	unsigned char dstC[16];
-	writeOutputToFileUint64(fileName,pt,16);
-	clefia_128_CtrEncrypt(fileName, skey, dst, 1,GPU_DEVICE);
-	writeOutputToFileUint64(fileNameOut,dst,16);
-	clefia_128_CtrDecrypt(fileNameOut, skey, dstC, 1,GPU_DEVICE);
+	clefia_128_CtrDecrypt(fileNameOut, skey, dstC, 1, device_id);
 
 	if (memcmp(pt, dstC, sizeof(pt)) != 0) {
 		success = 0;
@@ -151,35 +98,18 @@ int testClefia128CTRGPU(){
 }
 
 
-int testClefia192CTRCPU(){
+
+
+int testClefia192CTR(cl_device_id* device_id){
 	int success = 1;
 	char* fileName = "clefTest";
 	char* fileNameOut = "clefTestOut";
 	unsigned char dst[16];
 	unsigned char dstC[16];
 	writeOutputToFileUint64(fileName,pt,16);
-	clefia_192_CtrEncrypt(fileName, skey, dst, 1,CPU_DEVICE);
+	clefia_192_CtrEncrypt(fileName, skey, dst, 1, device_id);
 	writeOutputToFileUint64(fileNameOut,dst,16);
-	clefia_192_CtrDecrypt(fileNameOut, skey, dstC, 1,CPU_DEVICE);
-
-	if (memcmp(pt, dstC, sizeof(pt)) != 0) {
-		success = 0;
-	}
-	remove(fileName);
-	remove(fileNameOut);
-	return success;
-}
-
-int testClefia192CTRGPU(){
-	int success = 1;
-	char* fileName = "clefTest";
-	char* fileNameOut = "clefTestOut";
-	unsigned char dst[16];
-	unsigned char dstC[16];
-	writeOutputToFileUint64(fileName,pt,16);
-	clefia_192_CtrEncrypt(fileName, skey, dst, 1,GPU_DEVICE);
-	writeOutputToFileUint64(fileNameOut,dst,16);
-	clefia_192_CtrDecrypt(fileNameOut, skey, dstC, 1,GPU_DEVICE);
+	clefia_192_CtrDecrypt(fileNameOut, skey, dstC, 1, device_id);
 
 	if (memcmp(pt, dstC, sizeof(pt)) != 0) {
 		success = 0;
@@ -190,35 +120,17 @@ int testClefia192CTRGPU(){
 }
 
 
-int testClefia256CTRCPU(){
+
+int testClefia256CTR(cl_device_id* device_id){
 	int success = 1;
 	char* fileName = "clefTest";
 	char* fileNameOut = "clefTestOut";
 	unsigned char dst[16];
 	unsigned char dstC[16];
 	writeOutputToFileUint64(fileName,pt,16);
-	clefia_256_CtrEncrypt(fileName, skey, dst, 1,CPU_DEVICE);
+	clefia_256_CtrEncrypt(fileName, skey, dst, 1,device_id);
 	writeOutputToFileUint64(fileNameOut,dst,16);
-	clefia_256_CtrDecrypt(fileNameOut, skey, dstC, 1,CPU_DEVICE);
-
-	if (memcmp(pt, dstC, sizeof(pt)) != 0) {
-		success = 0;
-	}
-	remove(fileName);
-	remove(fileNameOut);
-	return success;
-}
-
-int testClefia256CTRGPU(){
-	int success = 1;
-	char* fileName = "clefTest";
-	char* fileNameOut = "clefTestOut";
-	unsigned char dst[16];
-	unsigned char dstC[16];
-	writeOutputToFileUint64(fileName,pt,16);
-	clefia_256_CtrEncrypt(fileName, skey, dst, 1,GPU_DEVICE);
-	writeOutputToFileUint64(fileNameOut,dst,16);
-	clefia_256_CtrDecrypt(fileNameOut, skey, dstC, 1,GPU_DEVICE);
+	clefia_256_CtrDecrypt(fileNameOut, skey, dstC, 1,device_id);
 
 	if (memcmp(pt, dstC, sizeof(pt)) != 0) {
 		success = 0;
@@ -229,103 +141,67 @@ int testClefia256CTRGPU(){
 }
 
 
-int testClefiaAll(){
+
+
+int testClefiaAll(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting Clefia tests");
 	
-	log("--- Test Clefia 128 CPU starting");
-	if(testClefia128CPU() == 1){
-		log("--- Test Clefia 128 CPU passed");
+	log("--- Test Clefia 128  starting");
+	if(testClefia128(device_id) == 1){
+		log("--- Test Clefia 128  passed");
 	}else{
-		log("--- Test Clefia 128 CPU FAILED!");
+		log("--- Test Clefia 128  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test Clefia 128 GPU starting");
-	if(testClefia128CPU() == 1){
-		log("--- Test Clefia 128 GPU passed");
+
+	log("--- Test Clefia 192  starting");
+	if(testClefia192(device_id) == 1){
+		log("--- Test Clefia 192  passed");
 	}else{
-		log("--- Test Clefia 128 GPU FAILED!");
+		log("--- Test Clefia 192  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test Clefia 192 CPU starting");
-	if(testClefia192CPU() == 1){
-		log("--- Test Clefia 192 CPU passed");
+
+
+	log("--- Test Clefia 256  starting");
+	if(testClefia256( device_id) == 1){
+		log("--- Test Clefia 256  passed");
 	}else{
-		log("--- Test Clefia 192 CPU FAILED!");
+		log("--- Test Clefia 256  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test Clefia 192 GPU starting");
-	if(testClefia192CPU() == 1){
-		log("--- Test Clefia 192 GPU passed");
+
+
+	log("--- Test Clefia 128 CTR  starting");
+	if(testClefia128CTR(device_id) == 1){
+		log("--- Test Clefia 128 CTR  passed");
 	}else{
-		log("--- Test Clefia 192 GPU FAILED!");
+		log("--- Test Clefia 128 CTR  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test Clefia 256 CPU starting");
-	if(testClefia256CPU() == 1){
-		log("--- Test Clefia 256 CPU passed");
+
+
+		log("--- Test Clefia 192 CTR  starting");
+	if(testClefia192CTR( device_id) == 1){
+		log("--- Test Clefia 192 CTR  passed");
 	}else{
-		log("--- Test Clefia 256 CPU FAILED!");
+		log("--- Test Clefia 192 CTR  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test Clefia 256 GPU starting");
-	if(testClefia256CPU() == 1){
-		log("--- Test Clefia 256 GPU passed");
+
+
+			log("--- Test Clefia 256 CTR  starting");
+	if(testClefia256CTR(device_id) == 1){
+		log("--- Test Clefia 256 CTR  passed");
 	}else{
-		log("--- Test Clefia 256 GPU FAILED!");
+		log("--- Test Clefia 256 CTR  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test Clefia 128 CTR CPU starting");
-	if(testClefia128CTRCPU() == 1){
-		log("--- Test Clefia 128 CTR CPU passed");
-	}else{
-		log("--- Test Clefia 128 CTR CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test Clefia 128 CTR GPU starting");
-	if(testClefia128CTRGPU() == 1){
-		log("--- Test Clefia 128 CTR GPU passed");
-	}else{
-		log("--- Test Clefia 128 CTR GPU FAILED!");
-		result = 0;
-	}
-
-		log("--- Test Clefia 192 CTR CPU starting");
-	if(testClefia192CTRCPU() == 1){
-		log("--- Test Clefia 192 CTR CPU passed");
-	}else{
-		log("--- Test Clefia 192 CTR CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test Clefia 192 CTR GPU starting");
-	if(testClefia192CTRGPU() == 1){
-		log("--- Test Clefia 192 CTR GPU passed");
-	}else{
-		log("--- Test Clefia 192 CTR GPU FAILED!");
-		result = 0;
-	}
-
-			log("--- Test Clefia 256 CTR CPU starting");
-	if(testClefia256CTRCPU() == 1){
-		log("--- Test Clefia 256 CTR CPU passed");
-	}else{
-		log("--- Test Clefia 256 CTR CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test Clefia 256 CTR GPU starting");
-	if(testClefia256CTRGPU() == 1){
-		log("--- Test Clefia 256 CTR GPU passed");
-	}else{
-		log("--- Test Clefia 256 CTR GPU FAILED!");
-		result = 0;
-	}
 }

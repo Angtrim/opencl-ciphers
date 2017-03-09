@@ -43,11 +43,11 @@ static void writeOutputToFileUint64(char* outFileName, uint64_t* output, long le
 
 // TEST FOR MISTY1
 
-int testMisty1CPU(){
+int testMisty1(cl_device_id* device_id){
 	int success = 1;
 	uint64_t* misty1Ciphertext = (uint64_t*)malloc((2)*sizeof(uint64_t));
 	writeOutputToFileUint64("tests/misty1_plaintext", Misty1P, 2);
-	misty1Encrypt("tests/misty1_plaintext", Misty1Key, misty1Ciphertext, 2, CPU_DEVICE);
+	misty1Encrypt("tests/misty1_plaintext", Misty1Key, misty1Ciphertext, 2,  device_id);
 	if (misty1Ciphertext[0] != Misty1C[0] || misty1Ciphertext[1] != Misty1C[1]) {
 		success = 0;
 	}
@@ -56,30 +56,17 @@ int testMisty1CPU(){
 	return success;
 }
 
-int testMisty1GPU(){
-	int success = 1;
-	uint64_t* misty1Ciphertext = (uint64_t*)malloc((2)*sizeof(uint64_t));
-	writeOutputToFileUint64("tests/misty1_plaintext", Misty1P, 2);
-	misty1Encrypt("tests/misty1_plaintext", Misty1Key, misty1Ciphertext, 2, GPU_DEVICE);
 
-	if (misty1Ciphertext[0] != Misty1C[0] || misty1Ciphertext[1] != Misty1C[1]) {
-		success = 0;
-	}
 
-	free(misty1Ciphertext);
-	remove("tests/misty1_plaintext");
-	return success;
-}
-
-int testMisty1CtrCPU(){
+int testMisty1Ctr(cl_device_id* device_id){
 	int success = 1;
 	struct FileInfo64 fileInfo = getFileUint64("tests/ctr_test");
 	long dim = fileInfo.lenght;
 	uint64_t* misty1Ciphertext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 	uint64_t* misty1Plaintext = (uint64_t*)malloc(dim*sizeof(uint64_t));
-	misty1CtrEncrypt("tests/ctr_test", Misty1Key, misty1Ciphertext, 2, CPU_DEVICE);
+	misty1CtrEncrypt("tests/ctr_test", Misty1Key, misty1Ciphertext, 2,  device_id);
 	writeOutputToFileUint64("tests/misty1_ciphertext", misty1Ciphertext, dim);
-	misty1CtrDecrypt("tests/misty1_ciphertext", Misty1Key, misty1Plaintext, 2, CPU_DEVICE);
+	misty1CtrDecrypt("tests/misty1_ciphertext", Misty1Key, misty1Plaintext, 2,  device_id);
 
 	if(memcmp(misty1Plaintext, fileInfo.filePointer, fileInfo.lenght) != 0){
 		success = 0;
@@ -92,62 +79,30 @@ int testMisty1CtrCPU(){
 	return success;
 }
 
-int testMisty1CtrGPU(){
-	int success = 1;
-	struct FileInfo64 fileInfo = getFileUint64("tests/ctr_test");
-	long dim = fileInfo.lenght;
-	uint64_t* misty1Ciphertext = (uint64_t*)malloc(dim*sizeof(uint64_t));
-	uint64_t* misty1Plaintext = (uint64_t*)malloc(dim*sizeof(uint64_t));
-	misty1CtrEncrypt("tests/ctr_test", Misty1Key, misty1Ciphertext, 2, GPU_DEVICE);
-	writeOutputToFileUint64("tests/misty1_ciphertext", misty1Ciphertext, dim);
-	misty1CtrDecrypt("tests/misty1_ciphertext", Misty1Key, misty1Plaintext, 2, GPU_DEVICE);
 
-	if(memcmp(misty1Plaintext, fileInfo.filePointer, fileInfo.lenght) != 0){
-		success = 0;
-	}
 
-	free(misty1Ciphertext);
-	free(misty1Plaintext);
-	free(fileInfo.filePointer);
-	remove("tests/misty1_ciphertext");
-	return success;
-}
-
-int testMisty1(){
+int testMisty1(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting MISTY1 tests");
 	
-	log("--- Test MISTY1 CPU starting");
-	if(testMisty1CPU() == 1){
-		log("--- Test MISTY1 CPU passed");
+	log("--- Test MISTY1  starting");
+	if(testMisty1( device_id) == 1){
+		log("--- Test MISTY1  passed");
 	}else{
-		log("--- Test MISTY1 CPU FAILED!");
+		log("--- Test MISTY1  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test MISTY1 GPU starting");
-	if(testMisty1GPU() == 1){
-		log("--- Test MISTY1 GPU passed");
+
+	log("--- Test MISTY1 CTR  starting");
+	if(testMisty1Ctr(device_id) == 1){
+		log("--- Test MISTY1 CTR  passed");
 	}else{
-		log("--- Test MISTY1 GPU FAILED!");
+		log("--- Test MISTY1 CTR  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test MISTY1 CTR CPU starting");
-	if(testMisty1CtrCPU() == 1){
-		log("--- Test MISTY1 CTR CPU passed");
-	}else{
-		log("--- Test MISTY1 CTR CPU FAILED!");
-		result = 0;
-	}
 
-	log("--- Test MISTY1 CTR GPU starting");
-	if(testMisty1CtrGPU() == 1){
-		log("--- Test MISTY1 CTR GPU passed");
-	}else{
-		log("--- Test MISTY1 CTR GPU FAILED!");
-		result = 0;
-	}
 
 	if(result != 0){
 		log("--- --- All MISTY1 test passed");
@@ -158,9 +113,9 @@ int testMisty1(){
 
 }
 
-int testMisty1All(){
+int testMisty1All(cl_device_id* device_id){
 
-	int tMisty1 = testMisty1();
+	int tMisty1 = testMisty1(device_id);
 	int result = tMisty1;
 	if(result){
 		log("--- --- --- ALL MISTY1 TEST PASSED");

@@ -69,7 +69,7 @@ static void writeOutputToFile(char* outFileName,uint8_t* output, long lenght){
 
 // TEST FOR 128
 
-int testAes128CPU(){
+int testAes128(cl_device_id* device_id){
 
 
 	int success = 1;
@@ -77,7 +77,7 @@ int testAes128CPU(){
 	uint8_t* aesCiphertext = (uint8_t*)malloc(128*sizeof(uint8_t));
 	writeOutputToFile("tests/aes_plaintext", aesPlaintext, 128);
 
-	aes128Encrypt("tests/aes_plaintext", aes128Key, aesCiphertext, 1, CPU_DEVICE);
+	aes128Encrypt("tests/aes_plaintext", aes128Key, aesCiphertext, 1, device_id);
 	if (memcmp(aesCiphertext, aes128Ciphertext, 128) != 0) {
 		success = 0;
 	}
@@ -86,30 +86,17 @@ int testAes128CPU(){
 	return success;
 }
 
-int testAes128GPU(){
-	int success = 1;
-	uint8_t* aesCiphertext = (uint8_t*)malloc(128*sizeof(uint8_t));
-	writeOutputToFile("tests/aes_plaintext", aesPlaintext, 128);
 
-	aes128Encrypt("tests/aes_plaintext", aes128Key, aesCiphertext, 2, GPU_DEVICE);
-	if (memcmp(aesCiphertext, aes128Ciphertext, 128) != 0) {
-		success = 0;
-	}
-	free(aesCiphertext);
-	remove("tests/aes_plaintext");
-	return success;
-}
-
-int testAes128CtrCPU(){
+int testAes128Ctr(cl_device_id* device_id){
 	int success = 1;
 	struct FileInfo fileInfo = getFileBytes("tests/ctr_test");
 	long dim = fileInfo.lenght;
 	uint8_t* aesCiphertext = (uint8_t*)malloc(dim*sizeof(uint8_t));
 	uint8_t* aesPlaintext = (uint8_t*)malloc(dim*sizeof(uint8_t));
 
-	aes128CtrEncrypt("tests/ctr_test", aes128Key, aesCiphertext, 2, CPU_DEVICE);
+	aes128CtrEncrypt("tests/ctr_test", aes128Key, aesCiphertext, 2,device_id);
 	writeOutputToFile("tests/aes_ciphertext", aesCiphertext, fileInfo.lenght);
-	aes128CtrDecrypt("tests/aes_ciphertext", aes128Key, aesPlaintext, 2, CPU_DEVICE);
+	aes128CtrDecrypt("tests/aes_ciphertext", aes128Key, aesPlaintext, 2, device_id);
 	
 	if (memcmp(aesPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0) {
 		success = 0;
@@ -122,37 +109,17 @@ int testAes128CtrCPU(){
 	return success;
 }
 
-int testAes128CtrGPU(){
-	int success = 1;
-	struct FileInfo fileInfo = getFileBytes("tests/ctr_test");
-	long dim = fileInfo.lenght;
-	uint8_t* aesCiphertext = (uint8_t*)malloc(dim*sizeof(uint8_t));
-	uint8_t* aesPlaintext = (uint8_t*)malloc(dim*sizeof(uint8_t));
-	
-	aes128CtrEncrypt("tests/ctr_test", aes128Key, aesCiphertext, 2, GPU_DEVICE);
-	writeOutputToFile("tests/aes_ciphertext", aesCiphertext, fileInfo.lenght);
-	aes128CtrDecrypt("tests/aes_ciphertext", aes128Key, aesPlaintext, 2, GPU_DEVICE);
-	
-	if (memcmp(aesPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0) {
-		success = 0;
-	}
 
-	free(aesCiphertext);
-	free(aesPlaintext);
-	free(fileInfo.filePointer);
-	remove("tests/aes_ciphertext");
-	return success;
-}
 
 
 // Test 192
 
-int testAes192CPU(){
+int testAes192(cl_device_id* device_id){
 	int success = 1;
 	uint8_t* aesCiphertext = (uint8_t*)malloc(128*sizeof(uint8_t));
 	writeOutputToFile("tests/aes_plaintext", aesPlaintext, 128);
 
-	aes192Encrypt("tests/aes_plaintext", aes192Key, aesCiphertext, 1, CPU_DEVICE);
+	aes192Encrypt("tests/aes_plaintext", aes192Key, aesCiphertext, 1,device_id);
 	if (memcmp(aesCiphertext, aes192Ciphertext, 128) != 0) {
 		success = 0;
 	}
@@ -161,30 +128,18 @@ int testAes192CPU(){
 	return success;
 }
 
-int testAes192GPU(){
-	int success = 1;
-	uint8_t* aesCiphertext = (uint8_t*)malloc(128*sizeof(uint8_t));
-	writeOutputToFile("tests/aes_plaintext", aesPlaintext, 128);
 
-	aes192Encrypt("tests/aes_plaintext", aes192Key, aesCiphertext, 2, GPU_DEVICE);
-	if (memcmp(aesCiphertext, aes192Ciphertext, 128) != 0) {
-		success = 0;
-	}
-	free(aesCiphertext);
-	remove("tests/aes_plaintext");
-	return success;
-}
 
-int testAes192CtrCPU(){
+int testAes192Ctr(cl_device_id* device_id){
 	int success = 1;
 	struct FileInfo fileInfo = getFileBytes("tests/ctr_test");
 	long dim = fileInfo.lenght;
 	uint8_t* aesCiphertext = (uint8_t*)malloc(dim*sizeof(uint8_t));
 	uint8_t* aesPlaintext = (uint8_t*)malloc(dim*sizeof(uint8_t));
 
-	aes192CtrEncrypt("tests/ctr_test", aes192Key, aesCiphertext, 2, CPU_DEVICE);
+	aes192CtrEncrypt("tests/ctr_test", aes192Key, aesCiphertext, 2, device_id);
 	writeOutputToFile("tests/aes_ciphertext", aesCiphertext, fileInfo.lenght);
-	aes192CtrDecrypt("tests/aes_ciphertext", aes192Key, aesPlaintext, 2, CPU_DEVICE);
+	aes192CtrDecrypt("tests/aes_ciphertext", aes192Key, aesPlaintext, 2, device_id);
 	
 	if (memcmp(aesPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0) {
 		success = 0;
@@ -197,35 +152,15 @@ int testAes192CtrCPU(){
 	return success;
 }
 
-int testAes192CtrGPU(){
-	int success = 1;
-	struct FileInfo fileInfo = getFileBytes("tests/ctr_test");
-	long dim = fileInfo.lenght;
-	uint8_t* aesCiphertext = (uint8_t*)malloc(dim*sizeof(uint8_t));
-	uint8_t* aesPlaintext = (uint8_t*)malloc(dim*sizeof(uint8_t));
-	
-	aes192CtrEncrypt("tests/ctr_test", aes192Key, aesCiphertext, 2, GPU_DEVICE);
-	writeOutputToFile("tests/aes_ciphertext", aesCiphertext, fileInfo.lenght);
-	aes192CtrDecrypt("tests/aes_ciphertext", aes192Key, aesPlaintext, 2, GPU_DEVICE);
-	
-	if (memcmp(aesPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0) {
-		success = 0;
-	}
 
-	free(aesCiphertext);
-	free(aesPlaintext);
-	free(fileInfo.filePointer);
-	remove("tests/aes_ciphertext");
-	return success;
-}
 
 
 // Test 256
-int testAes256CPU(){
+int testAes256(cl_device_id* device_id){
 	int success = 1;
 	uint8_t* aesCiphertext = (uint8_t*)malloc(128*sizeof(uint8_t));
 	writeOutputToFile("tests/aes_plaintext", aesPlaintext, 128);
-	aes256Encrypt("tests/aes_plaintext", aes256Key, aesCiphertext, 1, CPU_DEVICE);
+	aes256Encrypt("tests/aes_plaintext", aes256Key, aesCiphertext, 1, device_id);
 
 	if (memcmp(aesCiphertext, aes256Ciphertext, 128) != 0) {
 		success = 0;
@@ -235,30 +170,17 @@ int testAes256CPU(){
 	return success;
 }
 
-int testAes256GPU(){
-	int success = 1;
-	uint8_t* aesCiphertext = (uint8_t*)malloc(128*sizeof(uint8_t));
-	writeOutputToFile("tests/aes_plaintext", aesPlaintext, 128);
-	aes256Encrypt("tests/aes_plaintext", aes256Key, aesCiphertext, 2, GPU_DEVICE);
 
-	if (memcmp(aesCiphertext, aes256Ciphertext, 128) != 0) {
-		success = 0;
-	}
-	free(aesCiphertext);
-	remove("tests/aes_plaintext");
-	return success;
-}
-
-int testAes256CtrCPU(){
+int testAes256Ctr(cl_device_id* device_id){
 	int success = 1;
 	struct FileInfo fileInfo = getFileBytes("tests/ctr_test");
 	long dim = fileInfo.lenght;
 	uint8_t* aesCiphertext = (uint8_t*)malloc(dim*sizeof(uint8_t));
 	uint8_t* aesPlaintext = (uint8_t*)malloc(dim*sizeof(uint8_t));
 
-	aes256CtrEncrypt("tests/ctr_test", aes256Key, aesCiphertext, 2, CPU_DEVICE);
+	aes256CtrEncrypt("tests/ctr_test", aes256Key, aesCiphertext, 2, device_id);
 	writeOutputToFile("tests/aes_ciphertext", aesCiphertext, fileInfo.lenght);
-	aes256CtrDecrypt("tests/aes_ciphertext", aes256Key, aesPlaintext, 2, CPU_DEVICE);
+	aes256CtrDecrypt("tests/aes_ciphertext", aes256Key, aesPlaintext, 2, device_id);
 	
 	if (memcmp(aesPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0) {
 		success = 0;
@@ -271,67 +193,29 @@ int testAes256CtrCPU(){
 	return success;
 }
 
-int testAes256CtrGPU(){
-	int success = 1;
-	struct FileInfo fileInfo = getFileBytes("tests/ctr_test");
-	long dim = fileInfo.lenght;
-	uint8_t* aesCiphertext = (uint8_t*)malloc(dim*sizeof(uint8_t));
-	uint8_t* aesPlaintext = (uint8_t*)malloc(dim*sizeof(uint8_t));
-	
-	aes256CtrEncrypt("tests/ctr_test", aes256Key, aesCiphertext, 2, GPU_DEVICE);
-	writeOutputToFile("tests/aes_ciphertext", aesCiphertext, fileInfo.lenght);
-	aes256CtrDecrypt("tests/aes_ciphertext", aes256Key, aesPlaintext, 2, GPU_DEVICE);
-	
-	if (memcmp(aesPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0) {
-		success = 0;
-	}
-
-	free(aesCiphertext);
-	free(aesPlaintext);
-	free(fileInfo.filePointer);
-	remove("tests/aes_ciphertext");
-	return success;
-}
 
 
-
-
-
-int test128(){
+int test128(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting AES128 tests");
 	
-	log("--- Test AES 128 CPU starting");
-	if(testAes128CPU() == 1){
-		log("--- Test AES 128 CPU passed");
+	log("--- Test AES 128 starting");
+	if(testAes128(device_id) == 1){
+		log("--- Test AES 128  passed");
 	}else{
-		log("--- Test AES 128 CPU FAILED!");
+		log("--- Test AES 128 FAILED!");
 		result = 0;
 	}
 
-	log("--- Test AES 128 GPU starting");
-	if(testAes128GPU() == 1){
-		log("--- Test AES 128 GPU passed");
+
+	log("--- Test AES 128 CTR  starting");
+	if(testAes128Ctr(device_id) == 1){
+		log("--- Test AES 128 CTR passed");
 	}else{
-		log("--- Test AES 128 GPU FAILED!");
+		log("--- Test AES 128 CTR FAILED!");
 		result = 0;
 	}
 
-	log("--- Test AES 128 CTR CPU starting");
-	if(testAes128CtrCPU() == 1){
-		log("--- Test AES 128 CTR CPU passed");
-	}else{
-		log("--- Test AES 128 CTR CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test AES 128 CTR GPU starting");
-	if(testAes128CtrGPU() == 1){
-		log("--- Test AES 128 CTR GPU passed");
-	}else{
-		log("--- Test AES 128 CTR GPU FAILED!");
-		result = 0;
-	}
 
 	if(result != 0){
 		log("--- --- All Aes 128 test passed");
@@ -342,41 +226,27 @@ int test128(){
 
 }
 
-int test192(){
+int test192(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting AES192 tests");
 	
-	log("--- Test AES 192 CPU starting");
-	if(testAes192CPU() == 1){
-		log("--- Test AES 192 CPU passed");
+	log("--- Test AES 192 starting");
+	if(testAes192(device_id) == 1){
+		log("--- Test AES 192  passed");
 	}else{
-		log("--- Test AES 192 CPU FAILED!");
+		log("--- Test AES 192 FAILED!");
 		result = 0;
 	}
 
-	log("--- Test AES 192 GPU starting");
-	if(testAes192GPU() == 1){
-		log("--- Test AES 192 GPU passed");
-	}else{
-		log("--- Test AES 192 GPU FAILED!");
-		result = 0;
-	}
 
 	log("--- Test AES 192 CTR CPU starting");
-	if(testAes192CtrCPU() == 1){
-		log("--- Test AES 192 CTR CPU passed");
+	if(testAes192Ctr(device_id) == 1){
+		log("--- Test AES 192 CTR  passed");
 	}else{
-		log("--- Test AES 192 CTR CPU FAILED!");
+		log("--- Test AES 192 CTR  FAILED!");
 		result = 0;
 	}
-
-	log("--- Test AES 192 CTR GPU starting");
-	if(testAes192CtrGPU() == 1){
-		log("--- Test AES 192 CTR GPU passed");
-	}else{
-		log("--- Test AES 192 CTR GPU FAILED!");
-		result = 0;
-	}
+ì
 
 	if(result != 0){
 		log("--- --- All Aes 192 test passed");
@@ -388,39 +258,24 @@ int test192(){
 	
 }
 
-int test256(){
+int test256(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting AES256 tests");
 	
-	log("--- Test AES 256 CPU starting");
-	if(testAes256CPU() == 1){
-		log("--- Test AES 256 CPU passed");
+	log("--- Test AES 256 starting");
+	if(testAes256(device_id) == 1){
+		log("--- Test AES 256  passed");
 	}else{
-		log("--- Test AES 256 CPU FAILED!");
+		log("--- Test AES 256 FAILED!");
 		result = 0;
 	}
 
-	log("--- Test AES 256 GPU starting");
-	if(testAes256GPU() == 1){
-		log("--- Test AES 256 GPU passed");
-	}else{
-		log("--- Test AES 256 GPU FAILED!");
-		result = 0;
-	}
 
-	log("--- Test AES 256 CTR CPU starting");
-	if(testAes256CtrCPU() == 1){
-		log("--- Test AES 256 CTR CPU passed");
+	log("--- Test AES 256 CTR  starting");
+	if(testAes256Ctr(device_id) == 1){
+		log("--- Test AES 256 CTR  passed");
 	}else{
-		log("--- Test AES 256 CTR CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test AES 256 CTR GPU starting");
-	if(testAes256CtrGPU() == 1){
-		log("--- Test AES 256 CTR GPU passed");
-	}else{
-		log("--- Test AES 256 CTR GPU FAILED!");
+		log("--- Test AES 256 CTR  FAILED!");
 		result = 0;
 	}
 
@@ -434,11 +289,11 @@ int test256(){
 	
 }
 
-int testAESAll(){
+int testAESAll(cl_device_id* device_id){
 
-	int t128 = test128();
-	int t192 = test192();
-	int t256 = test256();	
+	int t128 = test128(device_id);
+	int t192 = test192(device_id);
+	int t256 = test256(device_iddevice_id);	
 	int result = t128&&t192&&t256;
 	if(result){
 		log("--- --- --- ALL AES TEST PASSED");

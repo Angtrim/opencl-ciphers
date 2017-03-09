@@ -37,11 +37,11 @@ static void writeOutputToFileUint64(char* outFileName, uint64_t* output, long le
 
 // TEST FOR HIGHT 
 
-int testHightCPU(){
+int testHight(cl_device_id* device_id){
 	int success = 1;
 	uint64_t* hightCiphertext = (uint64_t*)malloc(sizeof(uint64_t));
 	writeOutputToFileUint64("tests/hight_plaintext", HightPlaintexts, 1);
-	hightEncrypt("tests/hight_plaintext", HightKeys[0], hightCiphertext, 1, CPU_DEVICE);
+	hightEncrypt("tests/hight_plaintext", HightKeys[0], hightCiphertext, 1, device_id);
 	
 	if (hightCiphertext[0] != HightCiphertexts[0]) {
 		success = 0;
@@ -51,32 +51,19 @@ int testHightCPU(){
 	return success;
 }
 
-int testHightGPU(){
-	int success = 1;
-	uint64_t* hightCiphertext = (uint64_t*)malloc(sizeof(uint64_t));
-	writeOutputToFileUint64("tests/hight_plaintext", HightPlaintexts, 1);
-	hightEncrypt("tests/hight_plaintext", HightKeys[0], hightCiphertext, 1, GPU_DEVICE);
-	
-	if (hightCiphertext[0] != HightCiphertexts[0]) {
-		success = 0;
-	}
-	free(hightCiphertext);
-	remove("tests/hight_plaintext");
-	return success;
-}
 
 // TEST FOR HIGHT CTR
 
-int testHightCtrCPU(){
+int testHightCtrCPU(cl_device_id* device_id){
 	int success = 1;
 	struct FileInfo64 fileInfo = getFileUint64("tests/ctr_test");
 	long dim = fileInfo.lenght;
 	uint64_t* hightCiphertext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 	uint64_t* hightPlaintext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 
-	hightCtrEncrypt("tests/ctr_test", HightKeys[0], hightCiphertext, 2, CPU_DEVICE);
+	hightCtrEncrypt("tests/ctr_test", HightKeys[0], hightCiphertext, 2,  device_id);
 	writeOutputToFileUint64("tests/hight_ciphertext", hightCiphertext, dim);
-	hightCtrDecrypt("tests/hight_ciphertext", HightKeys[0], hightPlaintext, 2, CPU_DEVICE);
+	hightCtrDecrypt("tests/hight_ciphertext", HightKeys[0], hightPlaintext, 2,  device_id);
 
 	if(memcmp(hightPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0){
 		success = 0;
@@ -89,69 +76,34 @@ int testHightCtrCPU(){
 	return success;
 }
 
-int testHightCtrGPU(){
-	int success = 1;
-	struct FileInfo64 fileInfo = getFileUint64("tests/ctr_test");
-	long dim = fileInfo.lenght;
-	uint64_t* hightCiphertext = (uint64_t*)malloc(dim*sizeof(uint64_t));
-	uint64_t* hightPlaintext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 
-	hightCtrEncrypt("tests/ctr_test", HightKeys[0], hightCiphertext, 2, GPU_DEVICE);
-	writeOutputToFileUint64("tests/hight_ciphertext", hightCiphertext, dim);
-	hightCtrDecrypt("tests/hight_ciphertext", HightKeys[0], hightPlaintext, 2, GPU_DEVICE);
-
-	if(memcmp(hightPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0){
-		success = 0;
-	}
-
-	free(hightCiphertext);
-	free(hightPlaintext);
-	free(fileInfo.filePointer);
-	remove("tests/hight_ciphertext");
-	return success;
-}
-
-int testHight(){
+int testHight(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting HIGHT tests");
 	
-	log("--- Test HIGHT CPU starting");
-	if(testHightCPU() == 1){
-		log("--- Test HIGHT CPU passed");
+	log("--- Test HIGHT  starting");
+	if(testHightCPU( device_id) == 1){
+		log("--- Test HIGHT  passed");
 	}else{
-		log("--- Test HIGHT CPU FAILED!");
+		log("--- Test HIGHT  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test HIGHT GPU starting");
-	if(testHightGPU() == 1){
-		log("--- Test HIGHT GPU passed");
+
+	log("--- Test HIGHT CTR  starting");
+	if(testHightCtr(device_id) == 1){
+		log("--- Test HIGHT CTR  passed");
 	}else{
-		log("--- Test HIGHT GPU FAILED!");
+		log("--- Test HIGHT CTR  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test HIGHT CTR CPU starting");
-	if(testHightCtrCPU() == 1){
-		log("--- Test HIGHT CTR CPU passed");
-	}else{
-		log("--- Test HIGHT CTR CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test HIGHT CTR GPU starting");
-	if(testHightCtrGPU() == 1){
-		log("--- Test HIGHT CTR GPU passed");
-	}else{
-		log("--- Test HIGHT CTR GPU FAILED!");
-		result = 0;
-	}
 	return result;
 }
 
-int testHightAll(){
+int testHightAll(cl_device_id* device_id){
 
-	int tHight = testHight();
+	int tHight = testHight(device_id);
 	int result = tHight;
 	if(result){
 		log("--- --- --- ALL HIGHT TEST PASSED");

@@ -48,11 +48,11 @@ static void writeOutputToFileUint64(char* outFileName, uint64_t* output, long le
 
 // TEST FOR SEED OLD
 
-int testSeedOldCPU(){
+int testSeedOld(cl_device_id* device_id){
 	int success = 1;
 	uint64_t* seedCiphertext = (uint64_t*)malloc(2*sizeof(uint64_t));
 	writeOutputToFileUint64("tests/seed_plaintext", SeedPlaintext[3], 2);
-	seed_old_Encrypt("tests/seed_plaintext", SeedKey[3], seedCiphertext, 1, CPU_DEVICE);
+	seed_old_Encrypt("tests/seed_plaintext", SeedKey[3], seedCiphertext, 1, device_id);
 	if (seedCiphertext[0] != SeedCiphertext[3][0] || seedCiphertext[1] != SeedCiphertext[3][1]) {
 		success = 0;
 	}
@@ -61,26 +61,14 @@ int testSeedOldCPU(){
 	return success;
 }
 
-int testSeedOldGPU(){
-	int success = 1;
-	uint64_t* seedCiphertext = (uint64_t*)malloc(2*sizeof(uint64_t));
-	writeOutputToFileUint64("tests/seed_plaintext", SeedPlaintext[3], 2);
-	seed_old_Encrypt("tests/seed_plaintext", SeedKey[3], seedCiphertext, 1, GPU_DEVICE);
-	if (seedCiphertext[0] != SeedCiphertext[3][0] || seedCiphertext[1] != SeedCiphertext[3][1]) {
-		success = 0;
-	}
-	free(seedCiphertext);
-	remove("tests/seed_plaintext");
-	return success;
-}
 
 // TEST FOR SEED 
 
-int testSeedCPU(){
+int testSeed(cl_device_id* device_id){
 	int success = 1;
 	uint64_t* seedCiphertext = (uint64_t*)malloc(2*sizeof(uint64_t));
 	writeOutputToFileUint64("tests/seed_plaintext", SeedPlaintext[3], 2);
-	seed_Encrypt("tests/seed_plaintext", SeedKey[3], seedCiphertext, 1, CPU_DEVICE);
+	seed_Encrypt("tests/seed_plaintext", SeedKey[3], seedCiphertext, 1, device_id);
 	if (seedCiphertext[0] != SeedCiphertext[3][0] || seedCiphertext[1] != SeedCiphertext[3][1]) {
 		success = 0;
 	}
@@ -89,31 +77,19 @@ int testSeedCPU(){
 	return success;
 }
 
-int testSeedGPU(){
-	int success = 1;
-	uint64_t* seedCiphertext = (uint64_t*)malloc(2*sizeof(uint64_t));
-	writeOutputToFileUint64("tests/seed_plaintext", SeedPlaintext[3], 2);
-	seed_Encrypt("tests/seed_plaintext", SeedKey[3], seedCiphertext, 1, GPU_DEVICE);
-	if (seedCiphertext[0] != SeedCiphertext[3][0] || seedCiphertext[1] != SeedCiphertext[3][1]) {
-		success = 0;
-	}
-	free(seedCiphertext);
-	remove("tests/seed_plaintext");
-	return success;
-}
 
 // TEST FOR SEED OLD CTR
 
-int testSeedOldCtrCPU(){
+int testSeedOldCtr(cl_device_id* device_id){
 	int success = 1;
 	struct FileInfo64 fileInfo = getFileUint64("tests/ctr_test");
 	long dim = fileInfo.lenght;
 	uint64_t* seedCiphertext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 	uint64_t* seedPlaintext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 
-	seed_old_CtrEncrypt("tests/ctr_test", SeedKey[0], seedCiphertext, 1, CPU_DEVICE);
+	seed_old_CtrEncrypt("tests/ctr_test", SeedKey[0], seedCiphertext, 1,  device_id);
 	writeOutputToFileUint64("tests/seed_ciphertext", seedCiphertext, dim);
-	seed_old_CtrDecrypt("tests/seed_ciphertext", SeedKey[0], seedPlaintext, 1, CPU_DEVICE);
+	seed_old_CtrDecrypt("tests/seed_ciphertext", SeedKey[0], seedPlaintext, 1,  device_id);
 
 	if(memcmp(seedPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0){
 		success = 0;
@@ -126,40 +102,19 @@ int testSeedOldCtrCPU(){
 	return success;
 }
 
-int testSeedOldCtrGPU(){
-	int success = 1;
-	struct FileInfo64 fileInfo = getFileUint64("tests/ctr_test");
-	long dim = fileInfo.lenght;
-	uint64_t* seedCiphertext = (uint64_t*)malloc(dim*sizeof(uint64_t));
-	uint64_t* seedPlaintext = (uint64_t*)malloc(dim*sizeof(uint64_t));
-
-	seed_old_CtrEncrypt("tests/ctr_test", SeedKey[0], seedCiphertext, 1, GPU_DEVICE);
-	writeOutputToFileUint64("tests/seed_ciphertext", seedCiphertext, dim);
-	seed_old_CtrDecrypt("tests/seed_ciphertext", SeedKey[0], seedPlaintext, 1, GPU_DEVICE);
-
-	if(memcmp(seedPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0){
-		success = 0;
-	}
-
-	free(seedCiphertext);
-	free(seedPlaintext);
-	free(fileInfo.filePointer);
-	remove("tests/seed_ciphertext");
-	return success;
-}
 
 // TEST FOR SEED CTR
 
-int testSeedCtrCPU(){
+int testSeedCtr(cl_device_id* device_id){
 	int success = 1;
 	struct FileInfo64 fileInfo = getFileUint64("tests/ctr_test");
 	long dim = fileInfo.lenght;
 	uint64_t* seedCiphertext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 	uint64_t* seedPlaintext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 
-	seed_CtrEncrypt("tests/ctr_test", SeedKey[0], seedCiphertext, 1, CPU_DEVICE);
+	seed_CtrEncrypt("tests/ctr_test", SeedKey[0], seedCiphertext, 1, device_id);
 	writeOutputToFileUint64("tests/seed_ciphertext", seedCiphertext, dim);
-	seed_CtrDecrypt("tests/seed_ciphertext", SeedKey[0], seedPlaintext, 1, CPU_DEVICE);
+	seed_CtrDecrypt("tests/seed_ciphertext", SeedKey[0], seedPlaintext, 1, device_id);
 
 	if(memcmp(seedPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0){
 		success = 0;
@@ -172,63 +127,30 @@ int testSeedCtrCPU(){
 	return success;
 }
 
-int testSeedCtrGPU(){
-	int success = 1;
-	struct FileInfo64 fileInfo = getFileUint64("tests/ctr_test");
-	long dim = fileInfo.lenght;
-	uint64_t* seedCiphertext = (uint64_t*)malloc(dim*sizeof(uint64_t));
-	uint64_t* seedPlaintext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 
-	seed_CtrEncrypt("tests/ctr_test", SeedKey[0], seedCiphertext, 1, GPU_DEVICE);
-	writeOutputToFileUint64("tests/seed_ciphertext", seedCiphertext, dim);
-	seed_CtrDecrypt("tests/seed_ciphertext", SeedKey[0], seedPlaintext, 1, GPU_DEVICE);
 
-	if(memcmp(seedPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0){
-		success = 0;
-	}
-
-	free(seedCiphertext);
-	free(seedPlaintext);
-	free(fileInfo.filePointer);
-	remove("tests/seed_ciphertext");
-	return success;
-}
-
-int testSeedOld(){
+int testSeedOld(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting SEED OLD tests");
 	
-	log("--- Test SEED OLD CPU starting");
-	if(testSeedOldCPU() == 1){
-		log("--- Test SEED OLD CPU passed");
+	log("--- Test SEED OLD  starting");
+	if(testSeedOld(device_id) == 1){
+		log("--- Test SEED OLD  passed");
 	}else{
-		log("--- Test SEED OLD CPU FAILED!");
+		log("--- Test SEED OLD  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test SEED OLD GPU starting");
-	if(testSeedOldGPU() == 1){
-		log("--- Test SEED OLD GPU passed");
+
+
+	log("--- Test SEED OLD CTR  starting");
+	if(testSeedOldCtr(device_id) == 1){
+		log("--- Test SEED OLD CTR  passed");
 	}else{
-		log("--- Test SEED OLD GPU FAILED!");
+		log("--- Test SEED OLD CTR  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test SEED OLD CTR CPU starting");
-	if(testSeedOldCtrCPU() == 1){
-		log("--- Test SEED OLD CTR CPU passed");
-	}else{
-		log("--- Test SEED OLD CTR CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test SEED OLD CTR GPU starting");
-	if(testSeedOldCtrGPU() == 1){
-		log("--- Test SEED OLD CTR GPU passed");
-	}else{
-		log("--- Test SEED OLD CTR GPU FAILED!");
-		result = 0;
-	}
 
 	if(result != 0){
 		log("--- --- All SEED OLD test passed");
@@ -238,41 +160,27 @@ int testSeedOld(){
 	return result;
 }
 
-int testSeed(){
+int testSeed(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting SEED tests");
 	
-	log("--- Test SEED CPU starting");
-	if(testSeedCPU() == 1){
-		log("--- Test SEED CPU passed");
+	log("--- Test SEED  starting");
+	if(testSeed(device_id) == 1){
+		log("--- Test SEED  passed");
 	}else{
-		log("--- Test SEED CPU FAILED!");
+		log("--- Test SEED  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test SEED GPU starting");
-	if(testSeedGPU() == 1){
-		log("--- Test SEED GPU passed");
+
+	log("--- Test SEED CTR  starting");
+	if(testSeedCtr(device_id) == 1){
+		log("--- Test SEED CTR  passed");
 	}else{
-		log("--- Test SEED GPU FAILED!");
+		log("--- Test SEED CTR  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test SEED CTR CPU starting");
-	if(testSeedCtrCPU() == 1){
-		log("--- Test SEED CTR CPU passed");
-	}else{
-		log("--- Test SEED CTR CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test SEED CTR GPU starting");
-	if(testSeedCtrGPU() == 1){
-		log("--- Test SEED CTR GPU passed");
-	}else{
-		log("--- Test SEED CTR GPU FAILED!");
-		result = 0;
-	}
 
 	if(result != 0){
 		log("--- --- All SEED test passed");
@@ -282,10 +190,10 @@ int testSeed(){
 	return result;
 }
 
-int testSeedAll(){
+int testSeedAll(cl_device_id* device_id){
 
-	int tSeedOld = testSeedOld();
-	int tSeed = testSeed();	
+	int tSeedOld = testSeedOld(device_id);
+	int tSeed = testSeed(device_id);	
 	int result = tSeedOld&&tSeed;
 	if(result){
 		log("--- --- --- ALL SEED TEST PASSED");
@@ -293,5 +201,4 @@ int testSeedAll(){
 		log("--- --- --- TEST SEED FAILED");
 	}
 	return result;
-
 }

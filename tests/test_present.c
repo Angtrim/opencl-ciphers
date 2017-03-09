@@ -32,11 +32,11 @@ static void writeOutputToFileUint64(char* outFileName, uint64_t* output, long le
 
 // TEST FOR PRESENT MEMORY
 
-int testPresentMemoryCPU(){
+int testPresentMemory(cl_device_id* device_id){
 	int success = 1;
 	uint64_t* presentCiphertext = (uint64_t*)malloc(sizeof(uint64_t));
 	writeOutputToFileUint64("tests/present_plaintext", PresentPlaintext, 1);
-	present_memory_Encrypt("tests/present_plaintext", PresentKey, presentCiphertext, 1, CPU_DEVICE);
+	present_memory_Encrypt("tests/present_plaintext", PresentKey, presentCiphertext, 1,device_id);
 	
 	if (presentCiphertext[0] != PresentC) {
 		success = 0;
@@ -46,27 +46,14 @@ int testPresentMemoryCPU(){
 	return success;
 }
 
-int testPresentMemoryGPU(){
-	int success = 1;
-	uint64_t* presentCiphertext = (uint64_t*)malloc(sizeof(uint64_t));
-	writeOutputToFileUint64("tests/present_plaintext", PresentPlaintext, 1);
-	present_memory_Encrypt("tests/present_plaintext", PresentKey, presentCiphertext, 1, GPU_DEVICE);
-
-	if (presentCiphertext[0] != PresentC) {
-		success = 0;
-	}
-	free(presentCiphertext);
-	remove("tests/present_plaintext");
-	return success;
-}
 
 // TEST FOR PRESENT SPEED
 
-int testPresentSpeedCPU(){
+int testPresentSpeed(){
 	int success = 1;
 	uint64_t* presentCiphertext = (uint64_t*)malloc(sizeof(uint64_t));
 	writeOutputToFileUint64("tests/present_plaintext", PresentPlaintext, 1);
-	present_speed_Encrypt("tests/present_plaintext", PresentKey, presentCiphertext, 1, CPU_DEVICE);
+	present_speed_Encrypt("tests/present_plaintext", PresentKey, presentCiphertext, 1, device_id);
 
 	if (presentCiphertext[0] != PresentC) {
 		success = 0;
@@ -76,32 +63,20 @@ int testPresentSpeedCPU(){
 	return success;
 }
 
-int testPresentSpeedGPU(){
-	int success = 1;
-	uint64_t* presentCiphertext = (uint64_t*)malloc(sizeof(uint64_t));
-	writeOutputToFileUint64("tests/present_plaintext", PresentPlaintext, 1);
-	present_speed_Encrypt("tests/present_plaintext", PresentKey, presentCiphertext, 1, GPU_DEVICE);
 
-	if (presentCiphertext[0] != PresentC) {
-		success = 0;
-	}
-	free(presentCiphertext);
-	remove("tests/present_plaintext");
-	return success;
-}
 
 // TEST FOR PRESENT MEMORY CTR
 
-int testPresentMemoryCtrCPU(){
+int testPresentMemoryCtr(cl_device_id* device_id){
 	int success = 1;
 	struct FileInfo64 fileInfo = getFileUint64("tests/ctr_test");
 	long dim = fileInfo.lenght;
 	uint64_t* presentCiphertext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 	uint64_t* presentPlaintext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 
-	present_memory_CtrEncrypt("tests/ctr_test", PresentKey, presentCiphertext, 2, CPU_DEVICE);
+	present_memory_CtrEncrypt("tests/ctr_test", PresentKey, presentCiphertext, 2, device_id);
 	writeOutputToFileUint64("tests/present_ciphertext", presentCiphertext, dim);
-	present_memory_CtrDecrypt("tests/present_ciphertext", PresentKey, presentPlaintext, 2, CPU_DEVICE);
+	present_memory_CtrDecrypt("tests/present_ciphertext", PresentKey, presentPlaintext, 2, device_id);
 
 	if(memcmp(presentPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0){
 		success = 0;
@@ -114,40 +89,20 @@ int testPresentMemoryCtrCPU(){
 	return success;
 }
 
-int testPresentMemoryCtrGPU(){
-	int success = 1;
-	struct FileInfo64 fileInfo = getFileUint64("tests/ctr_test");
-	long dim = fileInfo.lenght;
-	uint64_t* presentCiphertext = (uint64_t*)malloc(dim*sizeof(uint64_t));
-	uint64_t* presentPlaintext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 
-	present_memory_CtrEncrypt("tests/ctr_test", PresentKey, presentCiphertext, 2, GPU_DEVICE);
-	writeOutputToFileUint64("tests/present_ciphertext", presentCiphertext, dim);
-	present_memory_CtrDecrypt("tests/present_ciphertext", PresentKey, presentPlaintext, 2, GPU_DEVICE);
-
-	if(memcmp(presentPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0){
-		success = 0;
-	}
-
-	free(presentCiphertext);
-	free(presentPlaintext);
-	free(fileInfo.filePointer);
-	remove("tests/present_ciphertext");
-	return success;
-}
 
 // TEST FOR PRESENT SPEED CTR
 
-int testPresentSpeedCtrCPU(){
+int testPresentSpeedCtr(cl_device_id* device_id){
 	int success = 1;
 	struct FileInfo64 fileInfo = getFileUint64("tests/ctr_test");
 	long dim = fileInfo.lenght;
 	uint64_t* presentCiphertext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 	uint64_t* presentPlaintext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 
-	present_speed_CtrEncrypt("tests/ctr_test", PresentKey, presentCiphertext, 2, CPU_DEVICE);
+	present_speed_CtrEncrypt("tests/ctr_test", PresentKey, presentCiphertext, 2,  device_id);
 	writeOutputToFileUint64("tests/present_ciphertext", presentCiphertext, dim);
-	present_speed_CtrDecrypt("tests/present_ciphertext", PresentKey, presentPlaintext, 2, CPU_DEVICE);
+	present_speed_CtrDecrypt("tests/present_ciphertext", PresentKey, presentPlaintext, 2,  device_id);
 
 	if(memcmp(presentPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0){
 		success = 0;
@@ -160,63 +115,29 @@ int testPresentSpeedCtrCPU(){
 	return success;
 }
 
-int testPresentSpeedCtrGPU(){
-	int success = 1;
-	struct FileInfo64 fileInfo = getFileUint64("tests/ctr_test");
-	long dim = fileInfo.lenght;
-	uint64_t* presentCiphertext = (uint64_t*)malloc(dim*sizeof(uint64_t));
-	uint64_t* presentPlaintext = (uint64_t*)malloc(dim*sizeof(uint64_t));
 
-	present_speed_CtrEncrypt("tests/ctr_test", PresentKey, presentCiphertext, 2, GPU_DEVICE);
-	writeOutputToFileUint64("tests/present_ciphertext", presentCiphertext, dim);
-	present_speed_CtrDecrypt("tests/present_ciphertext", PresentKey, presentPlaintext, 2, GPU_DEVICE);
-
-	if(memcmp(presentPlaintext, fileInfo.filePointer, fileInfo.lenght) != 0){
-		success = 0;
-	}
-
-	free(presentCiphertext);
-	free(presentPlaintext);
-	free(fileInfo.filePointer);
-	remove("tests/present_ciphertext");
-	return success;
-}
-
-int testPresentMemory(){
+int testPresentMemory(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting PRESENT MEMORY tests");
 	
-	log("--- Test PRESENT MEMORY CPU starting");
-	if(testPresentMemoryCPU() == 1){
-		log("--- Test PRESENT MEMORY CPU passed");
+	log("--- Test PRESENT MEMORY  starting");
+	if(testPresentMemory( device_id) == 1){
+		log("--- Test PRESENT MEMORY  passed");
 	}else{
-		log("--- Test PRESENT MEMORY CPU FAILED!");
+		log("--- Test PRESENT MEMORY  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test PRESENT MEMORY GPU starting");
-	if(testPresentMemoryGPU() == 1){
-		log("--- Test PRESENT MEMORY GPU passed");
+
+
+	log("--- Test PRESENT MEMORY CTR  starting");
+	if(testPresentMemoryCtr(device_id) == 1){
+		log("--- Test PRESENT MEMORY CTR  passed");
 	}else{
-		log("--- Test PRESENT MEMORY GPU FAILED!");
+		log("--- Test PRESENT MEMORY CTR  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test PRESENT MEMORY CTR CPU starting");
-	if(testPresentMemoryCtrCPU() == 1){
-		log("--- Test PRESENT MEMORY CTR CPU passed");
-	}else{
-		log("--- Test PRESENT MEMORY CTR CPU FAILED!");
-		result = 0;
-	}
-
-	log("--- Test PRESENT MEMORY CTR GPU starting");
-	if(testPresentMemoryCtrGPU() == 1){
-		log("--- Test PRESENT MEMORY CTR GPU passed");
-	}else{
-		log("--- Test PRESENT MEMORY CTR GPU FAILED!");
-		result = 0;
-	}
 
 	if(result != 0){
 		log("--- --- All PRESENT MEMORY test passed");
@@ -226,41 +147,28 @@ int testPresentMemory(){
 	return result;
 }
 
-int testPresentSpeed(){
+int testPresentSpeed(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting PRESENT SPEED tests");
 	
-	log("--- Test PRESENT SPEED CPU starting");
-	if(testPresentSpeedCPU() == 1){
-		log("--- Test PRESENT SPEED CPU passed");
+	log("--- Test PRESENT SPEED  starting");
+	if(testPresentSpeed(device_id) == 1){
+		log("--- Test PRESENT SPEED  passed");
 	}else{
-		log("--- Test PRESENT SPEED CPU FAILED!");
+		log("--- Test PRESENT SPEED  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test PRESENT SPEED GPU starting");
-	if(testPresentSpeedGPU() == 1){
-		log("--- Test PRESENT SPEED GPU passed");
+
+	log("--- Test PRESENT SPEED CTR  starting");
+	if(testPresentSpeedCtr(device_id) == 1){
+		log("--- Test PRESENT SPEED CTR  passed");
 	}else{
-		log("--- Test PRESENT SPEED GPU FAILED!");
+		log("--- Test PRESENT SPEED CTR  FAILED!");
 		result = 0;
 	}
 
-	log("--- Test PRESENT SPEED CTR CPU starting");
-	if(testPresentSpeedCtrCPU() == 1){
-		log("--- Test PRESENT SPEED CTR CPU passed");
-	}else{
-		log("--- Test PRESENT SPEED CTR CPU FAILED!");
-		result = 0;
-	}
 
-	log("--- Test PRESENT SPEED CTR GPU starting");
-	if(testPresentSpeedCtrGPU() == 1){
-		log("--- Test PRESENT SPEED CTR GPU passed");
-	}else{
-		log("--- Test PRESENT SPEED CTR GPU FAILED!");
-		result = 0;
-	}
 
 	if(result != 0){
 		log("--- --- All PRESENT SPEED test passed");
@@ -270,10 +178,10 @@ int testPresentSpeed(){
 	return result;
 }
 
-int testPresentAll(){
+int testPresentAll(cl_device_id* device_id){
 
-	int tPresentMemory = testPresentMemory();
-	int tPresentSpeed = testPresentSpeed();
+	int tPresentMemory = testPresentMemory(device_id);
+	int tPresentSpeed = testPresentSpeed(device_id);
 	int result = tPresentMemory&&tPresentSpeed;
 	if(result){
 		log("--- --- --- ALL PRESENT TEST PASSED");
