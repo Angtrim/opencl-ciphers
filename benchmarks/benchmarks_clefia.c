@@ -40,6 +40,7 @@ void benchClefia128(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_d
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 }
 
 void benchClefia128Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
@@ -73,6 +74,7 @@ void benchClefia256(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_d
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 }
 
 void benchClefia256Multiple(int fileSize,int* localSize, int numOfLocalSizes,cl_device_id* device_id){
@@ -106,6 +108,7 @@ void benchClefia192(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_d
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 }
 
 void benchClefia192Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){

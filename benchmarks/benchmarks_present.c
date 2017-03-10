@@ -33,6 +33,7 @@ void benchPresentMemoryCtr(int fileSize,int localSize,struct BenchInfo* benchInf
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 }
 
 void benchPresentSpeedCtr(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id){
@@ -63,6 +64,7 @@ if(event == NULL){
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 }
 
 void benchPresentMemoryMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){

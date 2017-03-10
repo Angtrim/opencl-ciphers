@@ -38,6 +38,7 @@ static uint8_t HightKeys[2][16] = {
 			benchInfo->totalTime = total_time;
 			benchInfo->localSize = localSize;
 			benchInfo->fileSize = fileSize;
+			clReleaseEvent(event);
 
 		}
 

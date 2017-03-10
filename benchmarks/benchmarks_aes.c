@@ -31,6 +31,7 @@ void benchAes128(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_devic
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 
 }
 
@@ -54,6 +55,8 @@ void benchAes192(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_devi
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
+
 
 }
 
@@ -72,12 +75,14 @@ void benchAes256(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_devi
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
 	total_time = time_end-time_start;
+
 	printf("Aes 256 CTR execution time is: %0.3f ms\n",total_time/1000000.0);
 	free(aesCiphertext);
 	remove(fileName);
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 
 }
 

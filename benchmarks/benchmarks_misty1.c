@@ -36,6 +36,7 @@ void benchMisty1Ctr(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_de
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 
 }
 

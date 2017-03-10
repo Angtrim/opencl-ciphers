@@ -34,6 +34,7 @@ void benchDes(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 
 }
 
@@ -58,7 +59,7 @@ void benchDes2(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
-
+clReleaseEvent(event);
 }
 
 void benchDes3(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
@@ -82,6 +83,7 @@ void benchDes3(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 
 }
 

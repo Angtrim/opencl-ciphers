@@ -61,6 +61,7 @@ void benchSeedCtr(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_dev
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 }
 
 void benchSeedOldCtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){

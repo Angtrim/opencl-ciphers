@@ -38,6 +38,7 @@ void benchCam128(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_devic
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 }
 
 void benchCam128Multiple(int fileSize,int* localSize, int numOfLocalSizes,cl_device_id* device_id){
@@ -70,6 +71,7 @@ void benchCam192(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_devic
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 }
 
 void benchCam192Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
@@ -103,6 +105,7 @@ void benchCam256(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_devi
 	benchInfo->totalTime = total_time;
 	benchInfo->localSize = localSize;
 	benchInfo->fileSize = fileSize;
+	clReleaseEvent(event);
 }
 
 void benchCam256Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
