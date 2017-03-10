@@ -43,8 +43,6 @@ static void setUpOpenCl_2_3(uint8_t* inputText, char* kernelName, des3_context* 
 
 
 	initClSetup(device_id,&context,&command_queue);
-
-
 	/* Create Memory Buffers */
 	_esk = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(uint32_t)*96, NULL, &ret); 
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint8_t), NULL, &ret);
@@ -65,20 +63,7 @@ static void setUpOpenCl_2_3(uint8_t* inputText, char* kernelName, des3_context* 
 	/* Build Kernel Program */
 	ret = clBuildProgram(program, 1, device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
-		printf("\nBuild Error = %i", ret);
-		
-		// Determine the size of the log
-		size_t log_size;
-		clGetProgramBuildInfo(program, *device_id, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
-
-		// Allocate memory for the log
-		char *log = (char *) malloc(log_size);
-
-		// Get the log
-		clGetProgramBuildInfo(program, *device_id, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
-
-		// Print the log
-		printf("%s\n", log);
+		logBuildError(&ret,&program,device_id);
 	}
 	
 	/* Create OpenCL Kernel */
@@ -108,6 +93,8 @@ static void finalizeExecution( uint8_t* inputText){
 	inputText = NULL;
 	free(source_str);
 	source_str = NULL;
+	program = NULL;
+	kernel = NULL;
 }
 
 cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, int mode, int isCtr,cl_device_id* device_id) {
