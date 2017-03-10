@@ -92,6 +92,7 @@ void benchDesMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_devic
 		benchDes(fileSize,localSize[i],&infos[i],device_id);
 	}
 	saveDataToFile("Des",infos,numOfLocalSizes);
+	free(infos);
 }
 
 void benchDes2Multiple(int fileSize,int* localSize, int numOfLocalSizes,cl_device_id* device_id){
@@ -100,6 +101,7 @@ void benchDes2Multiple(int fileSize,int* localSize, int numOfLocalSizes,cl_devic
 		benchDes2(fileSize,localSize[i],&infos[i], device_id);
 	}
 	saveDataToFile("Des2",infos,numOfLocalSizes);
+	free(infos);
 }
 
 void benchDes3Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
@@ -108,4 +110,5 @@ void benchDes3Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_devi
 		benchDes3(fileSize,localSize[i],&infos[i],device_id);
 	}
 	saveDataToFile("Des3",infos,numOfLocalSizes);
+	free(infos);
 }

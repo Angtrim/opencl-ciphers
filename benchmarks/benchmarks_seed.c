@@ -69,6 +69,7 @@ void benchSeedOldCtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, c
 		benchSeedOldCtr(fileSize,localSize[i],&infos[i], device_id);
 	}
 	saveDataToFile("SeedOLD",infos,numOfLocalSizes);
+	free(infos);
 }
 
 void benchSeedCtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
@@ -77,4 +78,5 @@ void benchSeedCtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_d
 		benchSeedCtr(fileSize,localSize[i],&infos[i],device_id);
 	}
 	saveDataToFile("Seed",infos,numOfLocalSizes);
+	free(infos);
 }

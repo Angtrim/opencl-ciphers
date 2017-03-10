@@ -38,6 +38,7 @@ static uint8_t HightKeys[2][16] = {
 			benchInfo->totalTime = total_time;
 			benchInfo->localSize = localSize;
 			benchInfo->fileSize = fileSize;
+
 		}
 
 		void benchHightMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
@@ -46,4 +47,5 @@ static uint8_t HightKeys[2][16] = {
 				benchHight(fileSize,localSize[i],&infos[i], device_id);
 			}
 			saveDataToFile("Hight",infos,numOfLocalSizes);
+			free(infos);
 		}

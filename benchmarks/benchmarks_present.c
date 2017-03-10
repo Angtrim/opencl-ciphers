@@ -71,6 +71,7 @@ void benchPresentMemoryMultiple(int fileSize,int* localSize, int numOfLocalSizes
 		benchPresentMemoryCtr(fileSize,localSize[i],&infos[i], device_id);
 	}
 	saveDataToFile("PresentMem",infos,numOfLocalSizes);
+	free(infos);
 }
 
 void benchPresentSpeedMultiple(int fileSize,int* localSize, int numOfLocalSizes,cl_device_id* device_id){
@@ -82,4 +83,5 @@ void benchPresentSpeedMultiple(int fileSize,int* localSize, int numOfLocalSizes,
 		benchPresentSpeedCtr(fileSize,localSize[i],&infos[i],device_id);
 	}
 	saveDataToFile("PresentSpeed",infos,numOfLocalSizes);
+	free(infos);
 }

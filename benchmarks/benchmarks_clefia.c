@@ -48,6 +48,7 @@ void benchClefia128Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl
 		benchClefia128(fileSize,localSize[i],&infos[i], device_id);
 	}
 	saveDataToFile("Clefia128",infos,numOfLocalSizes);
+	free(infos);
 }
 
 void benchClefia256(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
@@ -80,6 +81,7 @@ void benchClefia256Multiple(int fileSize,int* localSize, int numOfLocalSizes,cl_
 		benchClefia256(fileSize,localSize[i],&infos[i], device_id);
 	}
 	saveDataToFile("Clefia256",infos,numOfLocalSizes);
+	free(infos);
 }
 
 void benchClefia192(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
@@ -112,5 +114,6 @@ void benchClefia192Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl
 		benchClefia192(fileSize,localSize[i],&infos[i], device_id);
 	}
 	saveDataToFile("Clefia192",infos,numOfLocalSizes);
+	free(infos);
 }
 

@@ -88,6 +88,7 @@ void benchAes128Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_de
 		benchAes128(fileSize,localSize[i],&infos[i], device_id);
 	}
 	saveDataToFile("AES128",infos,numOfLocalSizes);
+	free(infos);
 }
 
 void benchAes192Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
@@ -96,6 +97,7 @@ void benchAes192Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_de
 		benchAes192(fileSize,localSize[i],&infos[i],device_id);
 	}
 	saveDataToFile("AES192",infos,numOfLocalSizes);
+	free(infos);
 }
 
 void benchAes256Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
@@ -104,4 +106,5 @@ void benchAes256Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_de
 		benchAes256(fileSize,localSize[i],&infos[i], device_id);
 	}
 	saveDataToFile("AES256",infos,numOfLocalSizes);
+	free(infos);
 }

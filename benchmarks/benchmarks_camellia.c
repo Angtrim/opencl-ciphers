@@ -46,6 +46,7 @@ void benchCam128Multiple(int fileSize,int* localSize, int numOfLocalSizes,cl_dev
 		benchCam128(fileSize,localSize[i],&infos[i], device_id);
 	}
 	saveDataToFile("CAM128",infos,numOfLocalSizes);
+	free(infos);
 }
 
 void benchCam192(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id){
@@ -77,6 +78,7 @@ void benchCam192Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_de
 		benchCam192(fileSize,localSize[i],&infos[i],device_id);
 	}
 	saveDataToFile("CAM192",infos,numOfLocalSizes);
+	free(infos);
 }
 
 void benchCam256(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
@@ -109,4 +111,5 @@ void benchCam256Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_de
 		benchCam256(fileSize,localSize[i],&infos[i], device_id);
 	}
 	saveDataToFile("CAM256",infos,numOfLocalSizes);
+	free(infos);
 }

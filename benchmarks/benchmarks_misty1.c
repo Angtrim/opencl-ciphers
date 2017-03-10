@@ -45,4 +45,5 @@ void benchMisty1CtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl
 		benchMisty1Ctr(fileSize,localSize[i],&infos[i],device_id);
 	}
 	saveDataToFile("Misty1",infos,numOfLocalSizes);
+	free(infos);
 }
