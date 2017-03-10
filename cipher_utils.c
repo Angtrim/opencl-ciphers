@@ -7,7 +7,7 @@
 #define MAX_DEVICES   32
 #define MAX_STR_LEN   1024
 
-#define MAX_SOURCE_SIZE (0x10000000)
+#define MAX_SOURCE_SIZE (0x1000000)
 
 /*
  * This function load the size in blocks of bytes 
