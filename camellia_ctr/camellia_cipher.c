@@ -69,6 +69,7 @@ static void finalizeExecution(uint64_t* inputText){
 	inputText = NULL;
 	free(source_str);
 	source_str = NULL;
+	event = NULL;
 
 }
 
