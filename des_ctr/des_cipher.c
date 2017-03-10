@@ -44,13 +44,13 @@ static void setUpOpenCl_2_3(uint8_t* inputText, char* kernelName, des3_context* 
 
 	initClSetup(device_id,&context,&command_queue);
 	/* Create Memory Buffers */
-	_esk = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(uint32_t)*96, NULL, &ret); 
+	_esk = clCreateBuffer(context, CL_MEM_READ_WRITE, 96*sizeof(uint32_t), NULL, &ret); 
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint8_t), NULL, &ret);
 	out = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint8_t), NULL, &ret);
 
 
 	/* Copy input data to Memory Buffer */
-	ret = clEnqueueWriteBuffer(command_queue, _esk, CL_TRUE, 0, sizeof(uint32_t)*96, K->esk, 0, NULL, NULL);
+	ret = clEnqueueWriteBuffer(command_queue, _esk, CL_TRUE, 0, 96*sizeof(uint32_t), K->esk, 0, NULL, NULL);
 	ret = clEnqueueWriteBuffer(command_queue, in, CL_TRUE, 0, bufferLenght * sizeof(uint8_t), inputText, 0, NULL, NULL);
 
 	/* Create Kernel Program from the source */
