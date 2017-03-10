@@ -14,8 +14,8 @@ int main(){
 		getSystemInfo();
 	cl_uint ret_num_devices;
 	cl_uint ret_num_platforms;
-	cl_platform_id platform_id = NULL;
-	cl_device_id device_id[1];
+	cl_platform_id platform_id[32];;
+	cl_device_id device_id[32];
 	// Get Platform and Device Info 
 	cl_int ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
 	// allocate memory, get list of platforms

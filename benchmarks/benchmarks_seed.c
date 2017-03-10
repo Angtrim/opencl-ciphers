@@ -46,7 +46,6 @@ void benchSeedCtr(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_dev
 	fileSize = fileSize + (fileSize%16);
 	char* fileName = "benchmarks/benchSeed";
 	buildFileOfZeroes(fileName,fileSize);
-	printf("\nnumber of uint64_t: %d", fileSize/8);
 	uint64_t* seedCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;

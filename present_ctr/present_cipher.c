@@ -90,22 +90,22 @@ cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, siz
 		//key expansion is performed on the cpu
 		present_memory_expandKey(Key, subkey);
 		
-		if(isCtr)
-		modality = "present_memoryCtrCipher";
-	else
-	modality = "present_memoryCipher";
+		if(isCtr){
+					modality = "present_memoryCtrCipher";
+		}else{
+			modality = "present_memoryCipher";
+		}
 
 } else if(strcmp(encryptionType, SPEED) == 0){
 		//key expansion is performed on the cpu
 	present_speed_expandKey(Key, subkey);
 	
-	if(isCtr)
-	modality = "present_speedCtrCipher";
-else
-modality = "present_speedCipher";
-
+		if(isCtr){
+					modality = "present_memoryCtrCipher";
+		}else{
+			modality = "present_memoryCipher";
+		}
 }
-
 if(source_str == NULL){
 	loadClProgramSource(clFileName,&source_str,&source_size);
 }
