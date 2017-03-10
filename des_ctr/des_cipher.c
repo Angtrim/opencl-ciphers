@@ -3,7 +3,6 @@
 
 static void setUpOpenCl(byte* inputText, char* kernelName, des_context* K, long bufferLenght,cl_device_id* device_id){
 	
-	initClSetup(device_id,&context,&command_queue);
 	/* Create Memory Buffers */
 	_esk = clCreateBuffer(context, CL_MEM_READ_WRITE, 32*sizeof(uint32_t), NULL, &ret); 
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint8_t), NULL, &ret);
@@ -42,17 +41,8 @@ static void setUpOpenCl(byte* inputText, char* kernelName, des_context* K, long 
 static void setUpOpenCl_2_3(uint8_t* inputText, char* kernelName, des3_context* K, long bufferLenght,cl_device_id* device_id){
 
 
-	/* Create OpenCL context */
-	context = clCreateContext(NULL, 1, device_id, NULL, NULL, &ret);
-	if(ret != CL_SUCCESS){
-		printf("Failed to create context\n");
-	}
+	initClSetup(device_id,&context,&command_queue);
 
-	/* Create Command Queue */
-	command_queue = clCreateCommandQueue(context, *device_id, CL_QUEUE_PROFILING_ENABLE, &ret);
-	if(ret != CL_SUCCESS){
-		printf("Failed to create command queue\n");
-	}
 
 	/* Create Memory Buffers */
 	_esk = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(uint32_t)*96, NULL, &ret); 

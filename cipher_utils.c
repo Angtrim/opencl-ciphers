@@ -183,7 +183,7 @@ void getSystemInfo(){
 
 
    void logBuildError(cl_int* ret,cl_program* program, cl_device_id* deviceId){
-   	printf("\nBuild Error = %i", *ret);
+   	printf("\nBuild Error = %d", *ret);
 				// Determine the size of the log
    	size_t log_size;
    	clGetProgramBuildInfo(*program, *deviceId, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
