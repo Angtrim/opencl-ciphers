@@ -8,9 +8,6 @@ int mainBench(cl_device_id* device_id){
 	benchAes128Multiple(100000,localSize,2,device_id);
 	benchAes192Multiple(100000,localSize,2,device_id);
 	benchAes256Multiple(100000,localSize,2,device_id);
-	benchDesMultiple(100000,localSize,2,device_id);
-	benchDes2Multiple(100000,localSize,2,device_id);
-	benchDes3Multiple(100000,localSize,2,device_id);
 	benchCam128Multiple(100000,localSize,2,device_id);
 	benchCam192Multiple(100000,localSize,2,device_id);
 	benchCam256Multiple(100000,localSize,2,device_id);
@@ -22,6 +19,9 @@ int mainBench(cl_device_id* device_id){
 	benchClefia128Multiple(10000, localSizeClefia, 1,device_id);
 	benchClefia192Multiple(10000, localSizeClefia, 1,device_id);
 	benchClefia256Multiple(10000, localSizeClefia, 1,device_id);
+	benchDesMultiple(100000,localSize,2,device_id);
+	benchDes2Multiple(100000,localSize,2,device_id);
+	benchDes3Multiple(100000,localSize,2,device_id);
 
 
 	
