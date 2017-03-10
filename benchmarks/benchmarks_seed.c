@@ -17,13 +17,8 @@ static uint32_t SeedKey[4][4] = {
 	{0x28DBC3BC, 0x49FFD87D, 0xCFA509B1, 0x1D422BE7}
 };
 
-void benchSeedOldCtr(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
-	char* device;
-	if(onGPU){
-		device = "GPU";
-	}else{
-		device = "CPU";
-	}
+void benchSeedOldCtr(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
+
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
 	char* fileName = "benchmarks/benchSeed";
@@ -31,7 +26,7 @@ void benchSeedOldCtr(int fileSize,int localSize,int onGPU, struct BenchInfo* ben
 	uint64_t* seedCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = seed_old_CtrEncrypt(fileName, SeedKey[3], seedCiphertext, localSize, device);
+	event = seed_old_CtrEncrypt(fileName, SeedKey[3], seedCiphertext, localSize, device_id);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
@@ -45,13 +40,8 @@ void benchSeedOldCtr(int fileSize,int localSize,int onGPU, struct BenchInfo* ben
 	benchInfo->fileSize = fileSize;
 }
 
-void benchSeedCtr(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
-	char* device;
-	if(onGPU){
-		device = "GPU";
-	}else{
-		device = "CPU";
-	}
+void benchSeedCtr(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
+
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
 	char* fileName = "benchmarks/benchSeed";
@@ -60,7 +50,7 @@ void benchSeedCtr(int fileSize,int localSize,int onGPU, struct BenchInfo* benchI
 	uint64_t* seedCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = seed_CtrEncrypt(fileName, SeedKey[3], seedCiphertext, localSize, device);
+	event = seed_CtrEncrypt(fileName, SeedKey[3], seedCiphertext, localSize, device_id);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
@@ -74,18 +64,18 @@ void benchSeedCtr(int fileSize,int localSize,int onGPU, struct BenchInfo* benchI
 	benchInfo->fileSize = fileSize;
 }
 
-void benchSeedOldCtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+void benchSeedOldCtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchSeedOldCtr(fileSize,localSize[i],onGPU,&infos[i]);
+		benchSeedOldCtr(fileSize,localSize[i],&infos[i], device_id);
 	}
-	saveDataToFile("SeedOLD",onGPU,infos,numOfLocalSizes);
+	saveDataToFile("SeedOLD",infos,numOfLocalSizes);
 }
 
-void benchSeedCtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+void benchSeedCtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchSeedCtr(fileSize,localSize[i],onGPU,&infos[i]);
+		benchSeedCtr(fileSize,localSize[i],&infos[i],device_id);
 	}
-	saveDataToFile("Seed",onGPU,infos,numOfLocalSizes);
+	saveDataToFile("Seed",infos,numOfLocalSizes);
 }

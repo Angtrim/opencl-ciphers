@@ -1,5 +1,10 @@
 #ifndef BENCHMARKS_UTILS_H
 #define BENCHMARKS_UTILS_H
+#ifdef __APPLE__
+#include <OpenCL/opencl.h>
+#else
+#include <CL/cl.h>
+#endif
 
 
 static struct BenchInfo {
@@ -9,7 +14,7 @@ static struct BenchInfo {
 }; 
 
 void buildFileOfZeroes(char* outFileName,long lenght);
-void saveDataToFile(char* nameCiph,int onGpu,struct BenchInfo* infos,int numInfos);
+void saveDataToFile(char* nameCiph,struct BenchInfo* infos,int numInfos);
 
 
 #endif

@@ -3,9 +3,9 @@
 #include "benchmarks_utils.h"
 
 
-void benchPresentMemoryCtr(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo);
-void benchPresentSpeedCtr(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo);
-void benchPresentMemoryMultiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU);
-void benchPresentSpeedMultiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU);
+void benchPresentMemoryCtr(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id);
+void benchPresentSpeedCtr(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id);
+void benchPresentMemoryMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id);
+void benchPresentSpeedMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id);
 
 #endif

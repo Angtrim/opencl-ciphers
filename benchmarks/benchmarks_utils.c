@@ -23,15 +23,10 @@ void buildFileOfZeroes(char* outFileName,long lenght){
 }
 
 
-void saveDataToFile(char* nameCiph,int onGPU,struct BenchInfo* infos,int numInfos){
+void saveDataToFile(char* nameCiph,struct BenchInfo* infos,int numInfos){
 	time_t rawtime;
 	struct tm * timeinfo;
-	char* device;
-	if(onGPU){
-		device = "GPU";
-	}else{
-		device = "CPU";
-	} 
+
 
 	time ( &rawtime );
 	timeinfo = localtime ( &rawtime );
@@ -54,7 +49,6 @@ void saveDataToFile(char* nameCiph,int onGPU,struct BenchInfo* infos,int numInfo
 
 	fprintf(fp, "%s %s\n","# CIPHER: ",nameCiph);
 	fprintf(fp, "%s %ld\n","# FILESIZE (bytes): ",infos[0].fileSize);
-	fprintf(fp, "%s %s\n","# DEVICE: ",device);
 
 	fprintf(fp, "\n\n%s \t  %s \n","# LOCAL_SIZE","TOTAL_TIME (ns)");
 

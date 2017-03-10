@@ -1,8 +1,4 @@
-#ifdef __APPLE__
-#include <OpenCL/opencl.h>
-#else
-#include <CL/cl.h>
-#endif
+
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -15,13 +11,7 @@ static uint32_t aes192Key[24] = {0xded642b8, 0x2daf73f0, 0x7a0f5caa, 0x554dc9c6,
 static uint32_t aes256Key[32] = {0x63375233, 0xca899f06, 0x2f868c91, 0x8eb2ccc1, 0x36eb5001, 0x58c75cbb, 0x2ee60020, 0x3286d86f};
 
 
-void benchAes128(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
-	char* device;
-	if(onGPU){
-		device = "GPU";
-	}else{
-		device = "CPU";
-	}
+void benchAes128(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id){
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
 	char* fileName = "benchmarks/benchAes";
@@ -29,7 +19,7 @@ void benchAes128(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = aes128CtrEncrypt(fileName, aes128Key, aesCiphertext, localSize, device);
+	event = aes128CtrEncrypt(fileName, aes128Key, aesCiphertext, localSize, device_id);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
@@ -44,13 +34,7 @@ void benchAes128(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 
 }
 
-void benchAes192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
-	char* device;
-	if(onGPU){
-		device = "GPU";
-	}else{
-		device = "CPU";
-	}
+void benchAes192(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
 	char* fileName = "benchmarks/benchAes";
@@ -58,7 +42,7 @@ void benchAes192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = aes192CtrEncrypt(fileName, aes192Key, aesCiphertext, localSize, device);
+	event = aes192CtrEncrypt(fileName, aes192Key, aesCiphertext, localSize, device_id);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
@@ -73,13 +57,8 @@ void benchAes192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 
 }
 
-void benchAes256(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
-	char* device;
-	if(onGPU){
-		device = "GPU";
-	}else{
-		device = "CPU";
-	}
+void benchAes256(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
+
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
 	char* fileName = "benchmarks/benchAes";
@@ -87,7 +66,7 @@ void benchAes256(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = aes256CtrEncrypt(fileName, aes256Key, aesCiphertext, localSize, device);
+	event = aes256CtrEncrypt(fileName, aes256Key, aesCiphertext, localSize, device_id);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
@@ -103,26 +82,26 @@ void benchAes256(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 }
 
 
-void benchAes128Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+void benchAes128Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchAes128(fileSize,localSize[i],onGPU,&infos[i]);
+		benchAes128(fileSize,localSize[i],&infos[i], device_id);
 	}
-	saveDataToFile("AES128",onGPU,infos,numOfLocalSizes);
+	saveDataToFile("AES128",infos,numOfLocalSizes);
 }
 
-void benchAes192Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+void benchAes192Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchAes192(fileSize,localSize[i],onGPU,&infos[i]);
+		benchAes192(fileSize,localSize[i],&infos[i],device_id);
 	}
-	saveDataToFile("AES192",onGPU,infos,numOfLocalSizes);
+	saveDataToFile("AES192",infos,numOfLocalSizes);
 }
 
-void benchAes256Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+void benchAes256Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchAes256(fileSize,localSize[i],onGPU,&infos[i]);
+		benchAes256(fileSize,localSize[i],&infos[i], device_id);
 	}
-	saveDataToFile("AES256",onGPU,infos,numOfLocalSizes);
+	saveDataToFile("AES256",infos,numOfLocalSizes);
 }

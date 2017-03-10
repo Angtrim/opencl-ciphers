@@ -16,13 +16,8 @@ static uint64_t Key256[4] = {0x0123456789abcdef, 0xfedcba9876543210,0x0011223344
 
 
 
-void benchCam128(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
-	char* device;
-	if(onGPU){
-		device = "GPU";
-	}else{
-		device = "CPU";
-	}
+void benchCam128(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id){
+
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
 	char* fileName = "benchCam";
@@ -30,7 +25,7 @@ void benchCam128(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	uint64_t* camCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = camelliaCtr128Encrypt(fileName, Key128, camCiphertext,localSize,device);
+	event = camelliaCtr128Encrypt(fileName, Key128, camCiphertext,localSize,device_id);
 
 	/* compute execution time */
 	double total_time;
@@ -45,21 +40,15 @@ void benchCam128(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	benchInfo->fileSize = fileSize;
 }
 
-void benchCam128Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+void benchCam128Multiple(int fileSize,int* localSize, int numOfLocalSizes,cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchCam128(fileSize,localSize[i],onGPU,&infos[i]);
+		benchCam128(fileSize,localSize[i],onGPU,&infos[i], device_id);
 	}
-	saveDataToFile("CAM128",onGPU,infos,numOfLocalSizes);
+	saveDataToFile("CAM128",infos,numOfLocalSizes);
 }
 
-void benchCam192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
-	char* device;
-	if(onGPU){
-		device = "GPU";
-	}else{
-		device = "CPU";
-	}
+void benchCam192(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id){
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
 	char* fileName = "benchCam";
@@ -67,7 +56,7 @@ void benchCam192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	uint64_t* camCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = camelliaCtr192Encrypt(fileName, Key192, camCiphertext, localSize,device);
+	event = camelliaCtr192Encrypt(fileName, Key192, camCiphertext, localSize,device_id);
 
 	/* compute execution time */
 	double total_time;
@@ -82,21 +71,16 @@ void benchCam192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	benchInfo->fileSize = fileSize;
 }
 
-void benchCam192Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+void benchCam192Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchCam192(fileSize,localSize[i],onGPU,&infos[i]);
+		benchCam192(fileSize,localSize[i],onGPU,&infos[i],device_id);
 	}
-	saveDataToFile("CAM192",onGPU,infos,numOfLocalSizes);
+	saveDataToFile("CAM192",infos,numOfLocalSizes);
 }
 
-void benchCam256(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
-	char* device;
-	if(onGPU){
-		device = "GPU";
-	}else{
-		device = "CPU";
-	}
+void benchCam256(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
+
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
 	char* fileName = "benchCam";
@@ -104,7 +88,7 @@ void benchCam256(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	uint64_t* camCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = camelliaCtr256Encrypt(fileName, Key256, camCiphertext, localSize,device);
+	event = camelliaCtr256Encrypt(fileName, Key256, camCiphertext, localSize, device_id);
 
 	/* compute execution time */
 	double total_time;
@@ -119,10 +103,10 @@ void benchCam256(int fileSize,int localSize,int onGPU, struct BenchInfo* benchIn
 	benchInfo->fileSize = fileSize;
 }
 
-void benchCam256Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+void benchCam256Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchCam256(fileSize,localSize[i],onGPU,&infos[i]);
+		benchCam256(fileSize,localSize[i],&infos[i], device_id);
 	}
-	saveDataToFile("CAM256",onGPU,infos,numOfLocalSizes);
+	saveDataToFile("CAM256",infos,numOfLocalSizes);
 }

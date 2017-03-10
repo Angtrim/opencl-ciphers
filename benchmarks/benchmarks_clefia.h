@@ -4,11 +4,11 @@
 //includes for testing normal encryption
 
 
-void benchClefia128(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo);
-void benchClefia128Multiple(int fileSizes,int* localSize, int numOfLocalSizes, int onGPU);
-void benchClefia192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo);
-void benchClefia192Multiple(int fileSizes,int* localSize, int numOfLocalSizes, int onGPU);
-void benchClefia256(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo);
-void benchClefia256Multiple(int fileSizes,int* localSize, int numOfLocalSizes, int onGPU);
+void benchClefia128(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id);
+void benchClefia128Multiple(int fileSizes,int* localSize, int numOfLocalSizes, cl_device_id* device_id);
+void benchClefia192(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id);
+void benchClefia192Multiple(int fileSizes,int* localSize, int numOfLocalSizes,cl_device_id* device_id);
+void benchClefia256(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id);
+void benchClefia256Multiple(int fileSizes,int* localSize, int numOfLocalSizes, cl_device_id* device_id);
 
 #endif

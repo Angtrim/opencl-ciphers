@@ -4,7 +4,7 @@
 //includes for testing normal encryption
 
 
-void benchHight(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo);
-void benchHightMultiple(int fileSizes,int* localSize, int numOfLocalSizes, int onGPU);
+void benchHight(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id);
+void benchHightMultiple(int fileSizes,int* localSize, int numOfLocalSizes, cl_device_id* device_id);
 
 #endif

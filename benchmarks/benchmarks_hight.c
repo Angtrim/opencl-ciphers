@@ -17,13 +17,8 @@ static uint8_t HightKeys[2][16] = {
 			0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00}
 		};
 
-		void benchHight(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
-			char* device;
-			if(onGPU){
-				device = "GPU";
-			}else{
-				device = "CPU";
-			}
+		void benchHight(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
+
 	// Pad file size
 			fileSize = fileSize + (fileSize%8);
 			char* fileName = "benchHight";
@@ -31,7 +26,7 @@ static uint8_t HightKeys[2][16] = {
 			uint64_t* hightCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 			cl_event event = NULL;
 			cl_ulong time_start, time_end;
-			event = hightCtrEncrypt(fileName, HightKeys[0], hightCiphertext ,localSize,device);
+			event = hightCtrEncrypt(fileName, HightKeys[0], hightCiphertext ,localSize,device_id);
 	/* compute execution time */
 			double total_time;
 			clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
@@ -45,10 +40,10 @@ static uint8_t HightKeys[2][16] = {
 			benchInfo->fileSize = fileSize;
 		}
 
-		void benchHightMultiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+		void benchHightMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
 			struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 			for(int i = 0;i<numOfLocalSizes;i++){
-				benchHight(fileSize,localSize[i],onGPU,&infos[i]);
+				benchHight(fileSize,localSize[i],&infos[i], device_id);
 			}
 			saveDataToFile("Hight",onGPU,infos,numOfLocalSizes);
 		}

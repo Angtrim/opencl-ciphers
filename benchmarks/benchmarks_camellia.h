@@ -4,11 +4,11 @@
 //includes for testing normal encryption
 
 
-void benchCam128(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo);
-void benchCam128Multiple(int fileSizes,int* localSize, int numOfLocalSizes, int onGPU);
-void benchCam192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo);
-void benchCam192Multiple(int fileSizes,int* localSize, int numOfLocalSizes, int onGPU);
-void benchCam256(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo);
-void benchCam256Multiple(int fileSizes,int* localSize, int numOfLocalSizes, int onGPU);
+void benchCam128(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id);
+void benchCam128Multiple(int fileSizes,int* localSize, int numOfLocalSizes, cl_device_id* device_id);
+void benchCam192(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id);
+void benchCam192Multiple(int fileSizes,int* localSize, int numOfLocalSizes, cl_device_id* device_id);
+void benchCam256(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id);
+void benchCam256Multiple(int fileSizes,int* localSize, int numOfLocalSizes, cl_device_id* device_id);
 
 #endif

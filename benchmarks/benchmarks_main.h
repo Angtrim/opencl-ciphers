@@ -1,5 +1,7 @@
 #ifndef BENCHMARKS_H
 #define BENCHMARKS_H
+#include "benchmarks_utils.h"
+
 #include "benchmarks_aes.h"
 #include "benchmarks_des.h"
 #include "benchmarks_camellia.h"
@@ -9,6 +11,6 @@
 #include "benchmarks_hight.h"
 #include "benchmarks_clefia.h"
 
-int mainBench();
+int mainBench(cl_device_id* device_id);
 
 #endif

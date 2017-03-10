@@ -15,13 +15,8 @@ static uint8_t Misty1Key[16] = {
 	0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff
 };
 
-void benchMisty1Ctr(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
-	char* device;
-	if(onGPU){
-		device = "GPU";
-	}else{
-		device = "CPU";
-	}
+void benchMisty1Ctr(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id){
+
 	// Pad file size
 	fileSize = fileSize + (fileSize%8);
 	char* fileName = "benchmarks/benchMisty1";
@@ -29,7 +24,7 @@ void benchMisty1Ctr(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	uint64_t* misty1Ciphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = misty1CtrEncrypt(fileName, Misty1Key, misty1Ciphertext, localSize, device);
+	event = misty1CtrEncrypt(fileName, Misty1Key, misty1Ciphertext, localSize, device_id);
 	/* compute execution time */
 	double total_time;
 	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
@@ -44,10 +39,10 @@ void benchMisty1Ctr(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 
 }
 
-void benchMisty1CtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+void benchMisty1CtrMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchMisty1Ctr(fileSize,localSize[i],onGPU,&infos[i]);
+		benchMisty1Ctr(fileSize,localSize[i],&infos[i],device_id);
 	}
-	saveDataToFile("Misty1",onGPU,infos,numOfLocalSizes);
+	saveDataToFile("Misty1",infos,numOfLocalSizes);
 }

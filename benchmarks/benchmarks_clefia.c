@@ -19,13 +19,7 @@ static const unsigned char skey[32] = {
 
 
 
-void benchClefia128(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
-	char* device;
-	if(onGPU){
-		device = "GPU";
-	}else{
-		device = "CPU";
-	}
+void benchClefia128(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
 	char* fileName = "benchClef";
@@ -33,7 +27,7 @@ void benchClefia128(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	uint8_t* clefCiphertext = (uint8_t*)malloc(fileSize*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = clefia_128_Encrypt(fileName, skey, clefCiphertext, localSize,device);
+	event = clefia_128_Encrypt(fileName, skey, clefCiphertext, localSize, device_id);
 
 	/* compute execution time */
 	double total_time;
@@ -48,21 +42,16 @@ void benchClefia128(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	benchInfo->fileSize = fileSize;
 }
 
-void benchClefia128Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+void benchClefia128Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchClefia128(fileSize,localSize[i],onGPU,&infos[i]);
+		benchClefia128(fileSize,localSize[i],onGPU,&infos[i], device_id);
 	}
-	saveDataToFile("Clefia128",onGPU,infos,numOfLocalSizes);
+	saveDataToFile("Clefia128",infos,numOfLocalSizes);
 }
 
-void benchClefia256(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
-	char* device;
-	if(onGPU){
-		device = "GPU";
-	}else{
-		device = "CPU";
-	}
+void benchClefia256(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
+
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
 	char* fileName = "benchClef";
@@ -70,7 +59,7 @@ void benchClefia256(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	uint8_t* clefCiphertext = (uint8_t*)malloc(fileSize*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = clefia_256_Encrypt(fileName, skey, clefCiphertext, localSize,device);
+	event = clefia_256_Encrypt(fileName, skey, clefCiphertext, localSize, device_id);
 
 	/* compute execution time */
 	double total_time;
@@ -85,21 +74,16 @@ void benchClefia256(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	benchInfo->fileSize = fileSize;
 }
 
-void benchClefia256Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+void benchClefia256Multiple(int fileSize,int* localSize, int numOfLocalSizes,cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchClefia256(fileSize,localSize[i],onGPU,&infos[i]);
+		benchClefia256(fileSize,localSize[i],&infos[i], device_id);
 	}
-	saveDataToFile("Clefia256",onGPU,infos,numOfLocalSizes);
+	saveDataToFile("Clefia256",infos,numOfLocalSizes);
 }
 
-void benchClefia192(int fileSize,int localSize,int onGPU, struct BenchInfo* benchInfo){
-	char* device;
-	if(onGPU){
-		device = "GPU";
-	}else{
-		device = "CPU";
-	}
+void benchClefia192(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
+
 	// Pad file size
 	fileSize = fileSize + (fileSize%16);
 	char* fileName = "benchClef";
@@ -107,7 +91,7 @@ void benchClefia192(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	uint8_t* clefCiphertext = (uint8_t*)malloc(fileSize*sizeof(uint8_t));
 	cl_event event = NULL;
 	cl_ulong time_start, time_end;
-	event = clefia_192_Encrypt(fileName, skey, clefCiphertext, localSize,device);
+	event = clefia_192_Encrypt(fileName, skey, clefCiphertext, localSize, device_id);
 
 	/* compute execution time */
 	double total_time;
@@ -122,10 +106,10 @@ void benchClefia192(int fileSize,int localSize,int onGPU, struct BenchInfo* benc
 	benchInfo->fileSize = fileSize;
 }
 
-void benchClefia192Multiple(int fileSize,int* localSize, int numOfLocalSizes, int onGPU){
+void benchClefia192Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchClefia192(fileSize,localSize[i],onGPU,&infos[i]);
+		benchClefia192(fileSize,localSize[i],&infos[i], device_id);
 	}
 	saveDataToFile("Clefia192",onGPU,infos,numOfLocalSizes);
 }
