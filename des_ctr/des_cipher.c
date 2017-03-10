@@ -100,7 +100,6 @@ static void finalizeExecution( uint8_t* inputText){
 	in = NULL;
 	_esk = NULL;
 	out = NULL;
-	event = NULL;
 }
 
 cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, int mode, int isCtr,cl_device_id* device_id) {

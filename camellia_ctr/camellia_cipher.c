@@ -69,13 +69,12 @@ static void finalizeExecution(uint64_t* inputText){
 	inputText = NULL;
 	free(source_str);
 	source_str = NULL;
-	event = NULL;
 
 }
 
 
 cl_event camellia_encryption(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, int mode, int isCtr,cl_device_id* device_id){
-	
+	event = NULL;
 	struct FileInfo64 fileInfo = getFileUint64(fileName);
  //plaintext divided in blocks of uint64_t
 	uint64_t* inputText = fileInfo.filePointer;
