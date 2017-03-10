@@ -89,12 +89,16 @@ static void finalizeExecution( uint8_t* inputText){
 	ret = clReleaseMemObject(out);
 	ret = clReleaseCommandQueue(command_queue);
 	ret = clReleaseContext(context);
+	free(source_str);
 	free(inputText);
 	inputText = NULL;
-	free(source_str);
 	source_str = NULL;
 	program = NULL;
 	kernel = NULL;
+	command_queue = NULL;
+	in = NULL;
+	_esk = NULL;
+	out = NULL;
 }
 
 cl_event des_encryption(char* fileName, uint8_t* key, uint8_t* output,size_t local_item_size, int mode, int isCtr,cl_device_id* device_id) {
