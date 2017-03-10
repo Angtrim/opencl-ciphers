@@ -91,6 +91,7 @@ static void finalizeExecution( uint8_t* inputText){
 	ret = clReleaseContext(context);
 	free(source_str);
 	free(inputText);
+	context = NULL;
 	inputText = NULL;
 	source_str = NULL;
 	program = NULL;
