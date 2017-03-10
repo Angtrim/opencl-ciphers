@@ -129,7 +129,7 @@ int testSeedCtr(cl_device_id* device_id){
 
 
 
-int testSeedOld(cl_device_id* device_id){
+int testSeedOldALL(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting SEED OLD tests");
 	
@@ -160,7 +160,7 @@ int testSeedOld(cl_device_id* device_id){
 	return result;
 }
 
-int testSeed(cl_device_id* device_id){
+int testSeedALL(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting SEED tests");
 	
@@ -192,8 +192,8 @@ int testSeed(cl_device_id* device_id){
 
 int testSeedAll(cl_device_id* device_id){
 
-	int tSeedOld = testSeedOld(device_id);
-	int tSeed = testSeed(device_id);	
+	int tSeedOld = testSeedOldALL(device_id);
+	int tSeed = testSeedALL(device_id);	
 	int result = tSeedOld&&tSeed;
 	if(result){
 		log("--- --- --- ALL SEED TEST PASSED");

@@ -43,7 +43,7 @@ void benchCam128(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_devic
 void benchCam128Multiple(int fileSize,int* localSize, int numOfLocalSizes,cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchCam128(fileSize,localSize[i],onGPU,&infos[i], device_id);
+		benchCam128(fileSize,localSize[i],&infos[i], device_id);
 	}
 	saveDataToFile("CAM128",infos,numOfLocalSizes);
 }
@@ -74,7 +74,7 @@ void benchCam192(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_devic
 void benchCam192Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchCam192(fileSize,localSize[i],onGPU,&infos[i],device_id);
+		benchCam192(fileSize,localSize[i],&infos[i],device_id);
 	}
 	saveDataToFile("CAM192",infos,numOfLocalSizes);
 }

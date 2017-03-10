@@ -45,5 +45,5 @@ static uint8_t HightKeys[2][16] = {
 			for(int i = 0;i<numOfLocalSizes;i++){
 				benchHight(fileSize,localSize[i],&infos[i], device_id);
 			}
-			saveDataToFile("Hight",onGPU,infos,numOfLocalSizes);
+			saveDataToFile("Hight",infos,numOfLocalSizes);
 		}

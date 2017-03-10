@@ -114,7 +114,7 @@ int testDes2CTR(cl_device_id* device_id){
 
 
 
-int testDes3CTR(){
+int testDes3CTR(cl_device_id* device_id){
   	int success = 1;
     uint8_t DES3_out[8];
     uint8_t DES3_out_dec[8];
@@ -134,7 +134,7 @@ int testDes3CTR(){
 
 
 
-int testDes(cl_device_id* device_id){
+int testDesAll(cl_device_id* device_id){
     int result = 1;
     log("--- --- Starting DES tests");
     
@@ -166,7 +166,7 @@ int testDes(cl_device_id* device_id){
     return result;
 }
 
-int testDes2(cl_device_id* device_id){
+int testDes2All(cl_device_id* device_id){
     int result = 1;
 
     log("--- Test DES2  starting");
@@ -180,7 +180,7 @@ int testDes2(cl_device_id* device_id){
 
 
     log("--- Test DES2 CTR  starting");
-    if(testDes2CTR(cl_device_id* device_id) == 1){
+    if(testDes2CTR( device_id) == 1){
         log("--- Test DES2 CTR  passed");
     }else{
         log("--- Test DES2 CTR  FAILED!");
@@ -198,7 +198,7 @@ int testDes2(cl_device_id* device_id){
     return result;
 }
 
-int testDes3(cl_device_id* device_id){
+int testDes3All(cl_device_id* device_id){
     int result = 1;
 
     log("--- Test DES3  starting");
@@ -232,9 +232,9 @@ int testDes3(cl_device_id* device_id){
 
 int testDESAll(cl_device_id* device_id){
 
-	int tDES = testDes(device_id);
-    int tDES2 = testDes2( device_id);
-    int tDES3 = testDes3( device_id);   
+	int tDES = testDesAll(device_id);
+    int tDES2 = testDes2All( device_id);
+    int tDES3 = testDes3All( device_id);   
     int result = tDES&&tDES2&&tDES3;
     if(result){
         log("--- --- --- ALL DES TEST PASSED");

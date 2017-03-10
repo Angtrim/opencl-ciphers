@@ -137,12 +137,12 @@ int testCamelliaCTR256(cl_device_id* device_id){
 
 
 
-int testCamellia128(cl_device_id* device_id){
+int testCamellia128All(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting CAMELLIA 128 tests");
 	
 	log("--- Test CAMELLIA 128  starting");
-	if(testCamellia128(cl_device_id* device_id) == 1){
+	if(testCamellia128( device_id) == 1){
 		log("--- Test CAMELLIA 128  passed");
 	}else{
 		log("--- Test CAMELLIA 128  FAILED!");
@@ -152,7 +152,7 @@ int testCamellia128(cl_device_id* device_id){
 
 
 	log("--- Test CAMELLIA CTR 128  starting");
-	if(testCamelliaCTR128(cl_device_id* device_id) == 1){
+	if(testCamelliaCTR128( device_id) == 1){
 		log("--- Test CAMELLIA CTR 128  passed");
 	}else{
 		log("--- Test CAMELLIA CTR 128  FAILED!");
@@ -169,13 +169,13 @@ int testCamellia128(cl_device_id* device_id){
 	return result;
 }
 
-int testCamellia192(cl_device_id* device_id){
+int testCamellia192All(cl_device_id* device_id){
 	int result = 1;
 
 	log("--- --- Starting CAMELLIA 192 tests");
 
 	log("--- Test CAMELLIA 192  starting");
-	if(testCamellia192(cl_device_id* device_id) == 1){
+	if(testCamellia192( device_id) == 1){
 		log("--- Test CAMELLIA 192  passed");
 	}else{
 		log("--- Test CAMELLIA 192  FAILED!");
@@ -184,7 +184,7 @@ int testCamellia192(cl_device_id* device_id){
 
 
 	log("--- Test CAMELLIA CTR 192  starting");
-	if(testCamelliaCTR192(cl_device_id* device_id) == 1){
+	if(testCamelliaCTR192( device_id) == 1){
 		log("--- Test CAMELLIA CTR 192  passed");
 	}else{
 		log("--- Test CAMELLIA CTR 192  FAILED!");
@@ -201,13 +201,13 @@ int testCamellia192(cl_device_id* device_id){
     return result;
 }
 
-int testCamellia256(){
+int testCamellia256All(cl_device_id* device_id){
 	int result = 1;
 
 	log("--- --- Starting CAMELLIA 256 tests");
 
 	log("--- Test CAMELLIA 256  starting");
-	if(testCamellia256(cl_device_id* device_id) == 1){
+	if(testCamellia256(device_id) == 1){
 		log("--- Test CAMELLIA 256  passed");
 	}else{
 		log("--- Test CAMELLIA 256  FAILED!");
@@ -217,7 +217,7 @@ int testCamellia256(){
 
 
 	log("--- Test CAMELLIA CTR 256  starting");
-	if(testCamelliaCTR256(cl_device_id* device_id) == 1){
+	if(testCamelliaCTR256( device_id) == 1){
 		log("--- Test CAMELLIA CTR 256  passed");
 	}else{
 		log("--- Test CAMELLIA CTR 256  FAILED!");
@@ -237,9 +237,9 @@ int testCamellia256(){
 
 int testCamelliaAll(cl_device_id* device_id){
 	
-	int tCamellia128 = testCamellia128(cl_device_id* device_id);
-	int tCamellia192 = testCamellia192(cl_device_id* device_id);
-	int tCamellia256 = testCamellia192(cl_device_id* device_id);
+	int tCamellia128 = testCamellia128All( device_id);
+	int tCamellia192 = testCamellia192All( device_id);
+	int tCamellia256 = testCamellia192All( device_id);
 	int result = tCamellia128&&tCamellia192&&tCamellia256;
 	if(result){
 		log("--- --- --- ALL CAMELLIA TEST PASSED");

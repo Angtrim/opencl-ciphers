@@ -246,7 +246,7 @@ int test192(cl_device_id* device_id){
 		log("--- Test AES 192 CTR  FAILED!");
 		result = 0;
 	}
-ì
+
 
 	if(result != 0){
 		log("--- --- All Aes 192 test passed");
@@ -293,7 +293,7 @@ int testAESAll(cl_device_id* device_id){
 
 	int t128 = test128(device_id);
 	int t192 = test192(device_id);
-	int t256 = test256(device_iddevice_id);	
+	int t256 = test256(device_id);	
 	int result = t128&&t192&&t256;
 	if(result){
 		log("--- --- --- ALL AES TEST PASSED");

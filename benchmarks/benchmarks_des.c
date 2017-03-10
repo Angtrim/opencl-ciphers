@@ -89,7 +89,7 @@ void benchDes3(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device
 void benchDesMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchDes(fileSize,localSize[i],onGPU,&infos[i],device_id);
+		benchDes(fileSize,localSize[i],&infos[i],device_id);
 	}
 	saveDataToFile("Des",infos,numOfLocalSizes);
 }
@@ -97,7 +97,7 @@ void benchDesMultiple(int fileSize,int* localSize, int numOfLocalSizes, cl_devic
 void benchDes2Multiple(int fileSize,int* localSize, int numOfLocalSizes,cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
-		benchDes2(fileSize,localSize[i],onGPU,&infos[i], device_id);
+		benchDes2(fileSize,localSize[i],&infos[i], device_id);
 	}
 	saveDataToFile("Des2",infos,numOfLocalSizes);
 }

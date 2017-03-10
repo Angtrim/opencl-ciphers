@@ -9,7 +9,7 @@
 static void setUpOpenCl(uint64_t* inputText, uint64_t* k, uint64_t* ke, uint64_t* kw, char* kernelName, int kdim, int kedim, int kwdim, long bufferLenght,cl_device_id* device_id){
 	
 	/* Get Platform and Device Info */
-	initClSetup(device_id,&device_type,&context,&command_queue);
+	initClSetup(device_id,&context,&command_queue);
 
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);
@@ -177,7 +177,6 @@ cl_event camellia128Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_
 
 cl_event camellia192Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id){
 
-	setDeviceType(deviceType,&device_type);
 	int mode = 192;
 	return camellia_encryption(fileName, K, output, local_item_size, mode, 0,device_id);
 
@@ -185,7 +184,6 @@ cl_event camellia192Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_
 
 cl_event camellia256Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id){
 
-	setDeviceType(deviceType,&device_type);
 	int mode = 256;
 	return camellia_encryption(fileName, K, output, local_item_size, mode, 0,device_id);
 
@@ -193,7 +191,6 @@ cl_event camellia256Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_
 
 cl_event camelliaCtr128Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size,cl_device_id* device_id){
 
-	setDeviceType(deviceType,&device_type);
 	int mode = 128;
 	return camellia_encryption(fileName, K, output, local_item_size, mode, 1,device_id);
 
@@ -201,7 +198,6 @@ cl_event camelliaCtr128Encrypt(char* fileName, uint64_t* K, uint64_t* output, si
 
 cl_event camelliaCtr192Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id){
 
-	setDeviceType(deviceType,&device_type);
 	int mode = 192;
 	return camellia_encryption(fileName, K, output, local_item_size, mode, 1,device_id);
 
@@ -209,7 +205,6 @@ cl_event camelliaCtr192Encrypt(char* fileName, uint64_t* K, uint64_t* output, si
 
 cl_event camelliaCtr256Encrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id){
 
-	setDeviceType(deviceType,&device_type);
 	int mode = 256;
 	return camellia_encryption(fileName, K, output, local_item_size, mode, 1,device_id); 
 
@@ -217,7 +212,6 @@ cl_event camelliaCtr256Encrypt(char* fileName, uint64_t* K, uint64_t* output, si
 
 cl_event camelliaCtr128Decrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id){
 
-	setDeviceType(deviceType,&device_type);
 	int mode = 128;
 	return camellia_encryption(fileName, K, output, local_item_size, mode, 1,device_id);
 
@@ -225,7 +219,6 @@ cl_event camelliaCtr128Decrypt(char* fileName, uint64_t* K, uint64_t* output, si
 
 cl_event camelliaCtr192Decrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id){
 
-	setDeviceType(deviceType,&device_type);
 	int mode = 192;
 	return camellia_encryption(fileName, K, output, local_item_size, mode, 1,device_id);
 
@@ -233,7 +226,6 @@ cl_event camelliaCtr192Decrypt(char* fileName, uint64_t* K, uint64_t* output, si
 
 cl_event camelliaCtr256Decrypt(char* fileName, uint64_t* K, uint64_t* output, size_t local_item_size, cl_device_id* device_id){
 
-	setDeviceType(deviceType,&device_type);
 	int mode = 256;
 	return camellia_encryption(fileName, K, output, local_item_size, mode, 1,device_id);
 	

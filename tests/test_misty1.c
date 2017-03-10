@@ -81,7 +81,7 @@ int testMisty1Ctr(cl_device_id* device_id){
 
 
 
-int testMisty1(cl_device_id* device_id){
+int testMisty1ALL(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting MISTY1 tests");
 	
@@ -115,7 +115,7 @@ int testMisty1(cl_device_id* device_id){
 
 int testMisty1All(cl_device_id* device_id){
 
-	int tMisty1 = testMisty1(device_id);
+	int tMisty1 = testMisty1ALL(device_id);
 	int result = tMisty1;
 	if(result){
 		log("--- --- --- ALL MISTY1 TEST PASSED");

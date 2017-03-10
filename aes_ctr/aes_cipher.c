@@ -18,7 +18,7 @@ static char* setUpBuildOptions(int mode){
 
 static void setUpOpenCl(byte* inputText, word* w, char* kernelName,long exKeyDim, long bufferLenght, int mode,cl_device_id* device_id){
 	
-	initClSetup(device_id,&device_type,&context,&command_queue);
+	initClSetup(device_id,&context,&command_queue);
 	
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(byte), NULL, &ret);

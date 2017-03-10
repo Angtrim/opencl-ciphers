@@ -49,7 +49,7 @@ int testPresentMemory(cl_device_id* device_id){
 
 // TEST FOR PRESENT SPEED
 
-int testPresentSpeed(){
+int testPresentSpeed(cl_device_id* device_id){
 	int success = 1;
 	uint64_t* presentCiphertext = (uint64_t*)malloc(sizeof(uint64_t));
 	writeOutputToFileUint64("tests/present_plaintext", PresentPlaintext, 1);
@@ -116,7 +116,7 @@ int testPresentSpeedCtr(cl_device_id* device_id){
 }
 
 
-int testPresentMemory(cl_device_id* device_id){
+int testPresentMemoryALL(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting PRESENT MEMORY tests");
 	
@@ -147,7 +147,7 @@ int testPresentMemory(cl_device_id* device_id){
 	return result;
 }
 
-int testPresentSpeed(cl_device_id* device_id){
+int testPresentSpeedALL(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting PRESENT SPEED tests");
 	
@@ -180,8 +180,8 @@ int testPresentSpeed(cl_device_id* device_id){
 
 int testPresentAll(cl_device_id* device_id){
 
-	int tPresentMemory = testPresentMemory(device_id);
-	int tPresentSpeed = testPresentSpeed(device_id);
+	int tPresentMemory = testPresentMemoryALL(device_id);
+	int tPresentSpeed = testPresentSpeedALL(device_id);
 	int result = tPresentMemory&&tPresentSpeed;
 	if(result){
 		log("--- --- --- ALL PRESENT TEST PASSED");

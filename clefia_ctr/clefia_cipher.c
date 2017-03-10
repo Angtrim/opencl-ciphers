@@ -3,7 +3,7 @@
 
 static void setUpOpenCl(uint8_t* inputText, char* kernelName, uint8_t* key, int R, int rk_dim,long bufferLenght,cl_device_id* device_id){
 	
-	initClSetup(device_id,&device_type,&context,&command_queue);
+	initClSetup(device_id,&context,&command_queue);
 
 	/* Create Memory Buffers */
 	_rk = clCreateBuffer(context, CL_MEM_READ_WRITE, rk_dim * sizeof(uint8_t), NULL, &ret);

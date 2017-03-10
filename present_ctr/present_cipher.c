@@ -7,7 +7,7 @@
 
 /* set up the opencl parameters */
 static void setUpOpenCl(uint64_t* inputText, uint64_t* SK, char* kernelName,long bufferLenght,cl_device_id* device_id){
-	initClSetup(device_id,&device_type,&context,&command_queue);
+	initClSetup(device_id,&context,&command_queue);
 
 	/* Create Memory Buffers */
 	in = clCreateBuffer(context, CL_MEM_READ_WRITE, bufferLenght * sizeof(uint64_t), NULL, &ret);

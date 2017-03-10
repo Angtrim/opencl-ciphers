@@ -180,14 +180,6 @@ void getSystemInfo(){
    	fclose(fp);
    }
 
-/* Selecting the device */
-   void setDeviceType(char* deviceType,cl_device_type* deviceTypeCl){
-   	if(strcmp(deviceType,"CPU") == 0){
-   		*deviceTypeCl = CL_DEVICE_TYPE_CPU;
-   	}else if(strcmp(deviceType, "GPU") == 0){
-   		*deviceTypeCl = CL_DEVICE_TYPE_GPU;
-   	}
-   }
 
 
    void logBuildError(cl_int* ret,cl_program* program, cl_device_id* deviceId){

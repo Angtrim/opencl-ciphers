@@ -66,7 +66,7 @@ void benchPresentMemoryMultiple(int fileSize,int* localSize, int numOfLocalSizes
 	saveDataToFile("PresentMem",infos,numOfLocalSizes);
 }
 
-void benchPresentSpeedMultiple(int fileSize,int* localSize, int numOfLocalSizes, device_id){
+void benchPresentSpeedMultiple(int fileSize,int* localSize, int numOfLocalSizes,cl_device_id* device_id){
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchPresentSpeedCtr(fileSize,localSize[i],&infos[i],device_id);

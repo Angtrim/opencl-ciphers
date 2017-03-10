@@ -54,7 +54,7 @@ int testHight(cl_device_id* device_id){
 
 // TEST FOR HIGHT CTR
 
-int testHightCtrCPU(cl_device_id* device_id){
+int testHightCtr(cl_device_id* device_id){
 	int success = 1;
 	struct FileInfo64 fileInfo = getFileUint64("tests/ctr_test");
 	long dim = fileInfo.lenght;
@@ -77,12 +77,12 @@ int testHightCtrCPU(cl_device_id* device_id){
 }
 
 
-int testHight(cl_device_id* device_id){
+int testHightALL(cl_device_id* device_id){
 	int result = 1;
 	log("--- --- Starting HIGHT tests");
 	
 	log("--- Test HIGHT  starting");
-	if(testHightCPU( device_id) == 1){
+	if(testHight( device_id) == 1){
 		log("--- Test HIGHT  passed");
 	}else{
 		log("--- Test HIGHT  FAILED!");
@@ -103,7 +103,7 @@ int testHight(cl_device_id* device_id){
 
 int testHightAll(cl_device_id* device_id){
 
-	int tHight = testHight(device_id);
+	int tHight = testHightALL(device_id);
 	int result = tHight;
 	if(result){
 		log("--- --- --- ALL HIGHT TEST PASSED");
