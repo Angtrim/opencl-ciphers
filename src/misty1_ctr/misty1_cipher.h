@@ -16,7 +16,7 @@
 #endif
 
 /** -- opencl parameters initialization to run the kernel -- **/
-static cl_device_type device_type;
+
 static cl_context context = NULL;
 static cl_command_queue command_queue = NULL;
 static cl_event event = NULL;
@@ -27,13 +27,10 @@ static cl_mem exKey = NULL;
 
 static cl_program program = NULL;
 static cl_kernel kernel = NULL;
-static cl_platform_id platform_id = NULL;
-static cl_uint ret_num_devices;
-static cl_uint ret_num_platforms;
+
 static cl_int ret;
 
-//cl file parameters
-static FILE *fp;
+
 static char clFileName[] = "src_cl/misty1_ctr.cl";
 
 static char* source_str = NULL;

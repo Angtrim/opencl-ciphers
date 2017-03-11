@@ -29,7 +29,7 @@
 #define BLOCK_SIZE (128 / 8)
 
 /** -- opencl parameters initialization to run the kernel -- **/
-static cl_device_type device_type;
+
 static cl_context context = NULL;
 static cl_command_queue command_queue = NULL;
 static cl_event event = NULL;
