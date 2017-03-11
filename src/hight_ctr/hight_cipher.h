@@ -1,5 +1,5 @@
-#ifndef MISTY1_CIPHER_H
-#define MISTY1_CIPHER_H
+#ifndef HIGHT_CIPHER_H
+#define HIGHT_CIPHER_H
 
 #include "hight_expansion.h"
 #include "../cipher_utils.h"

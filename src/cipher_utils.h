@@ -15,12 +15,12 @@
 typedef uint32_t word;
 typedef uint8_t byte;
 
-static struct FileInfo {
+struct FileInfo {
 		byte* filePointer;
 		long lenght;
 }; 
 
-static struct FileInfo64 {
+struct FileInfo64 {
 		uint64_t* filePointer;
 		long lenght;
 }; 
@@ -30,7 +30,7 @@ struct FileInfo64 getFileUint64(char* filePath);
 struct FileInfo getFileBytes(char* filePath);
 
 long getByteLenght(char* filePath);
-void loadClaProgramSource(char* fileName,char** source_str,size_t* source_size);
+void loadClProgramSource(char* fileName,char** source_str,size_t* source_size);
 void setDeviceType(char* deviceType,cl_device_type* deviceTypeCl);
 void logBuildError(cl_int* ret, cl_program* program, cl_device_id* deviceId);
 void getSystemInfo();

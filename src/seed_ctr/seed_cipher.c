@@ -72,7 +72,7 @@ cl_event seed_encryption(char* fileName, uint32_t* Key, uint64_t* output, size_t
 	
 	uint32_t Ki[32];
 	
-	char* modality;
+	char* modality = NULL;
 
 	//type of encryption
 	if(strcmp(encryptionType, SEED_OLD) == 0){

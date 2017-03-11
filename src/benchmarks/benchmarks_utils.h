@@ -7,7 +7,7 @@
 #endif
 
 
-static struct BenchInfo {
+struct BenchInfo {
 		long totalTime;
 		int localSize;
 		long fileSize;

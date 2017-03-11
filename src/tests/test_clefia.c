@@ -4,8 +4,7 @@
 #include "test_utils.h"
 #include "test_clefia.h"
 #include "../clefia_ctr/clefia_cipher.h"
-#define CPU_DEVICE "CPU"
-#define GPU_DEVICE "GPU"
+
 
 static const unsigned char skey[32] = {
 	0xffU,0xeeU,0xddU,0xccU,0xbbU,0xaaU,0x99U,0x88U,
@@ -145,63 +144,63 @@ int testClefia256CTR(cl_device_id* device_id){
 
 int testClefiaAll(cl_device_id* device_id){
 	int result = 1;
-	log("--- --- Starting Clefia tests");
+	logIt("--- --- Starting Clefia tests");
 	
-	log("--- Test Clefia 128  starting");
+	logIt("--- Test Clefia 128  starting");
 	if(testClefia128(device_id) == 1){
-		log("--- Test Clefia 128  passed");
+		logIt("--- Test Clefia 128  passed");
 	}else{
-		log("--- Test Clefia 128  FAILED!");
+		logIt("--- Test Clefia 128  FAILED!");
 		result = 0;
 	}
 
 
-	log("--- Test Clefia 192  starting");
+	logIt("--- Test Clefia 192  starting");
 	if(testClefia192(device_id) == 1){
-		log("--- Test Clefia 192  passed");
+		logIt("--- Test Clefia 192  passed");
 	}else{
-		log("--- Test Clefia 192  FAILED!");
+		logIt("--- Test Clefia 192  FAILED!");
 		result = 0;
 	}
 
 
 
-	log("--- Test Clefia 256  starting");
+	logIt("--- Test Clefia 256  starting");
 	if(testClefia256( device_id) == 1){
-		log("--- Test Clefia 256  passed");
+		logIt("--- Test Clefia 256  passed");
 	}else{
-		log("--- Test Clefia 256  FAILED!");
+		logIt("--- Test Clefia 256  FAILED!");
 		result = 0;
 	}
 
 
 
-	log("--- Test Clefia 128 CTR  starting");
+	logIt("--- Test Clefia 128 CTR  starting");
 	if(testClefia128CTR(device_id) == 1){
-		log("--- Test Clefia 128 CTR  passed");
+		logIt("--- Test Clefia 128 CTR  passed");
 	}else{
-		log("--- Test Clefia 128 CTR  FAILED!");
+		logIt("--- Test Clefia 128 CTR  FAILED!");
 		result = 0;
 	}
 
 
 
-		log("--- Test Clefia 192 CTR  starting");
+		logIt("--- Test Clefia 192 CTR  starting");
 	if(testClefia192CTR( device_id) == 1){
-		log("--- Test Clefia 192 CTR  passed");
+		logIt("--- Test Clefia 192 CTR  passed");
 	}else{
-		log("--- Test Clefia 192 CTR  FAILED!");
+		logIt("--- Test Clefia 192 CTR  FAILED!");
 		result = 0;
 	}
 
 
 
-			log("--- Test Clefia 256 CTR  starting");
+			logIt("--- Test Clefia 256 CTR  starting");
 	if(testClefia256CTR(device_id) == 1){
-		log("--- Test Clefia 256 CTR  passed");
+		logIt("--- Test Clefia 256 CTR  passed");
 	}else{
-		log("--- Test Clefia 256 CTR  FAILED!");
+		logIt("--- Test Clefia 256 CTR  FAILED!");
 		result = 0;
 	}
-
+	return result;
 }

@@ -3,15 +3,12 @@
 #include <stdlib.h>
 
 #include "test_utils.h"
-
+#include "../hight_ctr/hight_cipher.h"
 #include "test_hight.h"
 
 #include "../cipher_utils.h"
 
 #define MAX_LOCAL_SIZE 64
-
-#define CPU_DEVICE "CPU"
-#define GPU_DEVICE "GPU"
 
 static uint8_t HightKeys[2][16] = { 
     {0xff, 0xee, 0xdd, 0xcc, 0xbb, 0xaa, 0x99, 0x88,
@@ -79,22 +76,22 @@ int testHightCtr(cl_device_id* device_id){
 
 int testHightALL(cl_device_id* device_id){
 	int result = 1;
-	log("--- --- Starting HIGHT tests");
+	logIt("--- --- Starting HIGHT tests");
 	
-	log("--- Test HIGHT  starting");
+	logIt("--- Test HIGHT  starting");
 	if(testHight( device_id) == 1){
-		log("--- Test HIGHT  passed");
+		logIt("--- Test HIGHT  passed");
 	}else{
-		log("--- Test HIGHT  FAILED!");
+		logIt("--- Test HIGHT  FAILED!");
 		result = 0;
 	}
 
 
-	log("--- Test HIGHT CTR  starting");
+	logIt("--- Test HIGHT CTR  starting");
 	if(testHightCtr(device_id) == 1){
-		log("--- Test HIGHT CTR  passed");
+		logIt("--- Test HIGHT CTR  passed");
 	}else{
-		log("--- Test HIGHT CTR  FAILED!");
+		logIt("--- Test HIGHT CTR  FAILED!");
 		result = 0;
 	}
 
@@ -106,9 +103,9 @@ int testHightAll(cl_device_id* device_id){
 	int tHight = testHightALL(device_id);
 	int result = tHight;
 	if(result){
-		log("--- --- --- ALL HIGHT TEST PASSED");
+		logIt("--- --- --- ALL HIGHT TEST PASSED");
 	}else{
-		log("--- --- --- TEST HIGHT FAILED");
+		logIt("--- --- --- TEST HIGHT FAILED");
 	}
 	return result;
 }

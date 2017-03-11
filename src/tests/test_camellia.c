@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include "test_utils.h"
 #include "test_camellia.h"
-#define CPU_DEVICE "CPU"
-#define GPU_DEVICE "GPU"
+#include "../camellia_ctr/camellia_cipher.h"
 
 uint64_t Plaintext128[2] = {0x0123456789abcdef, 0xfedcba9876543210};
 uint64_t Ciphertext128[2] = {0x6767313854966973, 0x0857065648eabe43};
@@ -139,31 +138,31 @@ int testCamelliaCTR256(cl_device_id* device_id){
 
 int testCamellia128All(cl_device_id* device_id){
 	int result = 1;
-	log("--- --- Starting CAMELLIA 128 tests");
+	logIt("--- --- Starting CAMELLIA 128 tests");
 	
-	log("--- Test CAMELLIA 128  starting");
+	logIt("--- Test CAMELLIA 128  starting");
 	if(testCamellia128( device_id) == 1){
-		log("--- Test CAMELLIA 128  passed");
+		logIt("--- Test CAMELLIA 128  passed");
 	}else{
-		log("--- Test CAMELLIA 128  FAILED!");
+		logIt("--- Test CAMELLIA 128  FAILED!");
 		result = 0;
 	}
 
 
 
-	log("--- Test CAMELLIA CTR 128  starting");
+	logIt("--- Test CAMELLIA CTR 128  starting");
 	if(testCamelliaCTR128( device_id) == 1){
-		log("--- Test CAMELLIA CTR 128  passed");
+		logIt("--- Test CAMELLIA CTR 128  passed");
 	}else{
-		log("--- Test CAMELLIA CTR 128  FAILED!");
+		logIt("--- Test CAMELLIA CTR 128  FAILED!");
 		result = 0;
 	}
 
 
 	if(result != 0){
-        log("--- --- All CAMELLIA 128 test passed");
+        logIt("--- --- All CAMELLIA 128 test passed");
     }else{
-        log("--- --- Some CAMELLIA 128 Test FAILED");
+        logIt("--- --- Some CAMELLIA 128 Test FAILED");
     }
 
 	return result;
@@ -172,30 +171,30 @@ int testCamellia128All(cl_device_id* device_id){
 int testCamellia192All(cl_device_id* device_id){
 	int result = 1;
 
-	log("--- --- Starting CAMELLIA 192 tests");
+	logIt("--- --- Starting CAMELLIA 192 tests");
 
-	log("--- Test CAMELLIA 192  starting");
+	logIt("--- Test CAMELLIA 192  starting");
 	if(testCamellia192( device_id) == 1){
-		log("--- Test CAMELLIA 192  passed");
+		logIt("--- Test CAMELLIA 192  passed");
 	}else{
-		log("--- Test CAMELLIA 192  FAILED!");
+		logIt("--- Test CAMELLIA 192  FAILED!");
 		result = 0;
 	}
 
 
-	log("--- Test CAMELLIA CTR 192  starting");
+	logIt("--- Test CAMELLIA CTR 192  starting");
 	if(testCamelliaCTR192( device_id) == 1){
-		log("--- Test CAMELLIA CTR 192  passed");
+		logIt("--- Test CAMELLIA CTR 192  passed");
 	}else{
-		log("--- Test CAMELLIA CTR 192  FAILED!");
+		logIt("--- Test CAMELLIA CTR 192  FAILED!");
 		result = 0;
 	}
 
 
 	if(result != 0){
-        log("--- --- All CAMELLIA 192 test passed");
+        logIt("--- --- All CAMELLIA 192 test passed");
     }else{
-        log("--- --- Some CAMELLIA 192 Test FAILED");
+        logIt("--- --- Some CAMELLIA 192 Test FAILED");
     }
 
     return result;
@@ -204,31 +203,31 @@ int testCamellia192All(cl_device_id* device_id){
 int testCamellia256All(cl_device_id* device_id){
 	int result = 1;
 
-	log("--- --- Starting CAMELLIA 256 tests");
+	logIt("--- --- Starting CAMELLIA 256 tests");
 
-	log("--- Test CAMELLIA 256  starting");
+	logIt("--- Test CAMELLIA 256  starting");
 	if(testCamellia256(device_id) == 1){
-		log("--- Test CAMELLIA 256  passed");
+		logIt("--- Test CAMELLIA 256  passed");
 	}else{
-		log("--- Test CAMELLIA 256  FAILED!");
+		logIt("--- Test CAMELLIA 256  FAILED!");
 		result = 0;
 	}
 
 
 
-	log("--- Test CAMELLIA CTR 256  starting");
+	logIt("--- Test CAMELLIA CTR 256  starting");
 	if(testCamelliaCTR256( device_id) == 1){
-		log("--- Test CAMELLIA CTR 256  passed");
+		logIt("--- Test CAMELLIA CTR 256  passed");
 	}else{
-		log("--- Test CAMELLIA CTR 256  FAILED!");
+		logIt("--- Test CAMELLIA CTR 256  FAILED!");
 		result = 0;
 	}
 
 
 	if(result != 0){
-        log("--- --- All CAMELLIA 256 test passed");
+        logIt("--- --- All CAMELLIA 256 test passed");
     }else{
-        log("--- --- Some CAMELLIA 256 Test FAILED");
+        logIt("--- --- Some CAMELLIA 256 Test FAILED");
     }
 
 	return result;
@@ -242,9 +241,9 @@ int testCamelliaAll(cl_device_id* device_id){
 	int tCamellia256 = testCamellia192All( device_id);
 	int result = tCamellia128&&tCamellia192&&tCamellia256;
 	if(result){
-		log("--- --- --- ALL CAMELLIA TEST PASSED");
+		logIt("--- --- --- ALL CAMELLIA TEST PASSED");
 	}else{
-		log("--- --- --- TEST CAMELLIA FAILED");
+		logIt("--- --- --- TEST CAMELLIA FAILED");
 	}
 	return result;	
 }

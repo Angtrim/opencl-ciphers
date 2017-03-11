@@ -12,8 +12,6 @@
 
 #define MAX_LOCAL_SIZE 64
 
-#define CPU_DEVICE "CPU"
-#define GPU_DEVICE "GPU"
 
 static uint64_t PresentKey[2] = {0, 0};
 uint64_t PresentPlaintext[1] = {0x0000000000000000ul};
@@ -118,62 +116,62 @@ int testPresentSpeedCtr(cl_device_id* device_id){
 
 int testPresentMemoryALL(cl_device_id* device_id){
 	int result = 1;
-	log("--- --- Starting PRESENT MEMORY tests");
+	logIt("--- --- Starting PRESENT MEMORY tests");
 	
-	log("--- Test PRESENT MEMORY  starting");
+	logIt("--- Test PRESENT MEMORY  starting");
 	if(testPresentMemory( device_id) == 1){
-		log("--- Test PRESENT MEMORY  passed");
+		logIt("--- Test PRESENT MEMORY  passed");
 	}else{
-		log("--- Test PRESENT MEMORY  FAILED!");
+		logIt("--- Test PRESENT MEMORY  FAILED!");
 		result = 0;
 	}
 
 
 
-	log("--- Test PRESENT MEMORY CTR  starting");
+	logIt("--- Test PRESENT MEMORY CTR  starting");
 	if(testPresentMemoryCtr(device_id) == 1){
-		log("--- Test PRESENT MEMORY CTR  passed");
+		logIt("--- Test PRESENT MEMORY CTR  passed");
 	}else{
-		log("--- Test PRESENT MEMORY CTR  FAILED!");
+		logIt("--- Test PRESENT MEMORY CTR  FAILED!");
 		result = 0;
 	}
 
 
 	if(result != 0){
-		log("--- --- All PRESENT MEMORY test passed");
+		logIt("--- --- All PRESENT MEMORY test passed");
 	}else{
-		log("--- --- Some PRESENT MEMORY Test FAILED");
+		logIt("--- --- Some PRESENT MEMORY Test FAILED");
 	}
 	return result;
 }
 
 int testPresentSpeedALL(cl_device_id* device_id){
 	int result = 1;
-	log("--- --- Starting PRESENT SPEED tests");
+	logIt("--- --- Starting PRESENT SPEED tests");
 	
-	log("--- Test PRESENT SPEED  starting");
+	logIt("--- Test PRESENT SPEED  starting");
 	if(testPresentSpeed(device_id) == 1){
-		log("--- Test PRESENT SPEED  passed");
+		logIt("--- Test PRESENT SPEED  passed");
 	}else{
-		log("--- Test PRESENT SPEED  FAILED!");
+		logIt("--- Test PRESENT SPEED  FAILED!");
 		result = 0;
 	}
 
 
-	log("--- Test PRESENT SPEED CTR  starting");
+	logIt("--- Test PRESENT SPEED CTR  starting");
 	if(testPresentSpeedCtr(device_id) == 1){
-		log("--- Test PRESENT SPEED CTR  passed");
+		logIt("--- Test PRESENT SPEED CTR  passed");
 	}else{
-		log("--- Test PRESENT SPEED CTR  FAILED!");
+		logIt("--- Test PRESENT SPEED CTR  FAILED!");
 		result = 0;
 	}
 
 
 
 	if(result != 0){
-		log("--- --- All PRESENT SPEED test passed");
+		logIt("--- --- All PRESENT SPEED test passed");
 	}else{
-		log("--- --- Some PRESENT SPEED Test FAILED");
+		logIt("--- --- Some PRESENT SPEED Test FAILED");
 	}
 	return result;
 }
@@ -184,9 +182,9 @@ int testPresentAll(cl_device_id* device_id){
 	int tPresentSpeed = testPresentSpeedALL(device_id);
 	int result = tPresentMemory&&tPresentSpeed;
 	if(result){
-		log("--- --- --- ALL PRESENT TEST PASSED");
+		logIt("--- --- --- ALL PRESENT TEST PASSED");
 	}else{
-		log("--- --- --- TEST PRESENT FAILED");
+		logIt("--- --- --- TEST PRESENT FAILED");
 	}
 	return result;
 }

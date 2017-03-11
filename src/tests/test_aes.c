@@ -8,6 +8,7 @@
 #include "test_aes.h"
 
 #include "../cipher_utils.h"
+#include "../aes_ctr/aes_cipher.h"
 
 #define MAX_LOCAL_SIZE 64
 
@@ -195,30 +196,30 @@ int testAes256Ctr(cl_device_id* device_id){
 
 int test128(cl_device_id* device_id){
 	int result = 1;
-	log("--- --- Starting AES128 tests");
+	logIt("--- --- Starting AES128 tests");
 	
-	log("--- Test AES 128 starting");
+	logIt("--- Test AES 128 starting");
 	if(testAes128(device_id) == 1){
-		log("--- Test AES 128  passed");
+		logIt("--- Test AES 128  passed");
 	}else{
-		log("--- Test AES 128 FAILED!");
+		logIt("--- Test AES 128 FAILED!");
 		result = 0;
 	}
 
 
-	log("--- Test AES 128 CTR  starting");
+	logIt("--- Test AES 128 CTR  starting");
 	if(testAes128Ctr(device_id) == 1){
-		log("--- Test AES 128 CTR passed");
+		logIt("--- Test AES 128 CTR passed");
 	}else{
-		log("--- Test AES 128 CTR FAILED!");
+		logIt("--- Test AES 128 CTR FAILED!");
 		result = 0;
 	}
 
 
 	if(result != 0){
-		log("--- --- All Aes 128 test passed");
+		logIt("--- --- All Aes 128 test passed");
 	}else{
-		log("--- --- Some AES 128 Test FAILED");
+		logIt("--- --- Some AES 128 Test FAILED");
 	}
 	return result;
 
@@ -226,30 +227,30 @@ int test128(cl_device_id* device_id){
 
 int test192(cl_device_id* device_id){
 	int result = 1;
-	log("--- --- Starting AES192 tests");
+	logIt("--- --- Starting AES192 tests");
 	
-	log("--- Test AES 192 starting");
+	logIt("--- Test AES 192 starting");
 	if(testAes192(device_id) == 1){
-		log("--- Test AES 192  passed");
+		logIt("--- Test AES 192  passed");
 	}else{
-		log("--- Test AES 192 FAILED!");
+		logIt("--- Test AES 192 FAILED!");
 		result = 0;
 	}
 
 
-	log("--- Test AES 192 CTR CPU starting");
+	logIt("--- Test AES 192 CTR CPU starting");
 	if(testAes192Ctr(device_id) == 1){
-		log("--- Test AES 192 CTR  passed");
+		logIt("--- Test AES 192 CTR  passed");
 	}else{
-		log("--- Test AES 192 CTR  FAILED!");
+		logIt("--- Test AES 192 CTR  FAILED!");
 		result = 0;
 	}
 
 
 	if(result != 0){
-		log("--- --- All Aes 192 test passed");
+		logIt("--- --- All Aes 192 test passed");
 	}else{
-		log("--- --- Some AES 192 Test FAILED");
+		logIt("--- --- Some AES 192 Test FAILED");
 	}
 
 	return result;
@@ -258,29 +259,29 @@ int test192(cl_device_id* device_id){
 
 int test256(cl_device_id* device_id){
 	int result = 1;
-	log("--- --- Starting AES256 tests");
+	logIt("--- --- Starting AES256 tests");
 	
-	log("--- Test AES 256 starting");
+	logIt("--- Test AES 256 starting");
 	if(testAes256(device_id) == 1){
-		log("--- Test AES 256  passed");
+		logIt("--- Test AES 256  passed");
 	}else{
-		log("--- Test AES 256 FAILED!");
+		logIt("--- Test AES 256 FAILED!");
 		result = 0;
 	}
 
 
-	log("--- Test AES 256 CTR  starting");
+	logIt("--- Test AES 256 CTR  starting");
 	if(testAes256Ctr(device_id) == 1){
-		log("--- Test AES 256 CTR  passed");
+		logIt("--- Test AES 256 CTR  passed");
 	}else{
-		log("--- Test AES 256 CTR  FAILED!");
+		logIt("--- Test AES 256 CTR  FAILED!");
 		result = 0;
 	}
 
 	if(result != 0){
-		log("--- --- All Aes 256 test passed");
+		logIt("--- --- All Aes 256 test passed");
 	}else{
-		log("--- --- Some AES 256 Test FAILED");
+		logIt("--- --- Some AES 256 Test FAILED");
 	}
 
 	return result;
@@ -294,9 +295,9 @@ int testAESAll(cl_device_id* device_id){
 	int t256 = test256(device_id);	
 	int result = t128&&t192&&t256;
 	if(result){
-		log("--- --- --- ALL AES TEST PASSED");
+		logIt("--- --- --- ALL AES TEST PASSED");
 	}else{
-		log("--- --- --- TEST AES FAILED");
+		logIt("--- --- --- TEST AES FAILED");
 	}
 	return result;
 

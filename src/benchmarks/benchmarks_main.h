@@ -11,6 +11,6 @@
 #include "benchmarks_hight.h"
 #include "benchmarks_clefia.h"
 
-int mainBench(cl_device_id* device_id);
+void mainBench(cl_device_id* device_id);
 
 #endif

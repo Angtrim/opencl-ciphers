@@ -6,13 +6,10 @@
 #include "test_utils.h"
 
 #include "test_misty1.h"
-
+#include "../misty1_ctr/misty1_cipher.h"
 #include "../cipher_utils.h"
 
 #define MAX_LOCAL_SIZE 64
-
-#define CPU_DEVICE "CPU"
-#define GPU_DEVICE "GPU"
 
 static uint8_t Misty1Key[16] = {
 	0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
@@ -83,31 +80,31 @@ int testMisty1Ctr(cl_device_id* device_id){
 
 int testMisty1ALL(cl_device_id* device_id){
 	int result = 1;
-	log("--- --- Starting MISTY1 tests");
+	logIt("--- --- Starting MISTY1 tests");
 	
-	log("--- Test MISTY1  starting");
+	logIt("--- Test MISTY1  starting");
 	if(testMisty1( device_id) == 1){
-		log("--- Test MISTY1  passed");
+		logIt("--- Test MISTY1  passed");
 	}else{
-		log("--- Test MISTY1  FAILED!");
+		logIt("--- Test MISTY1  FAILED!");
 		result = 0;
 	}
 
 
-	log("--- Test MISTY1 CTR  starting");
+	logIt("--- Test MISTY1 CTR  starting");
 	if(testMisty1Ctr(device_id) == 1){
-		log("--- Test MISTY1 CTR  passed");
+		logIt("--- Test MISTY1 CTR  passed");
 	}else{
-		log("--- Test MISTY1 CTR  FAILED!");
+		logIt("--- Test MISTY1 CTR  FAILED!");
 		result = 0;
 	}
 
 
 
 	if(result != 0){
-		log("--- --- All MISTY1 test passed");
+		logIt("--- --- All MISTY1 test passed");
 	}else{
-		log("--- --- Some MISTY1 Test FAILED");
+		logIt("--- --- Some MISTY1 Test FAILED");
 	}
 	return result;
 
@@ -118,9 +115,9 @@ int testMisty1All(cl_device_id* device_id){
 	int tMisty1 = testMisty1ALL(device_id);
 	int result = tMisty1;
 	if(result){
-		log("--- --- --- ALL MISTY1 TEST PASSED");
+		logIt("--- --- --- ALL MISTY1 TEST PASSED");
 	}else{
-		log("--- --- --- TEST MISTY1 FAILED");
+		logIt("--- --- --- TEST MISTY1 FAILED");
 	}
 	return result;
 }

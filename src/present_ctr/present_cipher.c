@@ -83,7 +83,7 @@ cl_event present_encryption(char* fileName, uint64_t* Key, uint64_t* output, siz
 	
 	uint64_t subkey[32];
 
-	char* modality;
+	char* modality = NULL;
 
 	//type of encryption
 	if(strcmp(encryptionType, MEMORY) == 0){

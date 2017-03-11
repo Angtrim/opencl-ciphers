@@ -2,8 +2,8 @@
 #define MISTY1_EXPANSION_H
 
 #include <stdint.h>
-typedef uint32_t word;
-typedef uint8_t byte;
+#include "../cipher_utils.h"
+
 
 #define KEY_SIZE 16
 #define EX_KEY_SIZE 32

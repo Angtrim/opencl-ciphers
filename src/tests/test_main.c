@@ -17,7 +17,7 @@ int main(){
 	cl_platform_id platform_id[32];;
 	cl_device_id device_id[32];
 	// Get Platform and Device Info 
-	cl_int ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
+	cl_int ret = clGetPlatformIDs(1, platform_id, &ret_num_platforms);
 	// allocate memory, get list of platforms
 	cl_platform_id *platforms = (cl_platform_id *) malloc(ret_num_platforms*sizeof(platform_id));
 	clGetPlatformIDs(ret_num_platforms, platforms, NULL);
@@ -29,9 +29,6 @@ int main(){
    	}
 	}
 	free(platforms);
-printf("device : %d\n",device_id);
-
-
 
 		int aesResult = testAESAll(device_id);
 		int misty1Result = testMisty1All(device_id);

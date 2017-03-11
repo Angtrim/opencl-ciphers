@@ -1,4 +1,5 @@
 #include "aes_cipher.h"
+#include "../cipher_utils.h"
 
 static char* setUpBuildOptions(int mode){
 	char* res = "";

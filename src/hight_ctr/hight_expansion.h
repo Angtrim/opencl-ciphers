@@ -2,8 +2,8 @@
 #define HIGHT_EXPANSION_H
 
 #include <stdint.h>
-typedef uint32_t word;
-typedef uint8_t byte;
+#include "../cipher_utils.h"
+
 
 
 

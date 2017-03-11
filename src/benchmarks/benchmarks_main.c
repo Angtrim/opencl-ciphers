@@ -1,7 +1,7 @@
 #include "benchmarks_main.h"
+#include <stdio.h>
 
-
-int mainBench(cl_device_id* device_id){
+void mainBench(cl_device_id* device_id){
 	int localSize[] = {1,2};
 	int localSizeClefia[] = {1};
 	printf("\nSTARTING BENCHMARKS\n\n");
@@ -21,9 +21,5 @@ int mainBench(cl_device_id* device_id){
 	benchSeedCtrMultiple(100000, localSize, 2,device_id);
 	benchPresentSpeedMultiple(1000000, localSizeClefia, 1,device_id); 
 	benchPresentMemoryMultiple(100000, localSizeClefia, 1,device_id); 
-	benchHightMultiple(1000000, localSize, 2, device_id);
-
-
-
-	
+	benchHightMultiple(1000000, localSize, 2, device_id);	
 }

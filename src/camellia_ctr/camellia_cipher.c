@@ -35,7 +35,7 @@ static void setUpOpenCl(uint64_t* inputText, uint64_t* k, uint64_t* ke, uint64_t
 	/* Build Kernel Program */
 	ret = clBuildProgram(program, 1, device_id, NULL, NULL, NULL);
 	if(ret != CL_SUCCESS){
-		logBuildError(&ret,&program,&device_id);
+		logBuildError(&ret,&program,device_id);
 	}
 	
 	/* Create OpenCL Kernel */

@@ -6,7 +6,7 @@
 #include "test_utils.h"
 
 #include "test_des.h"
-
+#include "../des_ctr/des_cipher.h"
 
 
 uint8_t DES3_keys[24] = {0x2B, 0xD6, 0x45, 0x9F, 0x82, 0xC5, 0xB3, 0x00, 0x95, 0x2C, 0x49, 0x10, 0x48, 0x81, 0xFF, 0x48, 0x2B, 0xD6, 0x45, 0x9F, 0x82, 0xC5, 0xB3, 0x00};
@@ -136,31 +136,31 @@ int testDes3CTR(cl_device_id* device_id){
 
 int testDesAll(cl_device_id* device_id){
     int result = 1;
-    log("--- --- Starting DES tests");
+    logIt("--- --- Starting DES tests");
     
-    log("--- Test DES CPU starting");
+    logIt("--- Test DES CPU starting");
     if(testDes( device_id) == 1){
-        log("--- Test DES  passed");
+        logIt("--- Test DES  passed");
     }else{
-        log("--- Test DES  FAILED!");
+        logIt("--- Test DES  FAILED!");
         result = 0;
     }
 
 
 
-    log("--- Test DES CTR  starting");
+    logIt("--- Test DES CTR  starting");
     if(testDesCTR( device_id) == 1){
-        log("--- Test DES CTR  passed");
+        logIt("--- Test DES CTR  passed");
     }else{
-        log("--- Test DES CTR  FAILED!");
+        logIt("--- Test DES CTR  FAILED!");
         result = 0;
     }
 
 
     if(result != 0){
-        log("--- --- All DES test passed");
+        logIt("--- --- All DES test passed");
     }else{
-        log("--- --- Some DES Test FAILED");
+        logIt("--- --- Some DES Test FAILED");
     }
 
     return result;
@@ -169,30 +169,30 @@ int testDesAll(cl_device_id* device_id){
 int testDes2All(cl_device_id* device_id){
     int result = 1;
 
-    log("--- Test DES2  starting");
+    logIt("--- Test DES2  starting");
     if(testDes2( device_id) == 1){
-        log("--- Test DES2  passed");
+        logIt("--- Test DES2  passed");
     }else{
-        log("--- Test DES2  FAILED!");
+        logIt("--- Test DES2  FAILED!");
         result = 0;
     }
 
 
 
-    log("--- Test DES2 CTR  starting");
+    logIt("--- Test DES2 CTR  starting");
     if(testDes2CTR( device_id) == 1){
-        log("--- Test DES2 CTR  passed");
+        logIt("--- Test DES2 CTR  passed");
     }else{
-        log("--- Test DES2 CTR  FAILED!");
+        logIt("--- Test DES2 CTR  FAILED!");
         result = 0;
     }
 
 
 
     if(result != 0){
-        log("--- --- All DES2 test passed");
+        logIt("--- --- All DES2 test passed");
     }else{
-        log("--- --- Some DES2 Test FAILED");
+        logIt("--- --- Some DES2 Test FAILED");
     }
 
     return result;
@@ -201,29 +201,29 @@ int testDes2All(cl_device_id* device_id){
 int testDes3All(cl_device_id* device_id){
     int result = 1;
 
-    log("--- Test DES3  starting");
+    logIt("--- Test DES3  starting");
     if(testDes3(device_id) == 1){
-        log("--- Test DES3  passed");
+        logIt("--- Test DES3  passed");
     }else{
-        log("--- Test DES3  FAILED!");
+        logIt("--- Test DES3  FAILED!");
         result = 0;
     }
 
 
 
-    log("--- Test DES3 CTR  starting");
+    logIt("--- Test DES3 CTR  starting");
     if(testDes3CTR(device_id) == 1){
-        log("--- Test DES3 CTR  passed");
+        logIt("--- Test DES3 CTR  passed");
     }else{
-        log("--- Test DES3 CTR  FAILED!");
+        logIt("--- Test DES3 CTR  FAILED!");
         result = 0;
     }
 
 
     if(result != 0){
-        log("--- --- All DES3 test passed");
+        logIt("--- --- All DES3 test passed");
     }else{
-        log("--- --- Some DES3 Test FAILED");
+        logIt("--- --- Some DES3 Test FAILED");
     }
 
     return result;
@@ -237,9 +237,9 @@ int testDESAll(cl_device_id* device_id){
     int tDES3 = testDes3All( device_id);   
     int result = tDES&&tDES2&&tDES3;
     if(result){
-        log("--- --- --- ALL DES TEST PASSED");
+        logIt("--- --- --- ALL DES TEST PASSED");
     }else{
-        log("--- --- --- TEST DES FAILED");
+        logIt("--- --- --- TEST DES FAILED");
     }
     return result;
 	 

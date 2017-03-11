@@ -10,9 +10,7 @@
 #include "../cipher_utils.h"
 
 #define MAX_LOCAL_SIZE 64
-
-#define CPU_DEVICE "CPU"
-#define GPU_DEVICE "GPU"
+#include "../seed_ctr/seed_cipher.h"
 
 static uint32_t SeedKey[4][4] = {
   {0x00000000, 0x00000000, 0x00000000, 0x00000000},
@@ -131,61 +129,61 @@ int testSeedCtr(cl_device_id* device_id){
 
 int testSeedOldALL(cl_device_id* device_id){
 	int result = 1;
-	log("--- --- Starting SEED OLD tests");
+	logIt("--- --- Starting SEED OLD tests");
 	
-	log("--- Test SEED OLD  starting");
+	logIt("--- Test SEED OLD  starting");
 	if(testSeedOld(device_id) == 1){
-		log("--- Test SEED OLD  passed");
+		logIt("--- Test SEED OLD  passed");
 	}else{
-		log("--- Test SEED OLD  FAILED!");
+		logIt("--- Test SEED OLD  FAILED!");
 		result = 0;
 	}
 
 
 
-	log("--- Test SEED OLD CTR  starting");
+	logIt("--- Test SEED OLD CTR  starting");
 	if(testSeedOldCtr(device_id) == 1){
-		log("--- Test SEED OLD CTR  passed");
+		logIt("--- Test SEED OLD CTR  passed");
 	}else{
-		log("--- Test SEED OLD CTR  FAILED!");
+		logIt("--- Test SEED OLD CTR  FAILED!");
 		result = 0;
 	}
 
 
 	if(result != 0){
-		log("--- --- All SEED OLD test passed");
+		logIt("--- --- All SEED OLD test passed");
 	}else{
-		log("--- --- Some SEED OLD Test FAILED");
+		logIt("--- --- Some SEED OLD Test FAILED");
 	}
 	return result;
 }
 
 int testSeedALL(cl_device_id* device_id){
 	int result = 1;
-	log("--- --- Starting SEED tests");
+	logIt("--- --- Starting SEED tests");
 	
-	log("--- Test SEED  starting");
+	logIt("--- Test SEED  starting");
 	if(testSeed(device_id) == 1){
-		log("--- Test SEED  passed");
+		logIt("--- Test SEED  passed");
 	}else{
-		log("--- Test SEED  FAILED!");
+		logIt("--- Test SEED  FAILED!");
 		result = 0;
 	}
 
 
-	log("--- Test SEED CTR  starting");
+	logIt("--- Test SEED CTR  starting");
 	if(testSeedCtr(device_id) == 1){
-		log("--- Test SEED CTR  passed");
+		logIt("--- Test SEED CTR  passed");
 	}else{
-		log("--- Test SEED CTR  FAILED!");
+		logIt("--- Test SEED CTR  FAILED!");
 		result = 0;
 	}
 
 
 	if(result != 0){
-		log("--- --- All SEED test passed");
+		logIt("--- --- All SEED test passed");
 	}else{
-		log("--- --- Some SEED Test FAILED");
+		logIt("--- --- Some SEED Test FAILED");
 	}
 	return result;
 }
@@ -196,9 +194,9 @@ int testSeedAll(cl_device_id* device_id){
 	int tSeed = testSeedALL(device_id);	
 	int result = tSeedOld&&tSeed;
 	if(result){
-		log("--- --- --- ALL SEED TEST PASSED");
+		logIt("--- --- --- ALL SEED TEST PASSED");
 	}else{
-		log("--- --- --- TEST SEED FAILED");
+		logIt("--- --- --- TEST SEED FAILED");
 	}
 	return result;
 }

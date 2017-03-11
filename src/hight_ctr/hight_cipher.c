@@ -1,7 +1,7 @@
 #include "hight_cipher.h"
 
 
-static void setUpOpenCl(byte* inputText, char* kernelName, uint8_t* WK, uint8_t* SK, long bufferLenght,cl_device_id* device_id){
+static void setUpOpenCl(uint64_t* inputText, char* kernelName, uint8_t* WK, uint8_t* SK, long bufferLenght,cl_device_id* device_id){
 	/* Get Platform and Device Info */
 	initClSetup(device_id,&context,&command_queue);
 
