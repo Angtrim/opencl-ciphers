@@ -47,8 +47,8 @@ The benchmarks suite that can be used to verify the performances of the algorith
 
 By calling the makefile a binary executable is produced that call all the functions of the test suite and tries some default benchmarks.
 
-`make ubuntu OPENCL_INC=/usr/local/cuda-8.0/include OPENCL_LIB=/usr/local/cuda-8.0/lib64`
-`make apple`
+`make`
+
 
 The output of the benchmarks suite are .dat file that provide the statistics about the performances measured.
 They can be visualized with gnuplot

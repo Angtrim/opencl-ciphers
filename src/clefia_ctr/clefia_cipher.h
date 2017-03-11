@@ -45,7 +45,7 @@ cl_event clefia_128_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, si
 cl_event clefia_192_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
 cl_event clefia_256_CtrEncrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
 cl_event clefia_128_CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
-cl_event clefia_192_CtrDerypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
+cl_event clefia_192_CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
 cl_event clefia_256_CtrDecrypt(char* fileName, uint8_t* key, uint8_t* output, size_t local_item_size, cl_device_id* device_id);
 
 #endif
