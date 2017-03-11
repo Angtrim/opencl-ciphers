@@ -13,7 +13,7 @@ SRC_PATH = src
 # Space-separated pkg-config libraries used by this project
 LIBS =
 # General compiler flags
-COMPILE_FLAGS = -std=c99 -Wall -g 
+COMPILE_FLAGS = -std=c99 -Wall -Wno-unused-variable -g 
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags
