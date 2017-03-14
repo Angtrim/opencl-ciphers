@@ -23,7 +23,7 @@ int main(){
 	clGetPlatformIDs(ret_num_platforms, platforms, NULL);
 	// iterate over platforms
 	for (cl_uint i = 0; i < ret_num_platforms; ++i){
-		ret = clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_ALL, 1, device_id, &ret_num_devices);
+		ret = clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_GPU, 1, device_id, &ret_num_devices);
 		  if(ret != CL_SUCCESS){
    		printf("Failed to find device : %d\n",ret);
    	}

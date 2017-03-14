@@ -2,24 +2,29 @@
 #include <stdio.h>
 
 void mainBench(cl_device_id* device_id){
-	int localSize[] = {1,2};
-	int localSizeClefia[] = {1};
+	int localSize[] = {1,2,4,8,16,32,64,128,256,512};
+	int fileSize[] = {1000000,5000000,10000000,50000000,100000000,500000000,1000000000};
 	printf("\nSTARTING BENCHMARKS\n\n");
-	benchAes128Multiple(100000,localSize,2,device_id);
-	benchAes192Multiple(100000,localSize,2,device_id);
-	benchAes256Multiple(100000,localSize,2,device_id);
-	benchClefia128Multiple(10000, localSizeClefia, 1,device_id);
-	benchClefia192Multiple(10000, localSizeClefia, 1,device_id);
-	benchClefia256Multiple(10000, localSizeClefia, 1,device_id);
-	benchDesMultiple(100000,localSize,2,device_id);
-	benchDes2Multiple(100000,localSize,2,device_id);
-	benchDes3Multiple(100000,localSize,2,device_id);
-	benchCam128Multiple(100000,localSize,2,device_id);
-	benchCam192Multiple(100000,localSize,2,device_id);
-	benchCam256Multiple(100000,localSize,2,device_id);
-	benchMisty1CtrMultiple(100000,localSize,2,device_id);
-	benchSeedCtrMultiple(100000, localSize, 2,device_id);
-	benchPresentSpeedMultiple(1000000, localSizeClefia, 1,device_id); 
-	benchPresentMemoryMultiple(100000, localSizeClefia, 1,device_id); 
-	benchHightMultiple(1000000, localSize, 2, device_id);	
+
+
+	for(int i = 0;i< sizeof(fileSize) ;i++){
+		benchAes128Multiple(fileSize[i],localSize,2,device_id);
+		benchAes128Multiple(fileSize[i],localSize,2,device_id);
+		benchAes192Multiple(fileSize[i],localSize,2,device_id);
+		benchAes256Multiple(fileSize[i],localSize,2,device_id);
+		benchClefia128Multiple(fileSize[i], localSize, 1,device_id);
+		benchClefia192Multiple(fileSize[i], localSize, 1,device_id);
+		benchClefia256Multiple(fileSize[i], localSize, 1,device_id);
+		benchDesMultiple(fileSize[i],localSize,2,device_id);
+		benchDes2Multiple(fileSize[i],localSize,2,device_id);
+		benchDes3Multiple(fileSize[i],localSize,2,device_id);
+		benchCam128Multiple(fileSize[i],localSize,2,device_id);
+		benchCam192Multiple(fileSize[i],localSize,2,device_id);
+		benchCam256Multiple(fileSize[i],localSize,2,device_id);
+		benchMisty1CtrMultiple(fileSize[i],localSize,2,device_id);
+		benchSeedCtrMultiple(fileSize[i], localSize, 2,device_id);
+		benchPresentSpeedMultiple(fileSize[i], localSize, 1,device_id); 
+		benchPresentMemoryMultiple(fileSize[i], localSize, 1,device_id); 
+		benchHightMultiple(fileSize[i], localSize, 2, device_id);	
+	}
 }
