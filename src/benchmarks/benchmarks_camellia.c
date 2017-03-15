@@ -19,7 +19,7 @@ static uint64_t Key256[4] = {0x0123456789abcdef, 0xfedcba9876543210,0x0011223344
 void benchCam128(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize - (fileSize%(16*localSize));
 	char* fileName = "benchCam";
 	buildFileOfZeroes(fileName,fileSize);
 	uint64_t* camCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
@@ -52,7 +52,7 @@ void benchCam128Multiple(int fileSize,int* localSize, int numOfLocalSizes,cl_dev
 
 void benchCam192(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id){
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize - (fileSize%(16*localSize));
 	char* fileName = "benchCam";
 	buildFileOfZeroes(fileName,fileSize);
 	uint64_t* camCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
@@ -86,7 +86,7 @@ void benchCam192Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_de
 void benchCam256(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize - (fileSize%(16*localSize));
 	char* fileName = "benchCam";
 	buildFileOfZeroes(fileName,fileSize);
 	uint64_t* camCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));

@@ -21,7 +21,7 @@ static uint8_t skey[32] = {
 
 void benchClefia128(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize - (fileSize%(16*localSize));
 	char* fileName = "benchClef";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* clefCiphertext = (uint8_t*)malloc(fileSize*sizeof(uint8_t));
@@ -55,7 +55,7 @@ void benchClefia128Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl
 void benchClefia256(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize - (fileSize%(16*localSize));
 	char* fileName = "benchClef";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* clefCiphertext = (uint8_t*)malloc(fileSize*sizeof(uint8_t));
@@ -89,7 +89,7 @@ void benchClefia256Multiple(int fileSize,int* localSize, int numOfLocalSizes,cl_
 void benchClefia192(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize - (fileSize%(16*localSize));
 	char* fileName = "benchClef";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* clefCiphertext = (uint8_t*)malloc(fileSize*sizeof(uint8_t));

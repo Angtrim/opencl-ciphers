@@ -15,7 +15,7 @@ static uint64_t PresentKey[2] = {0, 0};
 void benchPresentMemoryCtr(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-	fileSize = fileSize + (fileSize%8);
+	fileSize = fileSize - (fileSize%(8*localSize));
 	char* fileName = "benchPresent";
 	buildFileOfZeroes(fileName,fileSize);
 	uint64_t* presentCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
@@ -39,7 +39,7 @@ void benchPresentMemoryCtr(int fileSize,int localSize,struct BenchInfo* benchInf
 void benchPresentSpeedCtr(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-	fileSize = fileSize + (fileSize%8);
+	fileSize = fileSize - (fileSize%(8*localSize));
 	char* fileName = "benchPresent";
 	buildFileOfZeroes(fileName,fileSize);
 	uint64_t* presentCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));

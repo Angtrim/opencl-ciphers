@@ -20,7 +20,7 @@ static uint8_t HightKeys[2][16] = {
 		void benchHight(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-			fileSize = fileSize + (fileSize%8);
+	fileSize = fileSize - (fileSize%(8*localSize));
 			char* fileName = "benchHight";
 			buildFileOfZeroes(fileName,fileSize);
 			uint64_t* hightCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));

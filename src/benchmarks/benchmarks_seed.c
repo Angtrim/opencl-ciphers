@@ -20,7 +20,7 @@ static uint32_t SeedKey[4][4] = {
 void benchSeedOldCtr(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize - (fileSize%(16*localSize));
 	char* fileName = "benchSeed";
 	buildFileOfZeroes(fileName,fileSize);
 	uint64_t* seedCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));
@@ -43,7 +43,7 @@ void benchSeedOldCtr(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_
 void benchSeedCtr(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize - (fileSize%(16*localSize));
 	char* fileName = "benchSeed";
 	buildFileOfZeroes(fileName,fileSize);
 	uint64_t* seedCiphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));

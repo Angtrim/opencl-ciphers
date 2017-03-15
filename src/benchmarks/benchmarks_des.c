@@ -16,7 +16,7 @@ static uint8_t DES3_keys[24] = {0x2B, 0xD6, 0x45, 0x9F, 0x82, 0xC5, 0xB3, 0x00, 
 void benchDes(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-	fileSize = fileSize + (fileSize%8);
+	fileSize = fileSize - (fileSize%(8*localSize));
 	char* fileName = "benchDes";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* desCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
@@ -41,7 +41,7 @@ void benchDes(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_
 void benchDes2(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize - (fileSize%(16*localSize));
 	char* fileName = "benchDes";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* desCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
@@ -65,7 +65,7 @@ clReleaseEvent(event);
 void benchDes3(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize - (fileSize%(16*localSize));
 	char* fileName = "benchDes";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* desCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));

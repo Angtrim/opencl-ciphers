@@ -18,7 +18,7 @@ static uint8_t Misty1Key[16] = {
 void benchMisty1Ctr(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-	fileSize = fileSize + (fileSize%8);
+	fileSize = fileSize - (fileSize%(8*localSize));
 	char* fileName = "benchMisty1";
 	buildFileOfZeroes(fileName,fileSize);
 	uint64_t* misty1Ciphertext = (uint64_t*)malloc((fileSize/8)*sizeof(uint64_t));

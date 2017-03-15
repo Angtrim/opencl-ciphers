@@ -13,7 +13,8 @@ static uint32_t aes256Key[32] = {0x63375233, 0xca899f06, 0x2f868c91, 0x8eb2ccc1,
 
 void benchAes128(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_device_id* device_id){
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize - (fileSize%(16*localSize));
+
 	char* fileName = "benchAes";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
@@ -37,7 +38,7 @@ void benchAes128(int fileSize,int localSize,struct BenchInfo* benchInfo,cl_devic
 
 void benchAes192(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize - (fileSize%(16*localSize));
 	char* fileName = "benchAesa";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
@@ -63,7 +64,7 @@ void benchAes192(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_devi
 void benchAes256(int fileSize,int localSize, struct BenchInfo* benchInfo,cl_device_id* device_id){
 
 	// Pad file size
-	fileSize = fileSize + (fileSize%16);
+	fileSize = fileSize - (fileSize%(16*localSize));
 	char* fileName = "benchAes";
 	buildFileOfZeroes(fileName,fileSize);
 	uint8_t* aesCiphertext = (uint8_t*)malloc((fileSize)*sizeof(uint8_t));
@@ -91,8 +92,11 @@ void benchAes128Multiple(int fileSize,int* localSize, int numOfLocalSizes, cl_de
 	struct BenchInfo* infos = (struct BenchInfo*)malloc(numOfLocalSizes*sizeof(struct BenchInfo));
 	for(int i = 0;i<numOfLocalSizes;i++){
 		benchAes128(fileSize,localSize[i],&infos[i], device_id);
+
 	}
+
 	saveDataToFile("AES128",infos,numOfLocalSizes);
+
 	free(infos);
 }
 
