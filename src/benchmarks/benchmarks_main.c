@@ -8,6 +8,7 @@ void mainBench(cl_device_id* device_id){
 
 
 	for(int i = 0;i< sizeof(fileSize)/sizeof(int) ;i++){
+		printf("\nBenchmark filesize: %d\n\n",fileSize[i]);
 		benchAes128Multiple(fileSize[i],localSize, sizeof(localSize)/sizeof(int),device_id);
 		benchAes192Multiple(fileSize[i],localSize, sizeof(localSize)/sizeof(int),device_id);
 		benchAes256Multiple(fileSize[i],localSize, sizeof(localSize)/sizeof(int),device_id);
