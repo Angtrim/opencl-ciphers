@@ -8,23 +8,23 @@ void mainBench(cl_device_id* device_id){
 
 
 	for(int i = 0;i< sizeof(fileSize) ;i++){
-		benchAes128Multiple(fileSize[i],localSize,2,device_id);
-		benchAes128Multiple(fileSize[i],localSize,2,device_id);
-		benchAes192Multiple(fileSize[i],localSize,2,device_id);
-		benchAes256Multiple(fileSize[i],localSize,2,device_id);
-		benchClefia128Multiple(fileSize[i], localSize, 1,device_id);
-		benchClefia192Multiple(fileSize[i], localSize, 1,device_id);
-		benchClefia256Multiple(fileSize[i], localSize, 1,device_id);
-		benchDesMultiple(fileSize[i],localSize,2,device_id);
-		benchDes2Multiple(fileSize[i],localSize,2,device_id);
-		benchDes3Multiple(fileSize[i],localSize,2,device_id);
-		benchCam128Multiple(fileSize[i],localSize,2,device_id);
-		benchCam192Multiple(fileSize[i],localSize,2,device_id);
-		benchCam256Multiple(fileSize[i],localSize,2,device_id);
-		benchMisty1CtrMultiple(fileSize[i],localSize,2,device_id);
-		benchSeedCtrMultiple(fileSize[i], localSize, 2,device_id);
-		benchPresentSpeedMultiple(fileSize[i], localSize, 1,device_id); 
-		benchPresentMemoryMultiple(fileSize[i], localSize, 1,device_id); 
-		benchHightMultiple(fileSize[i], localSize, 2, device_id);	
+		benchAes128Multiple(fileSize[i],localSize, sizeof(localSize),device_id);
+		benchAes128Multiple(fileSize[i],localSize, sizeof(localSize),device_id);
+		benchAes192Multiple(fileSize[i],localSize, sizeof(localSize),device_id);
+		benchAes256Multiple(fileSize[i],localSize, sizeof(localSize),device_id);
+		benchClefia128Multiple(fileSize[i], localSize, sizeof(localSize),device_id);
+		benchClefia192Multiple(fileSize[i], localSize, sizeof(localSize),device_id);
+		benchClefia256Multiple(fileSize[i], localSize, sizeof(localSize),device_id);
+		benchDesMultiple(fileSize[i],localSize, sizeof(localSize),device_id);
+		benchDes2Multiple(fileSize[i],localSize, sizeof(localSize),device_id);
+		benchDes3Multiple(fileSize[i],localSize, sizeof(localSize),device_id);
+		benchCam128Multiple(fileSize[i],localSize, sizeof(localSize),device_id);
+		benchCam192Multiple(fileSize[i],localSize, sizeof(localSize),device_id);
+		benchCam256Multiple(fileSize[i],localSize, sizeof(localSize),device_id);
+		benchMisty1CtrMultiple(fileSize[i],localSize, sizeof(localSize),device_id);
+		benchSeedCtrMultiple(fileSize[i], localSize, sizeof(localSize),device_id);
+		benchPresentSpeedMultiple(fileSize[i], localSize, sizeof(localSize),device_id); 
+		benchPresentMemoryMultiple(fileSize[i], localSize, sizeof(localSize),device_id); 
+		benchHightMultiple(fileSize[i], localSize, sizeof(localSize), device_id);	
 	}
 }
